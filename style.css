@@ -97,9 +97,19 @@ body {
   display: block;
 }
 
-.event-card p {
-    color: #ffffff; 
+  /* Light mode (default) */
+.event-card p,
+.event-card h3 {
+  color: #333;
 }
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  .event-card p,
+  .event-card h3 {
+    color: #ffffff;
+}
+
 
 section h2 {
   color: #333;
