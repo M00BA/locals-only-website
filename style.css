@@ -68,7 +68,7 @@ body {
 
 .event-card img {
   width: 100%;
-  height: 350px;
+  height: 450px;
   object-fit: cover;
   border-radius: 22px;
   margin-bottom: 20px;
@@ -105,7 +105,7 @@ section {
 
 .image-row img {
   border-radius: 40px;
-  height:350px;
+  height:450px;
   object-fit: cover;
 }
 
@@ -146,7 +146,7 @@ section {
   color: #ffffff;
 }
 
-.dark-mode .event-card {
+dark-mode .event-card {
   background: #1e1e1e;
 }
 
