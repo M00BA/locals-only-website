@@ -7,7 +7,7 @@ body {
 
 /* Container */
 .container {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 20px;
   text-align: center;
@@ -38,7 +38,7 @@ body {
   text-decoration: none;
   cursor: pointer;
   display: inline-block;
-  font-weight: 300;
+  font-weight: 500;
   transition: all 0.2s ease;
 }
 
