@@ -60,6 +60,7 @@ body {
   border-radius: 20px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   max-width: 600px;
+  text-align: left;
 }
 
 .event-card h3 {
