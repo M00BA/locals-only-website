@@ -137,3 +137,26 @@ section {
   min-height: 80px;
   resize: vertical;
 }
+
+/* DARK MODE */
+.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+
+.dark-mode .event-card {
+  background: #1e1e1e;
+}
+
+.dark-mode .navbar {
+  background: #1e1e1e;
+}
+
+.dark-mode .footer {
+  background: #1e1e1e;
+  color: #aaa;
+}
+
+.dark-mode .btn {
+  background-color: #66bb6a;
+}
