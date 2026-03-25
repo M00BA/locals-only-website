@@ -194,3 +194,54 @@ section {
   background-color: #66bb6a;
 }
 
+  /* FIXED DARK MODE */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #181818;
+    color: #ffffff;
+  }
+
+  .navbar {
+    background: #1e1e1e;
+  }
+
+  .navbar a {
+    color: #ffffff;
+  }
+
+  section h2 {
+    color: #ffffff;
+  }
+
+  .footer {
+    background: #1e1e1e;
+    color: #ffffff;
+  }
+
+  .event-card {
+    background: #1e1e1e;
+  }
+
+  .event-card p,
+  .event-card h3 {
+    color: #ffffff;
+  }
+
+  .paragraph {
+    color: #ffffff;
+  }
+
+  #contact p,
+  #create p,
+  .hero p {
+    color: #ffffff;
+  }
+
+  .event-form input,
+  .event-form textarea {
+    background-color: #222;
+    color: #ffffff;
+    border-color: #444;
+  }
+}
+
