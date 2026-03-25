@@ -69,9 +69,10 @@ section h2 {
 }
 
 .event-card:hover {
-  transform: translateY(-8px);
+  transform: translateY(-8px) !important;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
+
 
 .event-card h3,
 .event-card p {
@@ -203,4 +204,11 @@ body {
 
 .event-card:hover img {
   transform: scale(1.02);
+}
+
+.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.6s ease forwards;
+  will-change: transform;
 }
