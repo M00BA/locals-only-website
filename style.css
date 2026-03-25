@@ -80,6 +80,12 @@ section h2 {
   object-fit: cover;
   border-radius: 22px;
   margin-bottom: 20px;
+  pointer-events: none;
+  transition: transform 0.25s ease;
+}
+
+.event-card:hover img {
+  transform: scale(1.02);
 }
 
 .event-card h3,
@@ -214,3 +220,11 @@ body {
   transform: scale(1.02);
 }
 
+.event-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
