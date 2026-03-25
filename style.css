@@ -168,14 +168,6 @@ body, .navbar, .event-card, .footer, .btn, .event-form input, .event-form textar
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-.event-card {
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.event-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-}
 
 .fade-in {
   opacity: 0;
@@ -200,4 +192,13 @@ body, .navbar, .event-card, .footer, .btn, .event-form input, .event-form textar
 
 body {
   transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.event-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.event-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
