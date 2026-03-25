@@ -1,5 +1,5 @@
 /* ------------------------------
-   BASE STYLES (LIGHT MODE DEFAULT)
+   LIGHT MODE (DEFAULT)
 ------------------------------ */
 
 body {
@@ -123,4 +123,73 @@ section h2 {
 .event-form input,
 .event-form textarea {
   padding: 10px;
-  border-radius:
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  color: #333;
+  font-family: inherit;
+}
+
+.event-form textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+}
+
+/* ------------------------------
+   DARK MODE (TOGGLE ONLY)
+------------------------------ */
+
+.dark-mode {
+  background-color: #181818;
+  color: #ffffff;
+}
+
+.dark-mode .navbar {
+  background: #1e1e1e;
+}
+
+.dark-mode .navbar a {
+  color: #ffffff;
+}
+
+.dark-mode section h2 {
+  color: #ffffff;
+}
+
+.dark-mode .hero p,
+.dark-mode #contact p,
+.dark-mode #create p {
+  color: #ffffff;
+}
+
+.dark-mode .event-card {
+  background: #1e1e1e;
+}
+
+.dark-mode .event-card h3,
+.dark-mode .event-card p {
+  color: #ffffff;
+}
+
+.dark-mode .footer {
+  background: #1e1e1e;
+  color: #ffffff;
+}
+
+.dark-mode .event-form input,
+.dark-mode .event-form textarea {
+  background-color: #222;
+  color: #ffffff;
+  border-color: #444;
+}
+
+.dark-mode .btn {
+  background-color: #66bb6a;
+}
