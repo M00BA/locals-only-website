@@ -46,7 +46,7 @@ body {
 
 @media (prefers-color-scheme: dark) {
     .paragraph {
-        color: #fff; /* For dark mode */
+        color: #ffffff; /* For dark mode */
 }
 
 /* Buttons */
