@@ -147,7 +147,7 @@ section {
   color: #ffffff;
 }
 
-dark-mode .event-card {
+.dark-mode .event-card {
   background: #1e1e1e;
 }
 
