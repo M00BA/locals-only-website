@@ -159,3 +159,8 @@ section h2 {
 .dark-mode .btn {
   background-color: #66bb6a;
 }
+
+* {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
