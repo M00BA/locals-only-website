@@ -40,14 +40,98 @@ body {
   border-color: #ddd;
 }
 
-.paragraph {
-    color: #000; /* For light mode */
+/* LIGHT MODE (default) */
+body {
+  background-color: #f9f9f9;
+  color: #333;
 }
 
-@media (prefers-color-scheme: dark) {
-    .paragraph {
-        color: #ffffff; /* For dark mode */
+section h2 {
+  color: #333;
 }
+
+.footer {
+  color: #666;
+}
+
+.event-card p,
+.event-card h3 {
+  color: #333;
+}
+
+.hero p,
+#contact p,
+#create p {
+  color: #333;
+}
+
+.paragraph {
+  color: #000;
+}
+
+.navbar a {
+  color: #333;
+}
+
+.event-form input,
+.event-form textarea {
+  background-color: #fff;
+  color: #333;
+  border-color: #ddd;
+}
+
+
+/* DARK MODE */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #181818;
+    color: #ffffff;
+  }
+
+  .navbar {
+    background: #1e1e1e;
+  }
+
+  .navbar a {
+    color: #ffffff;
+  }
+
+  section h2 {
+    color: #ffffff;
+  }
+
+  .footer {
+    background: #1e1e1e;
+    color: #ffffff;
+  }
+
+  .event-card {
+    background: #1e1e1e;
+  }
+
+  .event-card p,
+  .event-card h3 {
+    color: #ffffff;
+  }
+
+  .paragraph {
+    color: #ffffff;
+  }
+
+  #contact p,
+  #create p,
+  .hero p {
+    color: #ffffff;
+  }
+
+  .event-form input,
+  .event-form textarea {
+    background-color: #222;
+    color: #ffffff;
+    border-color: #444;
+  }
+}
+
 
 /* Buttons */
 .btn {
@@ -108,6 +192,7 @@ body {
   .event-card p,
   .event-card h3 {
     color: #ffffff;
+  }
 }
 
 
@@ -127,6 +212,7 @@ section {
     padding: 10px;
   }
 }
+
 /* Navigation Bar */
 .navbar {
   background: white;
@@ -206,53 +292,54 @@ section {
 
   /* FIXED DARK MODE */
 @media (prefers-color-scheme: dark) {
-  body {
-    background-color: #181818;
-    color: #ffffff;
-  }
+   body {
+   background-color: #181818;
+   color: #ffffff;
+   }
+}
 
-  .navbar {
-    background: #1e1e1e;
-  }
+.navbar {
+  background: #1e1e1e;
+}
 
-  .navbar a {
-    color: #ffffff;
-  }
+.navbar a {
+  color: #ffffff;
+}
 
-  section h2 {
-    color: #ffffff;
-  }
+ section h2 {
+  color: #ffffff;
+}
 
-  .footer {
-    background: #1e1e1e;
-    color: #ffffff;
-  }
+.footer {
+  background: #1e1e1e;
+  color: #ffffff;
+}
 
-  .event-card {
-    background: #1e1e1e;
-  }
+.event-card {
+  background: #1e1e1e;
+}
 
-  .event-card p,
-  .event-card h3 {
-    color: #ffffff;
-  }
+.event-card p,
+.event-card h3 {
+  color: #ffffff;
+}
 
-  .paragraph {
-    color: #ffffff;
-  }
+.paragraph {
+  color: #ffffff;
+}
 
-  #contact p,
-  #create p,
-  .hero p {
-    color: #ffffff;
-  }
+#contact p,
+#create p,
+.hero p {
+  color: #ffffff;
+}
 
-  .event-form input,
-  .event-form textarea {
-    background-color: #222;
-    color: #ffffff;
-    border-color: #444;
-  }
+.event-form input,
+.event-form textarea {
+  background-color: #222;
+  color: #ffffff;
+  border-color: #444;
+}
   
 /* LIGHT MODE (default) */
 body {
