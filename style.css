@@ -25,7 +25,19 @@ body {
 
 .hero p {
   margin: 10px 0 20px;
-  color: #f0f0f0; /* Slightly lighter gray for hero paragraphs */
+  color: #666; /* Slightly lighter gray for hero paragraphs */
+}
+
+#contact p,
+#create p {
+  color: #333;
+}
+
+.event-form input,
+.event-form textarea {
+  background-color: #ffffff;
+  color: #333;
+  border-color: #ddd;
 }
 
 input, textarea {
@@ -82,8 +94,13 @@ input, textarea {
 }
 
 .event-card p {
-    color: #ffffff; /* White text for event card paragraphs */
+    color: #333; 
 }
+
+section h2 {
+  color: #333;
+}
+
 
 /* Sections */
 section {
@@ -109,7 +126,7 @@ section {
 .navbar a {
   margin-left: 15px;
   text-decoration: none;
-  color: #e0e0e0; /* Light gray for navbar links */
+  color: #333; /* Light gray for navbar links */
   font-weight: 500;
 }
 
