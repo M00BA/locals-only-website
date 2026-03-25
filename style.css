@@ -54,10 +54,11 @@ body {
 /* Event Cards */
 .event-card {
   background: white;
-  padding: 25px;
-  margin: 25px 0;
-  border-radius: 25px;
+  padding: 18px;
+  margin: 15px 0;
+  border-radius: 20px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  max-width: 600px;
 }
 
 .event-card h3 {
