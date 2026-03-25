@@ -243,5 +243,45 @@ section {
     color: #ffffff;
     border-color: #444;
   }
+  
+/* LIGHT MODE (default) */
+body {
+  background-color: #f9f9f9;
+  color: #333;
 }
+
+section h2 {
+  color: #333;
+}
+
+.footer {
+  color: #666;
+}
+
+.event-card p,
+.event-card h3 {
+  color: #333;
+}
+
+.hero p,
+#contact p,
+#create p {
+  color: #333;
+}
+
+.paragraph {
+  color: #000;
+}
+
+.navbar a {
+  color: #333;
+}
+
+.event-form input,
+.event-form textarea {
+  background-color: #fff;
+  color: #333;
+  border-color: #ddd;
+}
+
 
