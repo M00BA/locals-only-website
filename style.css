@@ -170,3 +170,27 @@ section h2 {
 /* Smooth theme transition */
 body, .navbar, .event-card, .footer, .btn, .event-form input, .event-form textarea {
   transition: background
+.contact-sub {
+  font-size: 16px;
+  opacity: 0.9;
+  margin-bottom: 5px;
+}
+
+.contact-email {
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 0;
+}
+
+#contact, #create {
+  margin-top: 40px;
+}
+
+.event-form input,
+.event-form textarea {
+  font-size: 15px;
+}
+
+.event-form button {
+  margin-top: 10px;
+}
