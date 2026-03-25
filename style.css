@@ -38,7 +38,7 @@ body {
   text-decoration: none;
   cursor: pointer;
   display: inline-block;
-  font-weight: 500;
+  font-weight: 300;
   transition: all 0.2s ease;
 }
 
