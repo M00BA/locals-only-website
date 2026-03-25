@@ -25,7 +25,12 @@ body {
 
 .hero p {
   margin: 10px 0 20px;
-  color: #666;
+  color: #f0f0f0; /* Slightly lighter gray for hero paragraphs */
+}
+
+input, textarea {
+    color: #ffffff; /* White text for form inputs */
+    background-color: #333; /* Dark background for better contrast */
 }
 
 /* Buttons */
@@ -76,6 +81,10 @@ body {
   display: block;
 }
 
+.event-card p {
+    color: #ffffff; /* White text for event card paragraphs */
+}
+
 /* Sections */
 section {
   margin-bottom: 40px;
@@ -100,7 +109,7 @@ section {
 .navbar a {
   margin-left: 15px;
   text-decoration: none;
-  color: #333;
+  color: #e0e0e0; /* Light gray for navbar links */
   font-weight: 500;
 }
 
