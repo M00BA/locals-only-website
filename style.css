@@ -40,9 +40,13 @@ body {
   border-color: #ddd;
 }
 
-input, textarea {
-    color: #ffffff; /* White text for form inputs */
-    background-color: #333; /* Dark background for better contrast */
+.paragraph {
+    color: #000; /* For light mode */
+}
+
+@media (prefers-color-scheme: dark) {
+    .paragraph {
+        color: #fff; /* For dark mode */
 }
 
 /* Buttons */
