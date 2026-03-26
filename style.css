@@ -235,8 +235,3 @@ body, .navbar, .event-card, .footer, .btn, .event-form input, .event-form textar
   margin-top: 10px;
   width: 100%;
 }
-
-body {
-  background: radial-gradient(circle at center, #ffffff 0%, #f7f7f7 100%);
-  transition: background-position 0.1s ease;
-}
