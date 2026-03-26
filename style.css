@@ -106,24 +106,26 @@ body {
 .fog-layer {
   position: fixed;
   inset: 0;
-  background: url('https://i.imgur.com/8fKQJkR.png'); /* transparent fog texture */
-  background-size: cover;
-  opacity: 0.18;
   pointer-events: none;
   z-index: 2;
+  background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.05), transparent 60%),
+              radial-gradient(circle at 70% 60%, rgba(255,255,255,0.04), transparent 70%),
+              radial-gradient(circle at 50% 80%, rgba(255,255,255,0.03), transparent 80%);
+  filter: blur(25px);
+  opacity: 0.25;
   animation: fogDrift 60s linear infinite;
-  filter: blur(8px);
 }
 
 .fog-front {
-  opacity: 0.28;
+  opacity: 0.35;
   animation-duration: 90s;
 }
 
 @keyframes fogDrift {
   0% { transform: translateX(0); }
-  100% { transform: translateX(-600px); }
+  100% { transform: translateX(-200px); }
 }
+
 
 /* ------------------------------
    HOLSTENTOR SILHOUETTE
@@ -131,23 +133,32 @@ body {
 
 .holstentor {
   position: absolute;
-  top: 900px; /* aligns behind events section */
+  top: 900px;
   left: 50%;
   transform: translateX(-50%);
   width: 55vw;
-  height: 45vh; /* L2 size */
+  height: 45vh;
   z-index: 0;
   opacity: 0.12;
   filter: blur(3px);
   pointer-events: none;
 
   background:
-    radial-gradient(circle at 50% 20%, rgba(120,255,190,0.25), transparent 70%),
-    url('https://i.imgur.com/5z0yq3E.png'); /* high-detail silhouette */
-  background-size: contain;
+    /* left tower */
+    radial-gradient(circle at 30% 60%, rgba(0,0,0,0.9) 0%, transparent 70%),
+    /* right tower */
+    radial-gradient(circle at 70% 60%, rgba(0,0,0,0.9) 0%, transparent 70%),
+    /* left roof cone */
+    linear-gradient(to top, rgba(0,0,0,0.9), transparent 70%) 25% 20% / 12% 40% no-repeat,
+    /* right roof cone */
+    linear-gradient(to top, rgba(0,0,0,0.9), transparent 70%) 75% 20% / 12% 40% no-repeat,
+    /* center arch */
+    radial-gradient(circle at 50% 80%, rgba(0,0,0,0.9) 0%, transparent 60%),
+    /* base */
+    linear-gradient(to bottom, rgba(0,0,0,0.9), transparent 80%);
+  
   background-repeat: no-repeat;
-  background-position: center;
-
+  background-size: cover;
   animation: holoParallax 18s ease-in-out infinite alternate;
 }
 
