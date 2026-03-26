@@ -11,7 +11,7 @@ body {
   font-family: 'Inter', sans-serif;
   background: radial-gradient(circle at top, #0b1f16 0%, #020908 40%, #020605 100%);
   color: #e9fff5;
-  transition: background-position 0.1s ease, background-color 0.3s ease, color 0.3s ease;
+  transition: background-position 0.1s ease, background-color 0.6s ease, color 0.3s ease;
   overflow-x: hidden;
   animation: bgPulse 12s ease-in-out infinite alternate;
 }
@@ -27,6 +27,25 @@ body {
 }
 
 /* ------------------------------
+   LIGHT MODE (PURPLE SHIFT)
+------------------------------ */
+
+.dark-mode {
+  background: radial-gradient(circle at top, #1a0f2b 0%, #0b0618 40%, #050312 100%);
+  color: #f5eaff;
+  animation: lightPulse 14s ease-in-out infinite alternate;
+}
+
+@keyframes lightPulse {
+  0% {
+    background: radial-gradient(circle at top, #1a0f2b 0%, #0b0618 40%, #050312 100%);
+  }
+  100% {
+    background: radial-gradient(circle at top, #24123d 0%, #120825 40%, #08041a 100%);
+  }
+}
+
+/* ------------------------------
    CURSOR GLOW
 ------------------------------ */
 
@@ -38,7 +57,7 @@ body {
   background: radial-gradient(circle, rgba(120,255,190,0.25), rgba(120,255,190,0));
   pointer-events: none;
   transform: translate(-50%, -50%);
-  z-index: 2;
+  z-index: 3;
   filter: blur(40px);
   opacity: 0.7;
 }
@@ -51,7 +70,7 @@ body {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
 }
 
 .firefly {
@@ -81,6 +100,76 @@ body {
 }
 
 /* ------------------------------
+   FOG LAYERS
+------------------------------ */
+
+.fog-layer {
+  position: fixed;
+  inset: 0;
+  background: url('https://i.imgur.com/8fKQJkR.png'); /* transparent fog texture */
+  background-size: cover;
+  opacity: 0.18;
+  pointer-events: none;
+  z-index: 2;
+  animation: fogDrift 60s linear infinite;
+  filter: blur(8px);
+}
+
+.fog-front {
+  opacity: 0.28;
+  animation-duration: 90s;
+}
+
+@keyframes fogDrift {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-600px); }
+}
+
+/* ------------------------------
+   HOLSTENTOR SILHOUETTE
+------------------------------ */
+
+.holstentor {
+  position: absolute;
+  top: 900px; /* aligns behind events section */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 55vw;
+  height: 45vh; /* L2 size */
+  z-index: 0;
+  opacity: 0.12;
+  filter: blur(3px);
+  pointer-events: none;
+
+  background:
+    radial-gradient(circle at 50% 20%, rgba(120,255,190,0.25), transparent 70%),
+    url('https://i.imgur.com/5z0yq3E.png'); /* high-detail silhouette */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  animation: holoParallax 18s ease-in-out infinite alternate;
+}
+
+@keyframes holoParallax {
+  0% { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(-18px); }
+}
+
+/* ------------------------------
+   VIGNETTE
+------------------------------ */
+
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  background: radial-gradient(circle, transparent 60%, rgba(0,0,0,0.45));
+}
+
+/* ------------------------------
    CONTAINER
 ------------------------------ */
 
@@ -90,7 +179,7 @@ body {
   padding: 20px 20px 60px;
   text-align: center;
   position: relative;
-  z-index: 1;
+  z-index: 5;
 }
 
 /* ------------------------------
@@ -163,19 +252,6 @@ body {
 }
 
 /* ------------------------------
-   SECTIONS
------------------------------- */
-
-section {
-  margin-bottom: 40px;
-}
-
-section h2 {
-  color: #e9fff5;
-  margin-bottom: 16px;
-}
-
-/* ------------------------------
    EVENT CARDS
 ------------------------------ */
 
@@ -191,6 +267,7 @@ section h2 {
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
   border: 1px solid rgba(120, 255, 190, 0.12);
   overflow: hidden;
+  z-index: 6;
 }
 
 .event-glow {
@@ -285,6 +362,7 @@ section h2 {
   backdrop-filter: blur(12px);
   box-shadow: 0 14px 36px rgba(0,0,0,0.8);
   border: 1px solid rgba(120, 255, 190, 0.18);
+  z-index: 6;
 }
 
 .contact-sub {
@@ -382,15 +460,6 @@ section h2 {
 }
 
 /* ------------------------------
-   DARK MODE
------------------------------- */
-
-.dark-mode {
-  background: radial-gradient(circle at top, #0f2b1c 0%, #020b08 40%, #010504 100%);
-  color: #f0fff9;
-}
-
-/* ------------------------------
    RESPONSIVE
 ------------------------------ */
 
@@ -409,5 +478,10 @@ section h2 {
 
   .contact-card {
     margin-inline: 12px;
+  }
+
+  .holstentor {
+    width: 80vw;
+    height: 35vh;
   }
 }
