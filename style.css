@@ -169,12 +169,9 @@ section h2 {
 
 /* Smooth theme transition */
 body, .navbar, .event-card, .footer, .btn, .event-form input, .event-form textarea {
-  transition: background
-.contact-sub {
-  font-size: 16px;
-  opacity: 0.9;
-  margin-bottom: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
+
 
 .contact-email {
   font-size: 18px;
