@@ -4,12 +4,13 @@
   <meta charset="UTF-8">
   <title>Local Events Lübeck</title>
   <link rel="stylesheet" href="style.css">
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
+
+<!-- FIREFLY LAYER -->
+<div class="fireflies"></div>
 
 <!-- NAVBAR -->
 <nav class="navbar">
@@ -17,7 +18,7 @@
   <div>
     <a href="#events">Events</a>
     <a href="#contact">Contact</a>
-    <button id="darkModeToggle" class="btn">🌙</button>
+    <button id="darkModeToggle" class="btn btn-ghost">🌙</button>
   </div>
 </nav>
 
@@ -25,8 +26,8 @@
 
   <!-- HERO SECTION -->
   <section class="hero fade-in">
-    <h1>🌟 Local Events Lübeck</h1>
-    <p>Meet people. Join simple activities. Feel welcome.</p>
+    <h1>🌲 Local Events Lübeck</h1>
+    <p>Meet people. Join simple activities. Feel welcome in our cozy little city forest.</p>
     <a href="#events" class="btn">See Events</a>
   </section>
 
@@ -35,6 +36,7 @@
     <h2>Upcoming Events</h2>
 
     <div class="event-card fade-in">
+      <div class="event-glow"></div>
       <img src="images/picnic.jpg" alt="Picnic">
       <h3>🌳 Picnic in the Park</h3>
       <p>Sunday, 3pm – Bring snacks & good vibes</p>
@@ -42,6 +44,7 @@
     </div>
 
     <div class="event-card fade-in">
+      <div class="event-glow"></div>
       <img src="images/coffee.jpg" alt="Coffee">
       <h3>☕ Coffee Meetup</h3>
       <p>Wednesday, 6pm – Casual chat & coffee</p>
@@ -49,6 +52,7 @@
     </div>
 
     <div class="event-card fade-in">
+      <div class="event-glow"></div>
       <img src="images/cinema.jpg" alt="Cinema">
       <h3>🎬 Cinema Night</h3>
       <p>Friday, 8pm – Movie & chill</p>
@@ -56,6 +60,7 @@
     </div>
 
     <div class="event-card fade-in">
+      <div class="event-glow"></div>
       <img src="images/jogging.jpg" alt="Jogging">
       <h3>🏃 Morning Jogging</h3>
       <p>Saturday, 9am – Easy pace for everyone</p>
@@ -63,6 +68,7 @@
     </div>
 
     <div class="event-card fade-in">
+      <div class="event-glow"></div>
       <img src="images/badminton.jpg" alt="Badminton">
       <h3>🏸 Badminton Meetup</h3>
       <p>Thursday, 7pm – Friendly games for all levels</p>
@@ -72,14 +78,14 @@
   </section>
 
   <!-- CONTACT -->
-  <section id="contact" class="fade-in">
+  <section id="contact" class="fade-in contact-card">
     <h2>Contact</h2>
     <p class="contact-sub">Want to join or suggest an event?</p>
     <p class="contact-email">📩 hello@locals-only.space</p>
   </section>
 
   <!-- SUGGEST EVENT -->
-  <section id="create" class="fade-in">
+  <section id="create" class="fade-in contact-card">
     <h2>Suggest an Event</h2>
     <p class="contact-sub">Have an idea for something fun? Share it with us!</p>
 
@@ -138,6 +144,22 @@ document.addEventListener("mousemove", (e) => {
   const y = (e.clientY / window.innerHeight) * 20;
   document.body.style.backgroundPosition = `${x}px ${y}px`;
 });
+</script>
+
+<!-- FIREFLIES SCRIPT -->
+<script>
+const fireflyContainer = document.querySelector('.fireflies');
+const FIREFLY_COUNT = 25;
+
+for (let i = 0; i < FIREFLY_COUNT; i++) {
+  const f = document.createElement('div');
+  f.classList.add('firefly');
+  f.style.left = Math.random() * 100 + 'vw';
+  f.style.top = Math.random() * 100 + 'vh';
+  f.style.animationDelay = (Math.random() * 5) + 's';
+  f.style.animationDuration = 6 + Math.random() * 6 + 's';
+  fireflyContainer.appendChild(f);
+}
 </script>
 
 </body>
