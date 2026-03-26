@@ -5,8 +5,9 @@
 body {
   margin: 0;
   font-family: 'Inter', sans-serif;
-  background-color: #ffffff;
+  background: radial-gradient(circle at center, #ffffff 0%, #f7f7f7 100%);
   color: #000000;
+  transition: background-position 0.1s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Container */
@@ -98,6 +99,16 @@ section h2 {
   cursor: pointer;
   display: inline-block;
   font-weight: 500;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+  transform: scale(0.97);
 }
 
 /* Footer */
@@ -112,20 +123,22 @@ section h2 {
 /* Form */
 .event-form input,
 .event-form textarea {
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
   border: 1px solid #ccc;
-  background-color: #ffffff;
-  color: #000000;
+  background-color: inherit;
+  color: inherit;
   font-family: inherit;
+  font-size: 15px;
+  width: 100%;
 }
 
 /* ------------------------------
-   DARK MODE (TOGGLE ONLY)
+   DARK MODE
 ------------------------------ */
 
 .dark-mode {
-  background-color: #181818;
+  background: radial-gradient(circle at center, #1a1a1a 0%, #0f0f0f 100%);
   color: #ffffff;
 }
 
@@ -158,9 +171,8 @@ section h2 {
 
 .dark-mode .event-form input,
 .dark-mode .event-form textarea {
-  background-color: #333333;
-  color: #ffffff;
-  border-color: #555555;
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.15);
 }
 
 .dark-mode .btn {
@@ -172,24 +184,23 @@ body, .navbar, .event-card, .footer, .btn, .event-form input, .event-form textar
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 
-.contact-email {
-  font-size: 18px;
-  font-weight: 600;
-  margin-top: 0;
-}
-
 /* CONTACT + SUGGEST EVENT SECTIONS */
 #contact, 
 #create {
   max-width: 500px;
   margin: 40px auto;
   text-align: center;
+  background: rgba(255, 255, 255, 0.55);
+  padding: 25px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
 }
 
-/* Headings */
-#contact h2,
-#create h2 {
-  margin-bottom: 10px;
+.dark-mode #contact,
+.dark-mode #create {
+  background: rgba(30, 30, 30, 0.55);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
 }
 
 /* Subtext */
@@ -211,30 +222,9 @@ body, .navbar, .event-card, .footer, .btn, .event-form input, .event-form textar
   flex-direction: column;
   gap: 12px;
   margin-top: 20px;
-  width: 100%;
 }
 
-.event-form input,
-.event-form textarea {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  background: inherit;
-  color: inherit;
-}
-
-.event-form textarea {
-  min-height: 90px;
-  resize: vertical;
-}
-
-.event-form button {
-  margin-top: 10px;
-  width: 100%;
-}
-
+/* Pop-in animation */
 .event-form input,
 .event-form textarea {
   animation: popIn 0.4s ease forwards;
@@ -249,27 +239,4 @@ body, .navbar, .event-card, .footer, .btn, .event-form input, .event-form textar
 @keyframes popIn {
   0% { transform: scale(0.95); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
-}
-
-.btn:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-}
-
-.btn:active {
-  transform: scale(0.97);
-}
-
-#contact, #create {
-  background: rgba(255, 255, 255, 0.6);
-  padding: 25px;
-  border-radius: 20px;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-}
-
-.dark-mode #contact,
-.dark-mode #create {
-  background: rgba(40, 40, 40, 0.6);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
 }
