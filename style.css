@@ -574,9 +574,6 @@ body.theme-night .footer-line {
   }
 }
 
-body::before {
-  animation: starFloat 40s linear infinite;
-}
 
 /* MAIN STARFIELD (visible stars + drifting) */
 body::before {
