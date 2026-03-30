@@ -1,4 +1,4 @@
-// MOBILE NAV TOGGLE
+// MOBILE NAV
 const navToggle = document.querySelector(".nav-toggle");
 const mainNav = document.querySelector(".main-nav");
 
@@ -8,7 +8,7 @@ if (navToggle) {
   });
 }
 
-// THEME SWITCHING
+// THEME SWITCH
 const modeToggle = document.querySelector(".mode-toggle");
 const body = document.body;
 
@@ -22,22 +22,21 @@ if (modeToggle) {
   });
 }
 
-// FADE-IN ON SCROLL
+// FADE-IN
 const fadeEls = document.querySelectorAll(".fade-in");
 
-const revealOnScroll = () => {
+const reveal = () => {
   fadeEls.forEach((el) => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight - 80) {
+    if (el.getBoundingClientRect().top < window.innerHeight - 80) {
       el.classList.add("visible");
     }
   });
 };
 
-window.addEventListener("scroll", revealOnScroll);
-window.addEventListener("load", revealOnScroll);
+window.addEventListener("scroll", reveal);
+window.addEventListener("load", reveal);
 
-// RSVP FORM (optional)
+// RSVP SUCCESS
 const rsvpForm = document.querySelector(".rsvp-form");
 const rsvpSuccess = document.querySelector(".rsvp-success");
 
