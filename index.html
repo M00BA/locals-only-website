@@ -1,101 +1,177 @@
-<!-- Past meetups section (replace the inner grid) -->
-<section id="past" class="section fade-in">
-  <header class="section-header">
-    <div>
-      <h2 class="section-title">Past meetups</h2>
-      <p class="section-subtitle">Once we’ve had a few gentle gatherings, they’ll show up here.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Locals Only – Hamburg & Lübeck</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="theme-light">
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">LOCALS ONLY</div>
+
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
+
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-link" data-city-filter="hamburg">Hamburg</button>
+        <button class="nav-link" data-city-filter="luebeck">Lübeck</button>
+        <button class="nav-link" data-scroll-target="#about">About</button>
+        <button id="modeToggle" class="mode-toggle" type="button">
+          Night mode
+        </button>
+      </nav>
     </div>
   </header>
 
-  <div id="pastMeetupsGrid" class="past-grid">
-    <!-- Filled dynamically by JavaScript.
-         If empty, JS will render soft placeholders. -->
-  </div>
-</section>
+  <main>
+    <!-- HERO -->
+    <section class="hero" id="top">
+      <div class="hero-inner fade-in">
+        <h1 class="hero-title">Soft evenings in Hamburg and Lübeck</h1>
+        <p class="hero-subtitle">
+          Small, cozy meetups for people who want gentle conversations, warm spaces, and real community.
+        </p>
+      </div>
+    </section>
 
-<!-- New: Suggest a meetup section (place this below “Past meetups”) -->
-<section id="suggest" class="section fade-in">
-  <header class="section-header">
-    <div>
-      <h2 class="section-title">Suggest a meetup</h2>
+    <!-- UPCOMING MEETUPS -->
+    <section class="section" id="upcoming">
+      <div class="section-header">
+        <h2 class="section-title">Upcoming meetups</h2>
+        <div class="city-filters" aria-label="Filter events by city">
+          <button class="city-filter-btn active" data-filter="all">All</button>
+          <button class="city-filter-btn" data-filter="hamburg">Hamburg</button>
+          <button class="city-filter-btn" data-filter="luebeck">Lübeck</button>
+        </div>
+      </div>
+
+      <div class="events-grid">
+        <!-- LÜBECK: Picnic -->
+        <article class="event-card fade-in" data-city="luebeck">
+          <div class="event-tag">Lübeck</div>
+          <h3 class="event-title">Picnic Meetup</h3>
+          <p class="event-meta">Sunday · Stadtpark</p>
+          <p class="event-description">
+            A calm picnic in the park with blankets, snacks, and gentle conversation in a quiet corner of the city.
+          </p>
+          <button class="event-rsvp-btn" type="button" data-event="Picnic Meetup">
+            RSVP (soon)
+          </button>
+        </article>
+
+        <!-- LÜBECK: Board Game -->
+        <article class="event-card fade-in" data-city="luebeck">
+          <div class="event-tag">Lübeck</div>
+          <h3 class="event-title">Board Game Evening</h3>
+          <p class="event-meta">Friday · Cozy café</p>
+          <p class="event-description">
+            Slow paced games, warm drinks, and a relaxed table where you can join in at your own speed.
+          </p>
+          <button class="event-rsvp-btn" type="button" data-event="Board Game Evening">
+            RSVP (soon)
+          </button>
+        </article>
+
+        <!-- HAMBURG: Harbor Walk -->
+        <article class="event-card fade-in" data-city="hamburg">
+          <div class="event-tag">Hamburg</div>
+          <h3 class="event-title">Harbor Walk and Talk</h3>
+          <p class="event-meta">Saturday · Landungsbrücken</p>
+          <p class="event-description">
+            A gentle walk along the water with soft city lights, fresh air, and easy conversation while moving.
+          </p>
+          <button class="event-rsvp-btn" type="button" data-event="Harbor Walk and Talk">
+            RSVP (soon)
+          </button>
+        </article>
+
+        <!-- HAMBURG: Café -->
+        <article class="event-card fade-in" data-city="hamburg">
+          <div class="event-tag">Hamburg</div>
+          <h3 class="event-title">Café and Quiet Chat</h3>
+          <p class="event-meta">Wednesday · Small café</p>
+          <p class="event-description">
+            A small table, warm drinks, and gentle conversation in a calm café setting with soft background noise.
+          </p>
+          <button class="event-rsvp-btn" type="button" data-event="Café and Quiet Chat">
+            RSVP (soon)
+          </button>
+        </article>
+
+        <!-- FIRST REAL EVENT: Badminton -->
+        <article class="event-card fade-in" data-city="hamburg">
+          <div class="event-tag">Hamburg</div>
+          <h3 class="event-title">Badminton Meetup</h3>
+          <p class="event-meta">Thursday · Sports Hall</p>
+          <p class="event-description">
+            A friendly badminton meetup with simple games, shared courts, and space to move at a comfortable pace.
+          </p>
+          <button class="event-rsvp-btn" type="button" data-event="Badminton Meetup">
+            RSVP (soon)
+          </button>
+        </article>
+      </div>
+    </section>
+
+    <!-- PAST MEETUPS PLACEHOLDER -->
+    <section class="section" id="past">
+      <h2 class="section-title">Past meetups</h2>
       <p class="section-subtitle">
-        Share an idea for a gentle, cozy meetup in Hamburg or Lübeck.
+        Soon there will be photos, small recaps, and gentle memories from past evenings here.
+      </p>
+      <div class="past-grid">
+        <article class="past-card">
+          <div class="past-placeholder">
+            Coming soon
+          </div>
+        </article>
+        <article class="past-card">
+          <div class="past-placeholder">
+            Coming soon
+          </div>
+        </article>
+        <article class="past-card">
+          <div class="past-placeholder">
+            Coming soon
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="section section-about" id="about">
+      <h2 class="section-title">About Locals Only</h2>
+      <p class="about-text">
+        Locals Only began with a simple wish: to feel closer to people again. Hamburg and Lübeck are full of life,
+        but it is still easy to feel alone.
+      </p>
+      <p class="about-text">
+        This project is for people who want small, cozy meetups, gentle conversations, and a place to feel welcome.
+        A calm space to meet others in a soft and friendly way.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-line"></div>
+    <div class="footer-inner">
+      <nav class="footer-nav" aria-label="Footer navigation">
+        <a href="#" class="footer-link">Impressum</a>
+        <a href="#" class="footer-link">Datenschutz</a>
+        <a href="#top" class="footer-link" data-scroll-target="#top">Contact</a>
+      </nav>
+      <p class="footer-note">
+        Locals Only · Hamburg and Lübeck
       </p>
     </div>
-  </header>
+  </footer>
 
-  <div class="suggest-card">
-    <form id="suggestForm" class="suggest-form">
-      <div class="form-row">
-        <label for="suggestIdea">Event idea</label>
-        <input id="suggestIdea" name="idea" type="text" required placeholder="Slow picnic, board games, quiet café hangout..." />
-      </div>
+  <script src="script.js"></script>
+  <div class="shooting-star"></div>
 
-      <div class="form-row">
-        <label for="suggestLocation">Location</label>
-        <input id="suggestLocation" name="location" type="text" required placeholder="Hamburg park, Lübeck café, etc." />
-      </div>
-
-      <div class="form-row">
-        <label for="suggestSize">Ideal group size</label>
-        <input id="suggestSize" name="size" type="number" min="2" max="40" placeholder="6–10, 10–15, etc." />
-      </div>
-
-      <div class="form-row">
-        <label for="suggestEmail">Email (optional)</label>
-        <input id="suggestEmail" name="email" type="email" placeholder="Only if you’d like a reply" />
-      </div>
-
-      <button type="submit" class="suggest-submit-btn">Send idea</button>
-
-      <p id="suggestSuccess" class="form-success" aria-live="polite"></p>
-    </form>
-  </div>
-</section>
-
-<!-- Footer (add “Last updated” + email link inside footer-inner) -->
-<footer class="site-footer">
-  <div class="footer-line"></div>
-  <div class="footer-inner">
-    <p class="footer-note">
-      Locals Only · Gentle meetups in Hamburg &amp; Lübeck
-      · <span id="lastUpdated"></span>
-    </p>
-    <nav class="footer-nav">
-      <a href="mailto:localsonlyhamburg@gmail.com" class="footer-link">Email</a>
-      <button class="footer-link" data-scroll-target="#upcoming">Upcoming</button>
-      <button class="footer-link" data-scroll-target="#past">Past</button>
-      <button class="footer-link" data-scroll-target="#suggest">Suggest</button>
-    </nav>
-  </div>
-</footer>
-
-<!-- RSVP modal (place near the end of body, after main) -->
-<div id="rsvpOverlay" class="modal-overlay" aria-hidden="true">
-  <div class="modal">
-    <button type="button" class="modal-close" id="rsvpClose" aria-label="Close RSVP form">×</button>
-    <h3 class="modal-title" id="rsvpEventTitle">RSVP</h3>
-    <p class="modal-subtitle">This is a soft, optional RSVP. No pressure at all.</p>
-
-    <form id="rsvpForm" class="modal-form">
-      <div class="form-row">
-        <label for="rsvpName">Name (optional)</label>
-        <input id="rsvpName" name="name" type="text" autocomplete="name" />
-      </div>
-
-      <div class="form-row">
-        <label for="rsvpEmail">Email (optional)</label>
-        <input id="rsvpEmail" name="email" type="email" autocomplete="email" />
-      </div>
-
-      <div class="form-row">
-        <label for="rsvpMessage">Message (optional)</label>
-        <textarea id="rsvpMessage" name="message" rows="3" placeholder="Anything you’d like to share or ask."></textarea>
-      </div>
-
-      <button type="submit" class="modal-submit-btn">Send RSVP</button>
-
-      <p id="rsvpSuccess" class="form-success" aria-live="polite"></p>
-    </form>
-  </div>
-</div>
+</body>
+</html>
