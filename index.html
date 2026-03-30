@@ -6,7 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="style.css" />
 </head>
-<body class="theme-light">
+
+<body class="theme-night">
+  <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
       <div class="logo">LOCALS ONLY</div>
@@ -21,7 +23,7 @@
         <button class="nav-link" data-city-filter="luebeck">Lübeck</button>
         <button class="nav-link" data-scroll-target="#about">About</button>
         <button id="modeToggle" class="mode-toggle" type="button">
-          Night mode
+          Light mode
         </button>
       </nav>
     </div>
@@ -42,6 +44,7 @@
     <section class="section" id="upcoming">
       <div class="section-header">
         <h2 class="section-title">Upcoming meetups</h2>
+
         <div class="city-filters" aria-label="Filter events by city">
           <button class="city-filter-btn active" data-filter="all">All</button>
           <button class="city-filter-btn" data-filter="hamburg">Hamburg</button>
@@ -50,6 +53,7 @@
       </div>
 
       <div class="events-grid">
+
         <!-- LÜBECK: Picnic -->
         <article class="event-card fade-in" data-city="luebeck">
           <div class="event-tag">Lübeck</div>
@@ -59,7 +63,7 @@
             A calm picnic in the park with blankets, snacks, and gentle conversation in a quiet corner of the city.
           </p>
           <button class="event-rsvp-btn" type="button" data-event="Picnic Meetup">
-            RSVP (soon)
+            RSVP
           </button>
         </article>
 
@@ -72,7 +76,7 @@
             Slow paced games, warm drinks, and a relaxed table where you can join in at your own speed.
           </p>
           <button class="event-rsvp-btn" type="button" data-event="Board Game Evening">
-            RSVP (soon)
+            RSVP
           </button>
         </article>
 
@@ -85,7 +89,7 @@
             A gentle walk along the water with soft city lights, fresh air, and easy conversation while moving.
           </p>
           <button class="event-rsvp-btn" type="button" data-event="Harbor Walk and Talk">
-            RSVP (soon)
+            RSVP
           </button>
         </article>
 
@@ -98,7 +102,7 @@
             A small table, warm drinks, and gentle conversation in a calm café setting with soft background noise.
           </p>
           <button class="event-rsvp-btn" type="button" data-event="Café and Quiet Chat">
-            RSVP (soon)
+            RSVP
           </button>
         </article>
 
@@ -111,34 +115,24 @@
             A friendly badminton meetup with simple games, shared courts, and space to move at a comfortable pace.
           </p>
           <button class="event-rsvp-btn" type="button" data-event="Badminton Meetup">
-            RSVP (soon)
+            RSVP
           </button>
         </article>
+
       </div>
     </section>
 
-    <!-- PAST MEETUPS PLACEHOLDER -->
+    <!-- PAST MEETUPS -->
     <section class="section" id="past">
       <h2 class="section-title">Past meetups</h2>
       <p class="section-subtitle">
         Soon there will be photos, small recaps, and gentle memories from past evenings here.
       </p>
+
       <div class="past-grid">
-        <article class="past-card">
-          <div class="past-placeholder">
-            Coming soon
-          </div>
-        </article>
-        <article class="past-card">
-          <div class="past-placeholder">
-            Coming soon
-          </div>
-        </article>
-        <article class="past-card">
-          <div class="past-placeholder">
-            Coming soon
-          </div>
-        </article>
+        <article class="past-card"><div class="past-placeholder">Coming soon</div></article>
+        <article class="past-card"><div class="past-placeholder">Coming soon</div></article>
+        <article class="past-card"><div class="past-placeholder">Coming soon</div></article>
       </div>
     </section>
 
@@ -156,6 +150,7 @@
     </section>
   </main>
 
+  <!-- FOOTER -->
   <footer class="site-footer">
     <div class="footer-line"></div>
     <div class="footer-inner">
@@ -164,14 +159,11 @@
         <a href="#" class="footer-link">Datenschutz</a>
         <a href="#top" class="footer-link" data-scroll-target="#top">Contact</a>
       </nav>
-      <p class="footer-note">
-        Locals Only · Hamburg and Lübeck
-      </p>
+      <p class="footer-note">Locals Only · Hamburg and Lübeck</p>
     </div>
   </footer>
 
   <script src="script.js"></script>
   <div class="shooting-star"></div>
-
 </body>
 </html>
