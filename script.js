@@ -88,6 +88,104 @@ scrollLinks.forEach((link) => {
 });
 
 /* ---------------------------------------------------
+   INLINE RSVP (fully working)
+--------------------------------------------------- */
+const rsvpButtons = document.querySelectorAll(".event-rsvp-btn");
+
+rsvpButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const card = btn.closest(".event-card");
+    if (!card) return;
+
+    // Create inline RSVP if not already created
+    let inline = card.querySelector(".event-rsvp-inline");
+    if (!inline) {
+      inline = document.createElement("div");
+      inline.className = "event-rsvp-inline";
+      inline.innerHTML = `
+        <form class="event-rsvp-form">
+          <input type="text" name="name" placeholder="Name (optional)">
+          <input type="email" name="email" placeholder="Email (optional)">
+          <button type="submit" class="event-rsvp-send">Send</button>
+        </form>
+        <p class="event-rsvp-confirmation"></p>
+      `;
+      card.appendChild(inline);
+    }
+
+    inline.classList.toggle("open");
+
+    const form = inline.querySelector(".event-rsvp-form");
+    const confirmation = inline.querySelector(".event-rsvp-confirmation");
+    const eventName = btn.dataset.event;
+
+    if (form) {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const name = formData.get("name")?.trim() || "";
+        const email = formData.get("email")?.trim() || "";
+
+        const rsvpData = {
+          event: eventName,
+          name,
+          email,
+          timestamp: new Date().toISOString(),
+        };
+
+        // Save to localStorage
+        const existing = JSON.parse(localStorage.getItem("localsOnlyRSVPs") || "[]");
+        existing.push(rsvpData);
+        localStorage.setItem("localsOnlyRSVPs", JSON.stringify(existing));
+
+        form.style.display = "none";
+        confirmation.textContent = "Thank you — see you there.";
+
+        setTimeout(() => {
+          confirmation.textContent = "";
+          form.reset();
+          form.style.display = "";
+          inline.classList.remove("open");
+        }, 3000);
+      });
+    }
+  });
+});
+
+/* ---------------------------------------------------
+   SUGGEST A MEETUP
+--------------------------------------------------- */
+const suggestForm = document.querySelector(".suggest-form");
+const suggestTextarea = document.querySelector(".suggest-textarea");
+const suggestConfirmation = document.querySelector(".suggest-confirmation");
+
+if (suggestForm) {
+  suggestForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const text = suggestTextarea.value.trim();
+    if (!text) return;
+
+    const suggestion = {
+      text,
+      timestamp: new Date().toISOString(),
+    };
+
+    const existing = JSON.parse(localStorage.getItem("localsOnlySuggestions") || "[]");
+    existing.push(suggestion);
+    localStorage.setItem("localsOnlySuggestions", JSON.stringify(existing));
+
+    suggestTextarea.value = "";
+    suggestConfirmation.textContent = "Thank you for the idea.";
+
+    setTimeout(() => {
+      suggestConfirmation.textContent = "";
+    }, 3000);
+  });
+}
+
+/* ---------------------------------------------------
    SHOOTING STARS (Night mode only)
 --------------------------------------------------- */
 function createShootingStar() {
@@ -123,14 +221,3 @@ function scheduleStars() {
 }
 
 window.addEventListener("load", scheduleStars);
-
-/* ---------------------------------------------------
-   INLINE RSVP (future-ready)
---------------------------------------------------- */
-const rsvpButtons = document.querySelectorAll(".event-rsvp-btn");
-
-rsvpButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    alert("RSVP coming soon — this feature is being added gently.");
-  });
-});
