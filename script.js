@@ -92,7 +92,7 @@ scrollLinks.forEach((link) => {
 });
 
 /* ---------------------------------------------------
-   INLINE RSVP (fully working)
+   INLINE RSVP -> SEND TO BACKEND
 --------------------------------------------------- */
 const rsvpButtons = document.querySelectorAll(".event-rsvp-btn");
 
@@ -123,69 +123,84 @@ rsvpButtons.forEach((btn) => {
     const confirmation = inline.querySelector(".event-rsvp-confirmation");
     const eventName = btn.dataset.event;
 
-    if (form) {
-      form.addEventListener("submit", (e) => {
+    if (form && !form.dataset.bound) {
+      form.dataset.bound = "true";
+
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
 
         const formData = new FormData(form);
-        const name = formData.get("name")?.trim() || "";
-        const email = formData.get("email")?.trim() || "";
+        const name = (formData.get("name") || "").toString().trim();
+        const email = (formData.get("email") || "").toString().trim();
 
-        const rsvpData = {
-          event: eventName,
-          name,
-          email,
-          timestamp: new Date().toISOString(),
-        };
+        confirmation.textContent = "Sending…";
 
-        // Save to localStorage
-        const existing = JSON.parse(localStorage.getItem("localsOnlyRSVPs") || "[]");
-        existing.push(rsvpData);
-        localStorage.setItem("localsOnlyRSVPs", JSON.stringify(existing));
+        try {
+          const res = await fetch("/api/rsvp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              event: eventName,
+              name,
+              email,
+            }),
+          });
 
-        form.style.display = "none";
-        confirmation.textContent = "Thank you — see you there.";
+          if (!res.ok) throw new Error("Request failed");
 
-        setTimeout(() => {
-          confirmation.textContent = "";
-          form.reset();
-          form.style.display = "";
-          inline.classList.remove("open");
-        }, 3000);
+          confirmation.textContent = "Thank you — see you there.";
+          form.style.display = "none";
+
+          setTimeout(() => {
+            confirmation.textContent = "";
+            form.reset();
+            form.style.display = "";
+            inline.classList.remove("open");
+          }, 3000);
+        } catch (err) {
+          console.error(err);
+          confirmation.textContent = "Something went wrong. Please try again.";
+        }
       });
     }
   });
 });
 
 /* ---------------------------------------------------
-   SUGGEST A MEETUP
+   SUGGEST A MEETUP (if you add the form later)
 --------------------------------------------------- */
 const suggestForm = document.querySelector(".suggest-form");
 const suggestTextarea = document.querySelector(".suggest-textarea");
 const suggestConfirmation = document.querySelector(".suggest-confirmation");
 
-if (suggestForm) {
-  suggestForm.addEventListener("submit", (e) => {
+if (suggestForm && suggestTextarea && suggestConfirmation) {
+  suggestForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const text = suggestTextarea.value.trim();
     if (!text) return;
 
-    const suggestion = {
-      text,
-      timestamp: new Date().toISOString(),
-    };
+    suggestConfirmation.textContent = "Sending…";
 
-    const existing = JSON.parse(localStorage.getItem("localsOnlySuggestions") || "[]");
-    existing.push(suggestion);
-    localStorage.setItem("localsOnlySuggestions", JSON.stringify(existing));
+    try {
+      const res = await fetch("/api/suggest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
 
-    suggestTextarea.value = "";
-    suggestConfirmation.textContent = "Thank you for the idea.";
+      if (!res.ok) throw new Error("Request failed");
 
-    setTimeout(() => {
-      suggestConfirmation.textContent = "";
-    }, 3000);
+      suggestTextarea.value = "";
+      suggestConfirmation.textContent = "Thank you for the idea.";
+
+      setTimeout(() => {
+        suggestConfirmation.textContent = "";
+      }, 3000);
+    } catch (err) {
+      console.error(err);
+      suggestConfirmation.textContent = "Something went wrong. Please try again.";
+    }
   });
 }
 
