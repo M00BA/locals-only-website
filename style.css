@@ -573,3 +573,20 @@ body.theme-night .footer-line {
     display: block;
   }
 }
+
+body::before {
+  animation: starFloat 40s linear infinite;
+}
+
+@keyframes starFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+  }
+  50% {
+    transform: translateY(-10px) translateX(6px);
+  }
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+}
+
