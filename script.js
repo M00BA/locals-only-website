@@ -75,31 +75,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-   // Shooting start
-  function randomShootingStar() {
-  const star = document.querySelector(".shooting-star");
-  if (!star) return;
-
-  const delay = Math.random() * 15000 + 8000; // 8–23 seconds
-
-  setTimeout(() => {
-    const startX = Math.random() * window.innerWidth * 0.6;
-    const startY = Math.random() * window.innerHeight * 0.3;
-
-    star.style.top = startY + "px";
-    star.style.left = startX + "px";
-
-    star.style.animation = "shoot 1.2s ease-out";
-
-    setTimeout(() => {
-      star.style.animation = "";
-      randomShootingStar();
-    }, 1500);
-  }, delay);
-}
-
-randomShootingStar();
-
   // City filter buttons in section
   const filterButtons = document.querySelectorAll(".city-filter-btn");
   filterButtons.forEach((btn) => {
@@ -162,11 +137,46 @@ randomShootingStar();
       mainNav.classList.toggle("open");
     });
 
-    // Close nav when clicking a nav item
     mainNav.querySelectorAll("button").forEach((btn) => {
       btn.addEventListener("click", () => {
         mainNav.classList.remove("open");
       });
     });
   }
+
+  // Start shooting stars
+  startShootingStars();
 });
+
+// Shooting star system (night mode only)
+function startShootingStars() {
+  const star = document.querySelector(".shooting-star");
+  if (!star) return;
+
+  function launch() {
+    // Only shoot in night mode
+    if (!document.body.classList.contains("theme-night")) {
+      setTimeout(launch, 4000);
+      return;
+    }
+
+    const delay = Math.random() * 15000 + 8000; // 8–23 seconds
+
+    setTimeout(() => {
+      const startX = Math.random() * window.innerWidth * 0.6;
+      const startY = Math.random() * window.innerHeight * 0.3;
+
+      star.style.top = startY + "px";
+      star.style.left = startX + "px";
+
+      star.style.animation = "shoot 1.2s ease-out";
+
+      setTimeout(() => {
+        star.style.animation = "";
+        launch();
+      }, 1500);
+    }, delay);
+  }
+
+  launch();
+}
