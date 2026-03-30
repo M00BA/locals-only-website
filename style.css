@@ -3,15 +3,20 @@
   --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 
   /* Light mode palette */
-  --light-bg-top: #ece7e1;
---light-bg-mid: #e4dcd4;
---light-bg-bottom: #d9cec5;
---light-surface: rgba(255, 255, 255, 0.82);
---light-text-main: #2e2a28;
---light-text-muted: #6a5f5a;
---light-accent: #c49a7a;
---light-accent-soft: rgba(196, 154, 122, 0.12);
---light-border-soft: rgba(0, 0, 0, 0.05);
+  --light-bg-top: #d9d3cc;
+--light-bg-mid: #d2c9c1;
+--light-bg-bottom: #c7bcb3;
+
+--light-surface: rgba(245, 240, 235, 0.78);
+
+--light-text-main: #2a2624;
+--light-text-muted: #5a524d;
+
+--light-accent: #b48a6c;
+--light-accent-soft: rgba(180, 138, 108, 0.14);
+
+--light-border-soft: rgba(0, 0, 0, 0.04);
+
 
   /* Night mode palette */
   --night-bg-top: #151528;
