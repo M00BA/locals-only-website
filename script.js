@@ -75,6 +75,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+   // Shooting start
+  function randomShootingStar() {
+  const star = document.querySelector(".shooting-star");
+  if (!star) return;
+
+  const delay = Math.random() * 15000 + 8000; // 8–23 seconds
+
+  setTimeout(() => {
+    const startX = Math.random() * window.innerWidth * 0.6;
+    const startY = Math.random() * window.innerHeight * 0.3;
+
+    star.style.top = startY + "px";
+    star.style.left = startX + "px";
+
+    star.style.animation = "shoot 1.2s ease-out";
+
+    setTimeout(() => {
+      star.style.animation = "";
+      randomShootingStar();
+    }, 1500);
+  }, delay);
+}
+
+randomShootingStar();
+
   // City filter buttons in section
   const filterButtons = document.querySelectorAll(".city-filter-btn");
   filterButtons.forEach((btn) => {
