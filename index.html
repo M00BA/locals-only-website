@@ -1,53 +1,128 @@
-<!-- HERO -->
-<section class="hero fade-in">
-  <h1 class="hero-title">Soft evenings in Hamburg & Lübeck</h1>
-  <p class="hero-subtitle">Cozy meetups for gentle conversations and warm community.</p>
-</section>
+<body class="theme-night">
 
-<!-- UPCOMING EVENTS -->
-<section class="events-section fade-in">
-  <h2 class="section-heading">Upcoming Meetups</h2>
+  <!-- HEADER (unchanged from your existing site) -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo">Locals Only</div>
 
-  <div class="events-list">
+      <button class="nav-toggle">
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+        <span class="nav-toggle-line"></span>
+      </button>
 
-    <div class="event-card">
-      <div class="event-info">
-        <h3 class="event-title">Evening Walk by the Alster</h3>
-        <p class="event-meta">Hamburg · Friday, 19:00</p>
-        <p class="event-description">A slow, quiet walk with warm conversation and soft city lights.</p>
-      </div>
-      <button class="event-btn">RSVP</button>
+      <nav class="main-nav">
+        <a class="nav-link" data-scroll-target="hero">Home</a>
+        <a class="nav-link" data-scroll-target="events">Upcoming</a>
+        <a class="nav-link" data-scroll-target="past">Past</a>
+        <a class="nav-link" data-scroll-target="suggest">Suggest</a>
+        <button class="mode-toggle">Light mode</button>
+      </nav>
     </div>
+  </header>
 
-    <div class="event-card">
-      <div class="event-info">
-        <h3 class="event-title">Tea & Quiet Chat</h3>
-        <p class="event-meta">Lübeck · Sunday, 16:00</p>
-        <p class="event-description">A gentle meetup for introverts who enjoy calm spaces.</p>
+
+  <!-- HERO -->
+  <section id="hero" class="hero fade-in">
+    <h1 class="hero-title">Soft evenings in Hamburg & Lübeck</h1>
+    <p class="hero-subtitle">Cozy meetups for gentle conversations and warm community.</p>
+  </section>
+
+
+  <!-- UPCOMING EVENTS -->
+  <section id="events" class="events-section fade-in">
+    <h2 class="section-heading">Upcoming Meetups</h2>
+
+    <div class="events-list">
+
+      <!-- EVENT 1 -->
+      <div class="event-card" data-event-id="evening-walk">
+        <div class="event-info">
+          <h3 class="event-title">Evening Walk by the Alster</h3>
+          <p class="event-meta">Hamburg · Friday, 19:00</p>
+          <p class="event-description">
+            A slow, quiet walk with warm conversation and soft city lights.
+          </p>
+        </div>
+
+        <button class="event-rsvp-btn">RSVP</button>
+
+        <!-- INLINE RSVP -->
+        <div class="event-rsvp-inline">
+          <form class="event-rsvp-form">
+            <input type="text" name="name" placeholder="Name (optional)">
+            <input type="email" name="email" placeholder="Email (optional)">
+            <button type="submit" class="event-rsvp-send">Send</button>
+          </form>
+          <p class="event-rsvp-confirmation"></p>
+        </div>
       </div>
-      <button class="event-btn">RSVP</button>
+
+
+      <!-- EVENT 2 -->
+      <div class="event-card" data-event-id="tea-chat">
+        <div class="event-info">
+          <h3 class="event-title">Tea & Quiet Chat</h3>
+          <p class="event-meta">Lübeck · Sunday, 16:00</p>
+          <p class="event-description">
+            A gentle meetup for introverts who enjoy calm spaces.
+          </p>
+        </div>
+
+        <button class="event-rsvp-btn">RSVP</button>
+
+        <!-- INLINE RSVP -->
+        <div class="event-rsvp-inline">
+          <form class="event-rsvp-form">
+            <input type="text" name="name" placeholder="Name (optional)">
+            <input type="email" name="email" placeholder="Email (optional)">
+            <button type="submit" class="event-rsvp-send">Send</button>
+          </form>
+          <p class="event-rsvp-confirmation"></p>
+        </div>
+      </div>
+
     </div>
+  </section>
 
-  </div>
-</section>
 
-<!-- RSVP -->
-<section class="rsvp-section fade-in">
-  <div class="rsvp-card">
-    <h2 class="rsvp-title">RSVP</h2>
-    <p class="rsvp-note">Optional. Just a quick hello.</p>
+  <!-- PAST MEETUPS -->
+  <section id="past" class="past-section fade-in">
+    <h2 class="section-heading">Past Meetups</h2>
 
-    <form class="rsvp-form">
-      <input type="text" placeholder="Name (optional)">
-      <input type="email" placeholder="Email (optional)">
-      <textarea placeholder="Message (optional)"></textarea>
-      <button class="rsvp-btn">Send</button>
-      <p class="rsvp-success"></p>
-    </form>
-  </div>
-</section>
+    <p class="past-placeholder">
+      More meetups coming soon — this space will fill with warm memories.
+    </p>
+  </section>
 
-<!-- FOOTER -->
-<footer class="site-footer fade-in">
-  <p class="footer-text">Made with warmth in Hamburg & Lübeck</p>
-</footer>
+
+  <!-- SUGGEST A MEETUP -->
+  <section id="suggest" class="suggest-section fade-in">
+    <div class="suggest-inner">
+      <h2 class="suggest-title">Suggest a meetup</h2>
+      <p class="suggest-subtitle">
+        Share an idea for a gentle meetup in Hamburg or Lübeck.
+      </p>
+
+      <form class="suggest-form">
+        <textarea
+          class="suggest-textarea"
+          placeholder="Your idea (optional details, place, time)…"
+        ></textarea>
+
+        <button type="submit" class="suggest-submit">Send suggestion</button>
+
+        <p class="suggest-confirmation"></p>
+      </form>
+    </div>
+  </section>
+
+
+  <!-- FOOTER -->
+  <footer class="site-footer fade-in">
+    <p class="footer-text">Made with warmth in Hamburg & Lübeck</p>
+    <p class="footer-updated">Last updated: <span id="lastUpdated"></span></p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
