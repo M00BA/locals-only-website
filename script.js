@@ -16,15 +16,19 @@ if (navToggle && mainNav) {
 const modeToggle = document.getElementById("modeToggle");
 const body = document.body;
 
+// Set correct label on load
 if (modeToggle) {
+  modeToggle.textContent = body.classList.contains("theme-night")
+    ? "Light mode"
+    : "Night mode";
+
   modeToggle.addEventListener("click", () => {
     body.classList.toggle("theme-light");
     body.classList.toggle("theme-night");
 
-    modeToggle.textContent =
-      body.classList.contains("theme-light")
-        ? "Night mode"
-        : "Light mode";
+    modeToggle.textContent = body.classList.contains("theme-night")
+      ? "Light mode"
+      : "Night mode";
   });
 }
 
