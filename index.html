@@ -140,4 +140,14 @@
         cityButtons.forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        const city = btn
+        const city = btn.dataset.city;
+        cards.forEach(card => {
+          card.style.display =
+            card.dataset.city === city ? 'block' : 'none';
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
