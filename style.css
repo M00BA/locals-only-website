@@ -1,32 +1,37 @@
-/* Root variables */
+/* -------------------------------------------------------
+   ROOT VARIABLES
+------------------------------------------------------- */
 :root {
   --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
 
   /* Light mode palette */
   --light-bg-top: #d9d3cc;
---light-bg-mid: #d2c9c1;
---light-bg-bottom: #c7bcb3;
+  --light-bg-mid: #d2c9c1;
+  --light-bg-bottom: #c7bcb3;
 
---light-surface: rgba(245, 240, 235, 0.78);
+  --light-surface: rgba(245, 240, 235, 0.78);
 
---light-text-main: #2a2624;
---light-text-muted: #5a524d;
+  --light-text-main: #2a2624;
+  --light-text-muted: #5a524d;
 
---light-accent: #b48a6c;
---light-accent-soft: rgba(180, 138, 108, 0.14);
+  --light-accent: #b48a6c;
+  --light-accent-soft: rgba(180, 138, 108, 0.14);
 
---light-border-soft: rgba(0, 0, 0, 0.04);
-
+  --light-border-soft: rgba(0, 0, 0, 0.04);
 
   /* Night mode palette */
   --night-bg-top: #151528;
   --night-bg-mid: #1b1b33;
   --night-bg-bottom: #0b0b18;
+
   --night-surface: rgba(18, 18, 34, 0.96);
+
   --night-text-main: #f5f0ff;
   --night-text-muted: #b6b0d0;
+
   --night-accent: #f2c98c;
   --night-accent-soft: rgba(242, 201, 140, 0.16);
+
   --night-border-soft: rgba(255, 255, 255, 0.08);
 
   /* Shared */
@@ -44,7 +49,9 @@
   --stars-opacity: 0;
 }
 
-/* Theme: light */
+/* -------------------------------------------------------
+   THEME SWITCHING
+------------------------------------------------------- */
 body.theme-light {
   --bg-top: var(--light-bg-top);
   --bg-mid: var(--light-bg-mid);
@@ -58,7 +65,6 @@ body.theme-light {
   --stars-opacity: 0;
 }
 
-/* Theme: night */
 body.theme-night {
   --bg-top: var(--night-bg-top);
   --bg-mid: var(--night-bg-mid);
@@ -72,7 +78,9 @@ body.theme-night {
   --stars-opacity: 1;
 }
 
-/* Global reset and base */
+/* -------------------------------------------------------
+   BASE
+------------------------------------------------------- */
 *,
 *::before,
 *::after {
@@ -95,27 +103,86 @@ body {
     color var(--transition-med);
 }
 
-/* Star field for night mode */
+/* -------------------------------------------------------
+   STARFIELD (MAIN + TWINKLE + SHOOTING STAR)
+------------------------------------------------------- */
+
+/* MAIN STARFIELD */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: -1;
+  z-index: -3;
   opacity: var(--stars-opacity);
   transition: opacity var(--transition-slow);
+
   background-image:
-    radial-gradient(2px 2px at 10% 20%, rgba(255, 255, 255, 0.9), transparent),
-    radial-gradient(1.5px 1.5px at 30% 80%, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(2px 2px at 70% 40%, rgba(255, 255, 255, 0.9), transparent),
-    radial-gradient(1px 1px at 90% 10%, rgba(255, 255, 255, 0.7), transparent),
-    radial-gradient(1.8px 1.8px at 50% 95%, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(1.2px 1.2px at 80% 60%, rgba(255, 255, 255, 0.7), transparent),
-    radial-gradient(1px 1px at 20% 90%, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(1.5px 1.5px at 60% 10%, rgba(255, 255, 255, 0.8), transparent);
+    radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1.5px 1.5px at 30% 80%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 70% 40%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1.8px 1.8px at 50% 95%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(1.2px 1.2px at 80% 60%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 20% 90%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1.5px 1.5px at 60% 10%, rgba(255,255,255,0.8), transparent);
+
+  animation: starFloat 40s ease-in-out infinite;
 }
 
-/* Layout helpers */
+@keyframes starFloat {
+  0% { transform: translate(0,0) rotate(0deg); }
+  50% { transform: translate(14px,-18px) rotate(0.4deg); }
+  100% { transform: translate(0,0) rotate(0deg); }
+}
+
+/* TWINKLING LAYER */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  opacity: var(--stars-opacity);
+
+  background-image:
+    radial-gradient(1.5px 1.5px at 15% 30%, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.5), transparent),
+    radial-gradient(1.2px 1.2px at 75% 20%, rgba(255,255,255,0.6), transparent),
+    radial-gradient(1px 1px at 90% 80%, rgba(255,255,255,0.4), transparent);
+
+  animation: twinkle 6s ease-in-out infinite alternate;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* SHOOTING STAR */
+.shooting-star {
+  position: fixed;
+  top: -40px;
+  left: -40px;
+  width: 3px;
+  height: 3px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 8px white;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+@keyframes shoot {
+  0% { opacity: 0; transform: translate(0,0) scale(1); }
+  10% { opacity: 1; }
+  100% { opacity: 0; transform: translate(350px,180px) scale(0.4); }
+}
+
+/* -------------------------------------------------------
+   LAYOUT HELPERS
+------------------------------------------------------- */
 main {
   padding: 96px 16px 64px;
 }
@@ -125,17 +192,15 @@ main {
   margin: 0 auto 64px;
 }
 
-/* Header */
+/* -------------------------------------------------------
+   HEADER
+------------------------------------------------------- */
 .site-header {
   position: sticky;
   top: 0;
   z-index: 20;
   backdrop-filter: blur(18px);
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.16),
-    transparent
-  );
+  background: linear-gradient(to bottom, rgba(0,0,0,0.16), transparent);
 }
 
 .header-inner {
@@ -155,7 +220,7 @@ main {
   text-transform: uppercase;
 }
 
-/* Navigation */
+/* NAVIGATION */
 .main-nav {
   display: flex;
   align-items: center;
@@ -165,7 +230,7 @@ main {
 .nav-link,
 .mode-toggle {
   border: 1px solid transparent;
-  background: rgba(0, 0, 0, 0.06);
+  background: rgba(0,0,0,0.06);
   color: var(--text-main);
   padding: 6px 14px;
   border-radius: var(--radius-pill);
@@ -180,7 +245,7 @@ main {
 
 body.theme-night .nav-link,
 body.theme-night .mode-toggle {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255,255,255,0.06);
 }
 
 .nav-link:hover,
@@ -190,7 +255,7 @@ body.theme-night .mode-toggle {
   background: var(--accent-soft);
 }
 
-/* Mobile nav toggle */
+/* MOBILE NAV */
 .nav-toggle {
   display: none;
   border: none;
@@ -209,7 +274,41 @@ body.theme-night .mode-toggle {
   transition: transform var(--transition-med), opacity var(--transition-med);
 }
 
-/* Hero */
+@media (max-width: 720px) {
+  .main-nav {
+    position: absolute;
+    right: 16px;
+    top: 52px;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    padding: 8px;
+    box-shadow: var(--shadow-soft);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 160px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition:
+      opacity var(--transition-med),
+      transform var(--transition-med);
+  }
+
+  .main-nav.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+}
+
+/* -------------------------------------------------------
+   HERO
+------------------------------------------------------- */
 .hero {
   padding: 40px 0 32px;
 }
@@ -234,7 +333,9 @@ body.theme-night .mode-toggle {
   color: var(--text-muted);
 }
 
-/* Sections */
+/* -------------------------------------------------------
+   SECTION HEADERS
+------------------------------------------------------- */
 .section-header {
   display: flex;
   align-items: center;
@@ -254,7 +355,9 @@ body.theme-night .mode-toggle {
   font-size: 0.95rem;
 }
 
-/* City filters */
+/* -------------------------------------------------------
+   CITY FILTERS
+------------------------------------------------------- */
 .city-filters {
   display: flex;
   gap: 8px;
@@ -264,7 +367,7 @@ body.theme-night .mode-toggle {
 .city-filter-btn {
   border-radius: var(--radius-pill);
   border: 1px solid transparent;
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0,0,0,0.04);
   color: var(--text-muted);
   padding: 4px 12px;
   font-size: 0.8rem;
@@ -277,7 +380,7 @@ body.theme-night .mode-toggle {
 }
 
 body.theme-night .city-filter-btn {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255,255,255,0.04);
 }
 
 .city-filter-btn.active {
@@ -287,26 +390,30 @@ body.theme-night .city-filter-btn {
   transform: translateY(-1px);
 }
 
-/* Events grid */
+/* -------------------------------------------------------
+   EVENTS GRID
+------------------------------------------------------- */
 .events-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0,1fr);
   gap: 16px;
 }
 
 @media (min-width: 640px) {
   .events-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(2,minmax(0,1fr));
   }
 }
 
 @media (min-width: 960px) {
   .events-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3,minmax(0,1fr));
   }
 }
 
-/* Event card */
+/* -------------------------------------------------------
+   EVENT CARD
+------------------------------------------------------- */
 .event-card {
   background: var(--surface);
   border-radius: var(--radius-lg);
@@ -329,7 +436,7 @@ body.theme-night .city-filter-btn {
   content: "";
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at top left, rgba(255, 255, 255, 0.12), transparent 55%);
+  background: radial-gradient(circle at top left, rgba(255,255,255,0.12), transparent 55%);
   opacity: 0;
   transition: opacity var(--transition-med);
   pointer-events: none;
@@ -374,7 +481,7 @@ body.theme-night .city-filter-btn {
   color: var(--text-main);
 }
 
-/* RSVP button */
+/* RSVP BUTTON */
 .event-rsvp-btn {
   margin-top: auto;
   align-self: flex-start;
@@ -396,20 +503,22 @@ body.theme-night .city-filter-btn {
   background: var(--accent);
   color: #1b1220;
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
 }
 
-/* Past meetups */
+/* -------------------------------------------------------
+   PAST MEETUPS
+------------------------------------------------------- */
 .past-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0,1fr);
   gap: 14px;
   margin-top: 16px;
 }
 
 @media (min-width: 640px) {
   .past-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(3,minmax(0,1fr));
   }
 }
 
@@ -419,247 +528,75 @@ body.theme-night .city-filter-btn {
   border: 1px solid var(--border-soft);
   padding: 18px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
+  flex-direction: column;
+  gap: 6px;
+  color: var(--text-main);
   font-size: 0.9rem;
 }
 
 .past-placeholder {
   opacity: 0.8;
+  color: var(--text-muted);
 }
 
-/* About */
-.section-about {
-  max-width: 760px;
+/* -------------------------------------------------------
+   SUGGEST MEETUP FORM
+------------------------------------------------------- */
+.suggest-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  padding: 18px 18px 20px;
 }
 
-.about-text {
-  margin: 8px 0;
-  font-size: 0.95rem;
-  line-height: 1.7;
-  color: var(--text-main);
-}
-
-/* Footer */
-.site-footer {
-  padding: 24px 16px 32px;
-}
-
-.footer-line {
-  max-width: 1100px;
-  margin: 0 auto 16px;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(0, 0, 0, 0.18),
-    transparent
-  );
-  opacity: 0.4;
-}
-
-body.theme-night .footer-line {
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
-}
-
-.footer-inner {
-  max-width: 1100px;
-  margin: 0 auto;
+.suggest-form {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-}
-
-.footer-nav {
-  display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 12px;
 }
 
-.footer-link {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  position: relative;
-  padding-bottom: 2px;
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.9rem;
 }
 
-.footer-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 0;
-  height: 1px;
-  background: var(--accent);
-  transition: width var(--transition-med);
-}
-
-.footer-link:hover::after {
-  width: 100%;
-}
-
-.footer-note {
-  margin: 0;
-  font-size: 0.8rem;
+.form-row label {
   color: var(--text-muted);
 }
 
-/* Fade in utility */
-.fade-in {
-  opacity: 0;
-  transform: translateY(8px);
+.form-row input,
+.form-row textarea {
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  padding: 8px 10px;
+  font: inherit;
+  color: var(--text-main);
+  background: rgba(0,0,0,0.02);
   transition:
-    opacity var(--transition-slow),
-    transform var(--transition-slow);
+    border-color var(--transition-med),
+    box-shadow var(--transition-med),
+    background var(--transition-med);
 }
 
-.fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
+body.theme-night .form-row input,
+body.theme-night .form-row textarea {
+  background: rgba(255,255,255,0.03);
 }
 
-/* Silhouettes hint at bottom */
-.city-silhouettes {
-  position: fixed;
-  inset-inline: 0;
-  bottom: 0;
-  height: 140px;
-  pointer-events: none;
-  z-index: -1;
-  background:
-    radial-gradient(circle at 20% 100%, rgba(255, 255, 255, 0.18), transparent 55%),
-    radial-gradient(circle at 80% 100%, rgba(0, 0, 0, 0.18), transparent 55%);
-  opacity: 0.7;
+.form-row input:focus,
+.form-row textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft);
+  background: var(--accent-soft);
 }
 
-/* Responsive nav */
-@media (max-width: 720px) {
-  .main-nav {
-    position: absolute;
-    right: 16px;
-    top: 52px;
-    background: var(--surface);
-    border-radius: var(--radius-md);
-    padding: 8px;
-    box-shadow: var(--shadow-soft);
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    min-width: 160px;
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(-6px);
-    transition:
-      opacity var(--transition-med),
-      transform var(--transition-med);
-  }
-
-  .main-nav.open {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0);
-  }
-
-  .nav-toggle {
-    display: block;
-  }
-}
-
-
-/* MAIN STARFIELD (visible stars + drifting) */
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: var(--stars-opacity);
-  transition: opacity var(--transition-slow);
-
-  /* Actual stars */
-  background-image:
-    radial-gradient(2px 2px at 10% 20%, rgba(255, 255, 255, 0.9), transparent),
-    radial-gradient(1.5px 1.5px at 30% 80%, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(2px 2px at 70% 40%, rgba(255, 255, 255, 0.9), transparent),
-    radial-gradient(1px 1px at 90% 10%, rgba(255, 255, 255, 0.7), transparent),
-    radial-gradient(1.8px 1.8px at 50% 95%, rgba(255, 255, 255, 0.8), transparent),
-    radial-gradient(1.2px 1.2px at 80% 60%, rgba(255, 255, 255, 0.7), transparent),
-    radial-gradient(1px 1px at 20% 90%, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(1.5px 1.5px at 60% 10%, rgba(255, 255, 255, 0.8), transparent);
-
-  /* Movement */
-  animation: starFloat 40s ease-in-out infinite;
-}
-
-@keyframes starFloat {
-  0% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  50% {
-    transform: translate(14px, -18px) rotate(0.4deg);
-  }
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-}
-
-/* TWINKLING LAYER */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1;
-  opacity: var(--stars-opacity);
-
-  background-image:
-    radial-gradient(1.5px 1.5px at 15% 30%, rgba(255, 255, 255, 0.7), transparent),
-    radial-gradient(1px 1px at 40% 70%, rgba(255, 255, 255, 0.5), transparent),
-    radial-gradient(1.2px 1.2px at 75% 20%, rgba(255, 255, 255, 0.6), transparent),
-    radial-gradient(1px 1px at 90% 80%, rgba(255, 255, 255, 0.4), transparent);
-
-  animation: twinkle 6s ease-in-out infinite alternate;
-}
-
-@keyframes twinkle {
-  0% { opacity: 0.7; }
-  100% { opacity: 1; }
-}
-
-/* SHOOTING STAR */
-.shooting-star {
-  position: fixed;
-  top: -40px;
-  left: -40px;
-  width: 3px;
-  height: 3px;
-  background: white;
-  border-radius: 50%;
-  box-shadow: 0 0 8px white;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-@keyframes shoot {
-  0% {
-    opacity: 0;
-    transform: translate(0, 0) scale(1);
-  }
-  10% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: translate(350px, 180px) scale(0.4);
-  }
-}
+.suggest-submit-btn {
+  align-self: flex-start;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent
