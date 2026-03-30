@@ -578,27 +578,49 @@ body::before {
   animation: starFloat 40s linear infinite;
 }
 
+/* Night sky starfield + movement */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: var(--stars-opacity);
+  transition: opacity var(--transition-slow);
+  background-image:
+    radial-gradient(2px 2px at 10% 20%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(1.5px 1.5px at 30% 80%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(2px 2px at 70% 40%, rgba(255, 255, 255, 0.9), transparent),
+    radial-gradient(1px 1px at 90% 10%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1.8px 1.8px at 50% 95%, rgba(255, 255, 255, 0.8), transparent),
+    radial-gradient(1.2px 1.2px at 80% 60%, rgba(255, 255, 255, 0.7), transparent),
+    radial-gradient(1px 1px at 20% 90%, rgba(255, 255, 255, 0.6), transparent),
+    radial-gradient(1.5px 1.5px at 60% 10%, rgba(255, 255, 255, 0.8), transparent);
+  animation: starFloat 40s ease-in-out infinite;
+}
+
 @keyframes starFloat {
   0% {
-    transform: translateY(0) translateX(0);
+    transform: translate(0, 0);
   }
   50% {
-    transform: translateY(-10px) translateX(6px);
+    transform: translate(12px, -14px);
   }
   100% {
-    transform: translateY(0) translateX(0);
+    transform: translate(0, 0);
   }
 }
 
+/* Shooting star */
 .shooting-star {
   position: fixed;
-  top: -20px;
-  left: -20px;
-  width: 2px;
-  height: 2px;
+  top: -40px;
+  left: -40px;
+  width: 3px;
+  height: 3px;
   background: white;
   border-radius: 50%;
-  box-shadow: 0 0 6px white;
+  box-shadow: 0 0 8px white;
   opacity: 0;
   pointer-events: none;
   z-index: 9999;
@@ -614,7 +636,7 @@ body::before {
   }
   100% {
     opacity: 0;
-    transform: translate(300px, 150px) scale(0.4);
+    transform: translate(350px, 180px) scale(0.4);
   }
 }
 
