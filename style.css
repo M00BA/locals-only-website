@@ -437,6 +437,6 @@ body.theme-night::after {
  .logo {
   display: flex;
   align-items: center;
-  height: 75px; /* gives the logo room to breathe */
+  height: 95px; /* gives the logo room to breathe */
 }
 
