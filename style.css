@@ -428,3 +428,14 @@ body.theme-night::after {
   opacity: 1;
   transform: translateY(0);
 }
+
+.logo-image {
+  height: 32px;
+  display: block;
+}
+
+@media (max-width: 480px) {
+  .logo-image {
+    height: 26px;
+  }
+}
