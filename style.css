@@ -430,13 +430,13 @@ body.theme-night::after {
 }
 
 .logo-image {
-  height: 80px;      /* bigger and more visible */
+  height: 88px;      /* bigger and more visible */
   width: auto;
   display: block;
 }
  .logo {
   display: flex;
   align-items: center;
-  height: 74px; /* gives the logo room to breathe */
+  height: 75px; /* gives the logo room to breathe */
 }
 
