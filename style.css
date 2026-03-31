@@ -430,12 +430,8 @@ body.theme-night::after {
 }
 
 .logo-image {
-  height: 32px;
+  height: 48px;      /* bigger and more visible */
+  width: auto;
   display: block;
 }
 
-@media (max-width: 480px) {
-  .logo-image {
-    height: 26px;
-  }
-}
