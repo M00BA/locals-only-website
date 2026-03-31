@@ -440,3 +440,9 @@ body.theme-night::after {
   height: 95px; /* gives the logo room to breathe */
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+  overflow: visible; /* allows the image to spill out */
+}
+
