@@ -429,20 +429,28 @@ body.theme-night::after {
   transform: translateY(0);
 }
 
+
+/* ---------------------------------------------------
+   LOGO (night mode default + light mode override)
+--------------------------------------------------- */
+
+/* Default (night mode) */
 .logo-image {
-  height: 110px;      /* bigger and more visible */
+  content: url("images/Locals-only-icon(night mode).jpg");
+  height: 120px;      /* avant‑garde size */
   width: auto;
   display: block;
 }
- .logo {
-  display: flex;
-  align-items: center;
-  height: 95px; /* gives the logo room to breathe */
+
+/* Light mode override */
+body.theme-light .logo-image {
+  content: url("images/Locals-only-icon(bright mode).jpg");
 }
 
+/* Logo container */
 .logo {
   display: flex;
   align-items: center;
-  overflow: visible; /* allows the image to spill out */
+  height: 95px;        /* header breathing room */
+  overflow: visible;   /* allows the logo to break out of the header */
 }
-
