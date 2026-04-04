@@ -41,9 +41,9 @@
   <header class="site-header">
     <div class="header-inner">
 
-      <!-- LOGO (static LO icon) -->
+      <!-- LOGO -->
       <div class="logo">
-        <img
+        <img 
           src="images/Locals-only-icon(night mode).jpg"
           alt="Locals Only Logo"
           class="logo-image"
@@ -59,11 +59,12 @@
         <button class="nav-link" data-city-filter="hamburg">Hamburg</button>
         <button class="nav-link" data-city-filter="luebeck">Lübeck</button>
         <button class="nav-link" data-scroll-target="#about">About</button>
+
         <button id="modeToggle" class="mode-toggle" type="button">
           Light mode
         </button>
 
-        <!-- Auth controls -->
+        <!-- AUTH BUTTONS -->
         <a id="authButton" href="#" class="nav-link">Become a Local</a>
         <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
       </nav>
@@ -213,10 +214,10 @@
 
       <h2>Become a Local</h2>
 
-      <label for="authEmail">Email</label>
+      <label>Email</label>
       <input type="email" id="authEmail" placeholder="you@example.com" required>
 
-      <label for="authUsername">Username</label>
+      <label>Username</label>
       <input type="text" id="authUsername" placeholder="Your name" required>
 
       <button id="sendMagicLink">Send Magic Link</button>
@@ -233,7 +234,6 @@
 
   <!-- Auth logic -->
   <script>
-    // TODO: replace with your real Supabase project values
     const SUPABASE_URL = "YOUR_SUPABASE_URL";
     const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
