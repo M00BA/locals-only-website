@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>My Meetups – Locals Only</title>
+
+  <!-- Mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="theme-night">
+
+  <!-- HEADER (minimal version) -->
+  <header class="site-header">
+    <div class="header-inner">
+
+      <div class="logo">
+        <img 
+          src="images/Locals-only-icon(night mode).jpg"
+          alt="Locals Only Logo"
+          class="logo-image"
+        >
+      </div>
+
+      <nav class="main-nav">
+        <a href="/" class="nav-link">Home</a>
+        <button id="modeToggle" class="mode-toggle">Light mode</button>
+      </nav>
+
+    </div>
+  </header>
+
+  <main class="section" style="padding-top: 80px;">
+
+    <h1 id="welcomeUser" class="section-title">Welcome back</h1>
+
+    <p class="about-text" style="margin-bottom: 30px;">
+      Here are your upcoming meetups. Soon this page will show RSVPs, reminders, and cozy details for your evenings.
+    </p>
+
+    <div class="past-grid">
+      <article class="past-card"><div class="past-placeholder">Your meetups will appear here</div></article>
+    </div>
+
+    <button id="signOutButton" class="event-rsvp-btn" style="margin-top: 40px;">
+      Sign Out
+    </button>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-line"></div>
+    <div class="footer-inner">
+      <p class="footer-note">Locals Only · Hamburg and Lübeck</p>
+    </div>
+  </footer>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <!-- Auth logic -->
+  <script>
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function loadUser() {
+      const { data } = await supabaseClient.auth.getSession();
+      const session = data.session;
+
+      // If not signed in → redirect home
+      if (!session) {
+        window.location.href = "/";
+        return;
+      }
+
+      const username = session.user.user_metadata.username || "Local";
+      document.getElementById("welcomeUser").textContent = `Welcome back, ${username}`;
+    }
+
+    // Sign out
+    document.getElementById("signOutButton").addEventListener("click", async () => {
+      await supabaseClient.auth.signOut();
+      window.location.href = "/";
+    });
+
+    loadUser();
+  </script>
+
+</body>
+</html>
