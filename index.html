@@ -207,53 +207,53 @@
     </div>
   </footer>
 
-  <!-- AUTH MODAL -->
-    <div id="authModal" class="modal">
+    <!-- AUTH MODAL -->
+  <div id="authModal" class="modal">
     <div class="modal-content">
-    <span id="closeAuthModal" class="close">&times;</span>
+      <span id="closeAuthModal" class="close">&times;</span>
 
-    <h2>Become a Local</h2>
-    <p>Enter your email to receive a magic sign‑in link.</p>
+      <h2>Become a Local</h2>
+      <p>Enter your email to receive a magic sign‑in link.</p>
 
-    <label>Email</label>
-    <input type="email" id="authEmail" placeholder="you@example.com" required>
+      <label>Email</label>
+      <input type="email" id="authEmail" placeholder="you@example.com" required>
 
-    <button id="sendMagicLink">Send Magic Link</button>
+      <button id="sendMagicLink">Send Magic Link</button>
     </div>
-    </div>
+  </div>
 
   <div class="shooting-star"></div>
 
   <!-- RSVP MODAL -->
-   <div id="rsvpModal" class="modal">
-   <div class="modal-content">
-    <span id="closeRsvpModal" class="close">&times;</span>
+  <div id="rsvpModal" class="modal">
+    <div class="modal-content">
+      <span id="closeRsvpModal" class="close">&times;</span>
 
-    <h2>RSVP</h2>
-    <p id="rsvpEventName" style="font-weight: bold;"></p>
+      <h2>RSVP</h2>
+      <p id="rsvpEventName" style="font-weight: bold;"></p>
 
-    <label>Email</label>
-    <input type="email" id="rsvpEmail" readonly />
+      <label>Email</label>
+      <input type="email" id="rsvpEmail" readonly />
 
-    <label>Username</label>
-    <input type="text" id="rsvpUsername" readonly />
+      <label>Username</label>
+      <input type="text" id="rsvpUsername" readonly />
 
-    <button id="submitRsvp">Confirm RSVP</button>
+      <button id="submitRsvp">Confirm RSVP</button>
     </div>
-   </div>
+  </div>
 
   <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Your existing script -->
-  <script src="script.js"></script>
-
-  <!-- Auth logic -->
+  <!-- Main logic -->
   <script>
-    const SUPABASE_URL = "YOUR_SUPABASE_URL";
-    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+    // -----------------------------
+    // Supabase Init
+    // -----------------------------
+    const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
     const authButton = document.getElementById("authButton");
     const myMeetupsLink = document.getElementById("myMeetupsLink");
@@ -261,13 +261,13 @@
     const closeAuthModal = document.getElementById("closeAuthModal");
     const sendMagicLink = document.getElementById("sendMagicLink");
 
-    // Open modal
+    // Open auth modal
     authButton.addEventListener("click", (e) => {
       e.preventDefault();
       authModal.style.display = "flex";
     });
 
-    // Close modal
+    // Close auth modal
     closeAuthModal.addEventListener("click", () => {
       authModal.style.display = "none";
     });
@@ -278,22 +278,16 @@
       }
     });
 
-    // Send magic link
+    // Send magic link (email only)
     sendMagicLink.addEventListener("click", async () => {
       const email = document.getElementById("authEmail").value.trim();
-      const username = document.getElementById("authUsername").value.trim();
 
-      if (!email || !username) {
-        alert("Please fill in both email and username.");
+      if (!email) {
+        alert("Please enter your email.");
         return;
       }
 
-      const { error } = await supabaseClient.auth.signInWithOtp({
-        email,
-        options: {
-          data: { username }
-        }
-      });
+      const { error } = await supabaseClient.auth.signInWithOtp({ email });
 
       if (error) {
         console.error(error);
@@ -317,19 +311,70 @@
     }
 
     checkSession();
-  </script>
-  
-  <!-- AUTH MODAL -->
-  <div id="authModal" class="modal">
-  <div class="modal-content">
-    <span id="closeAuthModal" class="close">&times;</span>
-    <h2>Become a Local</h2>
-    <p>Enter your email to receive a magic sign‑in link.</p>
 
-    <input type="email" id="authEmail" placeholder="you@example.com" />
-    <button id="sendMagicLink">Send Magic Link</button>
-   </div>
-</div>
-  
+    // -----------------------------
+    // RSVP Logic
+    // -----------------------------
+    const rsvpModal = document.getElementById("rsvpModal");
+    const closeRsvpModal = document.getElementById("closeRsvpModal");
+    const rsvpEventName = document.getElementById("rsvpEventName");
+    const rsvpEmail = document.getElementById("rsvpEmail");
+    const rsvpUsername = document.getElementById("rsvpUsername");
+    const submitRsvp = document.getElementById("submitRsvp");
+
+    // Open RSVP modal
+    document.querySelectorAll(".event-rsvp-btn").forEach(btn => {
+      btn.addEventListener("click", async () => {
+        const eventName = btn.dataset.event;
+        rsvpEventName.textContent = eventName;
+
+        const { data } = await supabaseClient.auth.getSession();
+        const session = data.session;
+
+        if (!session) {
+          alert("Please sign in first.");
+          return;
+        }
+
+        rsvpEmail.value = session.user.email;
+        rsvpUsername.value = session.user.user_metadata.username || "Local";
+
+        rsvpModal.style.display = "flex";
+      });
+    });
+
+    // Close RSVP modal
+    closeRsvpModal.addEventListener("click", () => {
+      rsvpModal.style.display = "none";
+    });
+
+    window.addEventListener("click", (e) => {
+      if (e.target === rsvpModal) {
+        rsvpModal.style.display = "none";
+      }
+    });
+
+    // Submit RSVP
+    submitRsvp.addEventListener("click", async () => {
+      const { data } = await supabaseClient.auth.getSession();
+      const session = data.session;
+
+      const { error } = await supabaseClient.from("rsvps").insert({
+        user_id: session.user.id,
+        email: session.user.email,
+        username: session.user.user_metadata.username || "Local",
+        event_name: rsvpEventName.textContent
+      });
+
+      if (error) {
+        console.error(error);
+        alert("Error saving RSVP.");
+      } else {
+        alert("You're in!");
+        rsvpModal.style.display = "none";
+      }
+    });
+  </script>
+
 </body>
 </html>
