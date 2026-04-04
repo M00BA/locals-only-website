@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://locals-only.space/sitemap.xml
