@@ -11,18 +11,22 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
 // -----------------------------
 const authModal = document.getElementById("authModal");
 const closeAuthModal = document.getElementById("closeAuthModal");
-const becomeLocalBtn = document.getElementById("becomeLocalBtn");
+const authButton = document.getElementById("authButton"); // FIXED
 const sendMagicLink = document.getElementById("sendMagicLink");
 const authEmail = document.getElementById("authEmail");
 
-becomeLocalBtn.addEventListener("click", () => {
+// Open modal
+authButton.addEventListener("click", (e) => {
+  e.preventDefault();
   authModal.style.display = "flex";
 });
 
+// Close modal
 closeAuthModal.addEventListener("click", () => {
   authModal.style.display = "none";
 });
 
+// Send magic link
 sendMagicLink.addEventListener("click", async () => {
   const email = authEmail.value.trim();
   if (!email) return alert("Please enter an email.");
