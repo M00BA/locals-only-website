@@ -208,23 +208,39 @@
   </footer>
 
   <!-- AUTH MODAL -->
-  <div id="authModal" class="modal">
+    <div id="authModal" class="modal">
     <div class="modal-content">
-      <span id="closeAuthModal" class="close">&times;</span>
+    <span id="closeAuthModal" class="close">&times;</span>
 
-      <h2>Become a Local</h2>
+    <h2>Become a Local</h2>
+    <p>Enter your email to receive a magic sign‑in link.</p>
 
-      <label>Email</label>
-      <input type="email" id="authEmail" placeholder="you@example.com" required>
+    <label>Email</label>
+    <input type="email" id="authEmail" placeholder="you@example.com" required>
 
-      <label>Username</label>
-      <input type="text" id="authUsername" placeholder="Your name" required>
-
-      <button id="sendMagicLink">Send Magic Link</button>
+    <button id="sendMagicLink">Send Magic Link</button>
     </div>
-  </div>
+    </div>
 
   <div class="shooting-star"></div>
+
+  <!-- RSVP MODAL -->
+   <div id="rsvpModal" class="modal">
+   <div class="modal-content">
+    <span id="closeRsvpModal" class="close">&times;</span>
+
+    <h2>RSVP</h2>
+    <p id="rsvpEventName" style="font-weight: bold;"></p>
+
+    <label>Email</label>
+    <input type="email" id="rsvpEmail" readonly />
+
+    <label>Username</label>
+    <input type="text" id="rsvpUsername" readonly />
+
+    <button id="submitRsvp">Confirm RSVP</button>
+    </div>
+   </div>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -302,5 +318,18 @@
 
     checkSession();
   </script>
+  
+  <!-- AUTH MODAL -->
+  <div id="authModal" class="modal">
+  <div class="modal-content">
+    <span id="closeAuthModal" class="close">&times;</span>
+    <h2>Become a Local</h2>
+    <p>Enter your email to receive a magic sign‑in link.</p>
+
+    <input type="email" id="authEmail" placeholder="you@example.com" />
+    <button id="sendMagicLink">Send Magic Link</button>
+   </div>
+</div>
+  
 </body>
 </html>
