@@ -26,7 +26,7 @@
   <!-- Google Image -->
   <meta itemprop="image" content="https://locals-only.space/images/locals-only-social-club-logo.png">
 
-  <!-- Twitter Card (Google sometimes uses this too) -->
+  <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Locals Only – Hamburg & Lübeck">
   <meta name="twitter:description" content="Soft evenings, cozy meetups, and gentle community in Hamburg & Lübeck.">
@@ -43,13 +43,12 @@
 
       <!-- LOGO (static LO icon) -->
       <div class="logo">
-        <img 
+        <img
           src="images/Locals-only-icon(night mode).jpg"
           alt="Locals Only Logo"
           class="logo-image"
         >
       </div>
-
 
       <button class="nav-toggle" aria-label="Toggle navigation">
         <span class="nav-toggle-line"></span>
@@ -63,6 +62,10 @@
         <button id="modeToggle" class="mode-toggle" type="button">
           Light mode
         </button>
+
+        <!-- Auth controls -->
+        <a id="authButton" href="#" class="nav-link">Become a Local</a>
+        <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
       </nav>
 
     </div>
@@ -203,7 +206,101 @@
     </div>
   </footer>
 
-  <script src="script.js"></script>
+  <!-- AUTH MODAL -->
+  <div id="authModal" class="modal">
+    <div class="modal-content">
+      <span id="closeAuthModal" class="close">&times;</span>
+
+      <h2>Become a Local</h2>
+
+      <label for="authEmail">Email</label>
+      <input type="email" id="authEmail" placeholder="you@example.com" required>
+
+      <label for="authUsername">Username</label>
+      <input type="text" id="authUsername" placeholder="Your name" required>
+
+      <button id="sendMagicLink">Send Magic Link</button>
+    </div>
+  </div>
+
   <div class="shooting-star"></div>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <!-- Your existing script -->
+  <script src="script.js"></script>
+
+  <!-- Auth logic -->
+  <script>
+    // TODO: replace with your real Supabase project values
+    const SUPABASE_URL = "YOUR_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const authButton = document.getElementById("authButton");
+    const myMeetupsLink = document.getElementById("myMeetupsLink");
+    const authModal = document.getElementById("authModal");
+    const closeAuthModal = document.getElementById("closeAuthModal");
+    const sendMagicLink = document.getElementById("sendMagicLink");
+
+    // Open modal
+    authButton.addEventListener("click", (e) => {
+      e.preventDefault();
+      authModal.style.display = "flex";
+    });
+
+    // Close modal
+    closeAuthModal.addEventListener("click", () => {
+      authModal.style.display = "none";
+    });
+
+    window.addEventListener("click", (e) => {
+      if (e.target === authModal) {
+        authModal.style.display = "none";
+      }
+    });
+
+    // Send magic link
+    sendMagicLink.addEventListener("click", async () => {
+      const email = document.getElementById("authEmail").value.trim();
+      const username = document.getElementById("authUsername").value.trim();
+
+      if (!email || !username) {
+        alert("Please fill in both email and username.");
+        return;
+      }
+
+      const { error } = await supabaseClient.auth.signInWithOtp({
+        email,
+        options: {
+          data: { username }
+        }
+      });
+
+      if (error) {
+        console.error(error);
+        alert("Error sending magic link.");
+      } else {
+        alert("Magic link sent! Check your email.");
+        authModal.style.display = "none";
+      }
+    });
+
+    // Check session on load
+    async function checkSession() {
+      const { data } = await supabaseClient.auth.getSession();
+      const session = data.session;
+
+      if (session) {
+        const username = session.user.user_metadata.username || "Local";
+        authButton.textContent = `Signed in as ${username}`;
+        myMeetupsLink.style.display = "inline-block";
+      }
+    }
+
+    checkSession();
+  </script>
 </body>
 </html>
