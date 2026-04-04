@@ -11,9 +11,10 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
 // -----------------------------
 const authModal = document.getElementById("authModal");
 const closeAuthModal = document.getElementById("closeAuthModal");
-const authButton = document.getElementById("authButton"); // FIXED
+const authButton = document.getElementById("authButton");
 const sendMagicLink = document.getElementById("sendMagicLink");
 const authEmail = document.getElementById("authEmail");
+const myMeetupsLink = document.getElementById("myMeetupsLink");
 
 // Open modal
 authButton.addEventListener("click", (e) => {
@@ -26,6 +27,12 @@ closeAuthModal.addEventListener("click", () => {
   authModal.style.display = "none";
 });
 
+window.addEventListener("click", (e) => {
+  if (e.target === authModal) {
+    authModal.style.display = "none";
+  }
+});
+
 // Send magic link
 sendMagicLink.addEventListener("click", async () => {
   const email = authEmail.value.trim();
@@ -33,9 +40,28 @@ sendMagicLink.addEventListener("click", async () => {
 
   const { error } = await supabaseClient.auth.signInWithOtp({ email });
 
-  if (error) alert("Error sending magic link.");
-  else alert("Magic link sent! Check your inbox.");
+  if (error) {
+    console.error(error);
+    alert("Error sending magic link.");
+  } else {
+    alert("Magic link sent! Check your inbox.");
+    authModal.style.display = "none";
+  }
 });
+
+// Check session on load
+async function checkSession() {
+  const { data } = await supabaseClient.auth.getSession();
+  const session = data.session;
+
+  if (session) {
+    const username = session.user.user_metadata.username || "Local";
+    authButton.textContent = `Signed in as ${username}`;
+    myMeetupsLink.style.display = "inline-block";
+  }
+}
+
+checkSession();
 
 // -----------------------------
 // RSVP MODAL
@@ -62,7 +88,7 @@ document.querySelectorAll(".event-rsvp-btn").forEach(btn => {
     }
 
     rsvpEmail.value = session.user.email;
-    rsvpUsername.value = session.user.user_metadata.username || "Anonymous";
+    rsvpUsername.value = session.user.user_metadata.username || "Local";
 
     rsvpModal.style.display = "flex";
   });
@@ -73,6 +99,12 @@ closeRsvpModal.addEventListener("click", () => {
   rsvpModal.style.display = "none";
 });
 
+window.addEventListener("click", (e) => {
+  if (e.target === rsvpModal) {
+    rsvpModal.style.display = "none";
+  }
+});
+
 // Submit RSVP
 submitRsvp.addEventListener("click", async () => {
   const { data } = await supabaseClient.auth.getSession();
@@ -81,11 +113,12 @@ submitRsvp.addEventListener("click", async () => {
   const { error } = await supabaseClient.from("rsvps").insert({
     user_id: session.user.id,
     email: session.user.email,
-    username: session.user.user_metadata.username || "Anonymous",
+    username: session.user.user_metadata.username || "Local",
     event_name: rsvpEventName.textContent
   });
 
   if (error) {
+    console.error(error);
     alert("Error saving RSVP.");
   } else {
     alert("You're in!");
