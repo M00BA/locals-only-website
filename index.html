@@ -208,173 +208,176 @@
   </footer>
 
     <!-- AUTH MODAL -->
-  <div id="authModal" class="modal">
-    <div class="modal-content">
-      <span id="closeAuthModal" class="close">&times;</span>
+<div id="authModal" class="modal">
+  <div class="modal-content">
+    <span id="closeAuthModal" class="close">&times;</span>
 
-      <h2>Become a Local</h2>
-      <p>Enter your email to receive a magic sign‑in link.</p>
+    <h2>Become a Local</h2>
+    <p>Enter your email to receive a magic sign‑in link.</p>
 
-      <label>Email</label>
-      <input type="email" id="authEmail" placeholder="you@example.com" required>
+    <label>Email</label>
+    <input type="email" id="authEmail" placeholder="you@example.com" required>
 
-      <button id="sendMagicLink">Send Magic Link</button>
-    </div>
+    <button id="sendMagicLink">Send Magic Link</button>
   </div>
+</div>
 
-  <div class="shooting-star"></div>
+<div class="shooting-star"></div>
 
-  <!-- RSVP MODAL -->
-  <div id="rsvpModal" class="modal">
-    <div class="modal-content">
-      <span id="closeRsvpModal" class="close">&times;</span>
+<!-- RSVP MODAL -->
+<div id="rsvpModal" class="modal">
+  <div class="modal-content">
+    <span id="closeRsvpModal" class="close">&times;</span>
 
-      <h2>RSVP</h2>
-      <p id="rsvpEventName" style="font-weight: bold;"></p>
+    <h2>RSVP</h2>
+    <p id="rsvpEventName" style="font-weight: bold;"></p>
 
-      <label>Email</label>
-      <input type="email" id="rsvpEmail" readonly />
+    <label>Email</label>
+    <input type="email" id="rsvpEmail" readonly />
 
-      <label>Username</label>
-      <input type="text" id="rsvpUsername" readonly />
+    <label>Username</label>
+    <input type="text" id="rsvpUsername" readonly />
 
-      <button id="submitRsvp">Confirm RSVP</button>
-    </div>
+    <button id="submitRsvp">Confirm RSVP</button>
   </div>
+</div>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- Main logic -->
-  <script>
-    // -----------------------------
-    // Supabase Init
-    // -----------------------------
-    const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
+<!-- Main logic -->
+<script>
+  // -----------------------------
+  // Supabase Init
+  // -----------------------------
+  const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    const authButton = document.getElementById("authButton");
-    const myMeetupsLink = document.getElementById("myMeetupsLink");
-    const authModal = document.getElementById("authModal");
-    const closeAuthModal = document.getElementById("closeAuthModal");
-    const sendMagicLink = document.getElementById("sendMagicLink");
+  // -----------------------------
+  // AUTH MODAL
+  // -----------------------------
+  const authButton = document.getElementById("authButton");
+  const myMeetupsLink = document.getElementById("myMeetupsLink");
+  const authModal = document.getElementById("authModal");
+  const closeAuthModal = document.getElementById("closeAuthModal");
+  const sendMagicLink = document.getElementById("sendMagicLink");
 
-    // Open auth modal
-    authButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      authModal.style.display = "flex";
-    });
+  // Open auth modal
+  authButton.addEventListener("click", (e) => {
+    e.preventDefault();
+    authModal.style.display = "flex";
+  });
 
-    // Close auth modal
-    closeAuthModal.addEventListener("click", () => {
+  // Close auth modal
+  closeAuthModal.addEventListener("click", () => {
+    authModal.style.display = "none";
+  });
+
+  window.addEventListener("click", (e) => {
+    if (e.target === authModal) {
       authModal.style.display = "none";
-    });
+    }
+  });
 
-    window.addEventListener("click", (e) => {
-      if (e.target === authModal) {
-        authModal.style.display = "none";
-      }
-    });
+  // Send magic link
+  sendMagicLink.addEventListener("click", async () => {
+    const email = document.getElementById("authEmail").value.trim();
 
-    // Send magic link (email only)
-    sendMagicLink.addEventListener("click", async () => {
-      const email = document.getElementById("authEmail").value.trim();
+    if (!email) {
+      alert("Please enter your email.");
+      return;
+    }
 
-      if (!email) {
-        alert("Please enter your email.");
+    const { error } = await supabaseClient.auth.signInWithOtp({ email });
+
+    if (error) {
+      console.error(error);
+      alert("Error sending magic link.");
+    } else {
+      alert("Magic link sent! Check your email.");
+      authModal.style.display = "none";
+    }
+  });
+
+  // Check session on load
+  async function checkSession() {
+    const { data } = await supabaseClient.auth.getSession();
+    const session = data.session;
+
+    if (session) {
+      const username = session.user.user_metadata.username || "Local";
+      authButton.textContent = `Signed in as ${username}`;
+      myMeetupsLink.style.display = "inline-block";
+    }
+  }
+
+  checkSession();
+
+  // -----------------------------
+  // RSVP Logic
+  // -----------------------------
+  const rsvpModal = document.getElementById("rsvpModal");
+  const closeRsvpModal = document.getElementById("closeRsvpModal");
+  const rsvpEventName = document.getElementById("rsvpEventName");
+  const rsvpEmail = document.getElementById("rsvpEmail");
+  const rsvpUsername = document.getElementById("rsvpUsername");
+  const submitRsvp = document.getElementById("submitRsvp");
+
+  // Open RSVP modal
+  document.querySelectorAll(".event-rsvp-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const eventName = btn.dataset.event;
+      rsvpEventName.textContent = eventName;
+
+      const { data } = await supabaseClient.auth.getSession();
+      const session = data.session;
+
+      if (!session) {
+        alert("Please sign in first.");
         return;
       }
 
-      const { error } = await supabaseClient.auth.signInWithOtp({ email });
+      rsvpEmail.value = session.user.email;
+      rsvpUsername.value = session.user.user_metadata.username || "Local";
 
-      if (error) {
-        console.error(error);
-        alert("Error sending magic link.");
-      } else {
-        alert("Magic link sent! Check your email.");
-        authModal.style.display = "none";
-      }
+      rsvpModal.style.display = "flex";
     });
+  });
 
-    // Check session on load
-    async function checkSession() {
-      const { data } = await supabaseClient.auth.getSession();
-      const session = data.session;
+  // Close RSVP modal
+  closeRsvpModal.addEventListener("click", () => {
+    rsvpModal.style.display = "none";
+  });
 
-      if (session) {
-        const username = session.user.user_metadata.username || "Local";
-        authButton.textContent = `Signed in as ${username}`;
-        myMeetupsLink.style.display = "inline-block";
-      }
-    }
-
-    checkSession();
-
-    // -----------------------------
-    // RSVP Logic
-    // -----------------------------
-    const rsvpModal = document.getElementById("rsvpModal");
-    const closeRsvpModal = document.getElementById("closeRsvpModal");
-    const rsvpEventName = document.getElementById("rsvpEventName");
-    const rsvpEmail = document.getElementById("rsvpEmail");
-    const rsvpUsername = document.getElementById("rsvpUsername");
-    const submitRsvp = document.getElementById("submitRsvp");
-
-    // Open RSVP modal
-    document.querySelectorAll(".event-rsvp-btn").forEach(btn => {
-      btn.addEventListener("click", async () => {
-        const eventName = btn.dataset.event;
-        rsvpEventName.textContent = eventName;
-
-        const { data } = await supabaseClient.auth.getSession();
-        const session = data.session;
-
-        if (!session) {
-          alert("Please sign in first.");
-          return;
-        }
-
-        rsvpEmail.value = session.user.email;
-        rsvpUsername.value = session.user.user_metadata.username || "Local";
-
-        rsvpModal.style.display = "flex";
-      });
-    });
-
-    // Close RSVP modal
-    closeRsvpModal.addEventListener("click", () => {
+  window.addEventListener("click", (e) => {
+    if (e.target === rsvpModal) {
       rsvpModal.style.display = "none";
+    }
+  });
+
+  // Submit RSVP
+  submitRsvp.addEventListener("click", async () => {
+    const { data } = await supabaseClient.auth.getSession();
+    const session = data.session;
+
+    const { error } = await supabaseClient.from("rsvps").insert({
+      user_id: session.user.id,
+      email: session.user.email,
+      username: session.user.user_metadata.username || "Local",
+      event_name: rsvpEventName.textContent
     });
 
-    window.addEventListener("click", (e) => {
-      if (e.target === rsvpModal) {
-        rsvpModal.style.display = "none";
-      }
-    });
-
-    // Submit RSVP
-    submitRsvp.addEventListener("click", async () => {
-      const { data } = await supabaseClient.auth.getSession();
-      const session = data.session;
-
-      const { error } = await supabaseClient.from("rsvps").insert({
-        user_id: session.user.id,
-        email: session.user.email,
-        username: session.user.user_metadata.username || "Local",
-        event_name: rsvpEventName.textContent
-      });
-
-      if (error) {
-        console.error(error);
-        alert("Error saving RSVP.");
-      } else {
-        alert("You're in!");
-        rsvpModal.style.display = "none";
-      }
-    });
-  </script>
+    if (error) {
+      console.error(error);
+      alert("Error saving RSVP.");
+    } else {
+      alert("You're in!");
+      rsvpModal.style.display = "none";
+    }
+  });
+</script>
 
 </body>
 </html>
