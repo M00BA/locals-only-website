@@ -1,4 +1,4 @@
-if (window.location.pathname.includes("login")) {
+if (window.location.pathname.includes("login.html")) {
   console.log("Main script disabled on login page");
   return;
 }
