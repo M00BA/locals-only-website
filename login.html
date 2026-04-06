@@ -80,7 +80,7 @@
   </div>
 
   <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
   // 1. Initialize Supabase
@@ -90,15 +90,14 @@
 
   // 2. Redirect instantly if already logged in
   supabaseClient.auth.getSession().then(({ data }) => {
-  if (data.session) {
-    setTimeout(() => {
-      window.location.href = "/";
-     }, 50);
+    if (data.session) {
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 50);
     }
   });
 
-
-  // 3. Your login button logic
+  // 3. Login button logic
   const loginButton = document.getElementById("loginButton");
   const loginEmail = document.getElementById("loginEmail");
 
@@ -120,6 +119,7 @@
     }
   });
 </script>
+
 
 </body>
 </html>
