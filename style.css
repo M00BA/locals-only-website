@@ -490,3 +490,38 @@ body::after {
     margin: 80px 16px;
   }
 }
+
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-dropdown-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.user-dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: var(--surface);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  z-index: 999;
+}
+
+.user-dropdown-menu a {
+  display: block;
+  padding: 8px 12px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.user-dropdown-menu a:hover {
+  background: var(--surface-hover);
+}
