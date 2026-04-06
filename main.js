@@ -13,32 +13,34 @@ const isSuggestPage = window.location.pathname.includes("suggest-event.html");
 const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 
 // ===============================
-// Navbar Session Logic
+// Navbar Session Logic (with hydration delay)
 // ===============================
-supabaseClient.auth.getSession().then(({ data }) => {
-  const session = data.session;
+setTimeout(() => {
+  supabaseClient.auth.getSession().then(({ data }) => {
+    const session = data.session;
 
-  const myMeetupsLink = document.getElementById("myMeetupsLink");
-  const loginLink = document.getElementById("loginLink");
-  const userDropdown = document.getElementById("userDropdown");
-  const navbarUsername = document.getElementById("navbarUsername");
+    const myMeetupsLink = document.getElementById("myMeetupsLink");
+    const loginLink = document.getElementById("loginLink");
+    const userDropdown = document.getElementById("userDropdown");
+    const navbarUsername = document.getElementById("navbarUsername");
 
-  if (session && session.user) {
-    const username = session.user.user_metadata?.username;
+    if (session && session.user) {
+      const username = session.user.user_metadata?.username;
 
-    // Hide login link
-    if (loginLink) loginLink.style.display = "none";
+      // Hide login link
+      if (loginLink) loginLink.style.display = "none";
 
-    // Show dropdown
-    if (userDropdown) userDropdown.style.display = "inline-block";
+      // Show dropdown
+      if (userDropdown) userDropdown.style.display = "inline-block";
 
-    // Set username
-    if (navbarUsername) navbarUsername.textContent = username;
+      // Set username
+      if (navbarUsername) navbarUsername.textContent = username;
 
-    // Show My Meetups link
-    if (myMeetupsLink) myMeetupsLink.style.display = "inline-block";
-  }
-});
+      // Show My Meetups link
+      if (myMeetupsLink) myMeetupsLink.style.display = "inline-block";
+    }
+  });
+}, 150);
 
 // ===============================
 // Username Dropdown Toggle
