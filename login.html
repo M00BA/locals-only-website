@@ -62,7 +62,7 @@
         email,
         options: {
           emailRedirectTo: "https://locals-only.space",
-          data: { username } // ⭐ store username in metadata
+          data: { username } // store username in metadata
         }
       });
 
@@ -72,7 +72,26 @@
         alert("Magic link sent! Check your inbox.");
       }
     });
+
+    // Login success overlay after magic link
+    supabaseClient.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_IN") {
+        const box = document.getElementById("loginSuccess");
+        if (box) {
+          box.style.display = "flex";
+          setTimeout(() => window.location.href = "/", 1500);
+        }
+      }
+    });
   </script>
+
+  <!-- LOGIN SUCCESS OVERLAY -->
+  <div id="loginSuccess" class="welcome-overlay" style="display:none;">
+    <div class="welcome-box fade-in">
+      <h2>You're logged in!</h2>
+      <p>Redirecting...</p>
+    </div>
+  </div>
 
 </body>
 </html>
