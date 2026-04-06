@@ -410,6 +410,14 @@ body.theme-night::after {
   color: var(--accent);
 }
 
+/* Force login card to stay visible */
+.fade-in {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+
+
 .footer-note {
   margin-top: 10px;
   color: var(--text-muted);
