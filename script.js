@@ -1,8 +1,3 @@
-if (window.location.pathname.includes("login.html")) {
-  console.log("Main script disabled on login page");
-  return;
-}
-
 // Prevent main script from running on login page
 if (window.location.pathname.includes("login.html")) {
   console.log("Main script disabled on login page");
