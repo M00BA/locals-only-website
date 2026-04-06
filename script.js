@@ -50,11 +50,19 @@ function spawnShootingStar() {
 }
 
 // Random stars every 6–12 seconds
-setInterval(() => {
-  if (body.classList.contains("theme-night")) {
-    spawnShootingStar();
+function randomStars() {
+  if (!body.classList.contains("theme-night")) return;
+
+  const count = Math.floor(Math.random() * 4) + 3; // 3–6 stars
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => spawnShootingStar(), Math.random() * 1200);
   }
-}, Math.random() * 6000 + 6000);
+}
+
+setInterval(() => {
+  randomStars();
+}, Math.random() * 8000 + 6000); // 6–14 sec
+
 
 // -------------------------------------------------------------
 // CITY FILTERS
