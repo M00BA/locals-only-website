@@ -27,25 +27,33 @@
         <div class="nav-toggle-line"></div>
       </button>
 
-      <a href="/" class="nav-link">Home</a>
-<a href="suggest-event.html" class="nav-link">Suggest Event</a>
-<a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
+      <!-- FIXED NAV WRAPPER -->
+      <nav class="main-nav">
 
-<!-- USER DROPDOWN (hidden until logged in) -->
-<div id="userDropdown" class="user-dropdown" style="display:none;">
-  <button id="userDropdownButton" class="user-dropdown-btn">
-    <span id="navbarUsername">User</span> ▼
-  </button>
+        <a href="/" class="nav-link">Home</a>
+        <a href="suggest-event.html" class="nav-link">Suggest Event</a>
+        <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
 
-  <div id="userDropdownMenu" class="user-dropdown-menu">
-    <a href="my-meetups.html">My Meetups</a>
-    <a href="suggest-event.html">Suggest Event</a>
-    <a id="logoutButton">Logout</a>
-  </div>
-</div>
+        <!-- USER DROPDOWN (hidden until logged in) -->
+        <div id="userDropdown" class="user-dropdown" style="display:none;">
+          <button id="userDropdownButton" class="user-dropdown-btn">
+            <span id="navbarUsername">User</span> ▼
+          </button>
 
-<!-- If logged out -->
-<a id="loginLink" href="login.html" class="nav-link">Become a Local</a>
+          <div id="userDropdownMenu" class="user-dropdown-menu">
+            <a href="my-meetups.html">My Meetups</a>
+            <a href="suggest-event.html">Suggest Event</a>
+            <a id="logoutButton">Logout</a>
+          </div>
+        </div>
+
+        <!-- If logged out -->
+        <a id="loginLink" href="login.html" class="nav-link">Become a Local</a>
+
+      </nav>
+      <!-- END NAV -->
+
+    </div>
   </header>
 
   <!-- HERO -->
@@ -105,48 +113,49 @@
 
   </main>
 
-<!-- RSVP MODAL -->
-<div id="rsvpModal" class="modal" style="display:none;">
-  <div class="modal-content">
+  <!-- RSVP MODAL -->
+  <div id="rsvpModal" class="modal" style="display:none;">
+    <div class="modal-content">
 
-    <span id="closeRsvpModal" class="close">&times;</span>
+      <span id="closeRsvpModal" class="close">&times;</span>
 
-    <h2 id="rsvpEventName" class="modal-title"></h2>
+      <h2 id="rsvpEventName" class="modal-title"></h2>
 
-    <p class="about-text" style="margin-bottom: 20px;">
-      You're about to join this meetup. Your details look correct?
-    </p>
+      <p class="about-text" style="margin-bottom: 20px;">
+        You're about to join this meetup. Your details look correct?
+      </p>
 
-    <label class="login-sub">Email</label>
-    <input id="rsvpEmail" class="login-input" type="email" readonly />
+      <label class="login-sub">Email</label>
+      <input id="rsvpEmail" class="login-input" type="email" readonly />
 
-    <label class="login-sub">Username</label>
-    <input id="rsvpUsername" class="login-input" type="text" readonly />
+      <label class="login-sub">Username</label>
+      <input id="rsvpUsername" class="login-input" type="text" readonly />
 
-    <button id="submitRsvp" class="login-btn" style="margin-top: 20px;">
-      Confirm RSVP
-    </button>
+      <button id="submitRsvp" class="login-btn" style="margin-top: 20px;">
+        Confirm RSVP
+      </button>
 
+    </div>
   </div>
-</div>
 
+  <!-- WELCOME OVERLAY -->
+  <div id="welcomeOverlay" class="welcome-overlay" style="display:none;">
+    <div class="welcome-box fade-in">
+      <h2 id="welcomeMessage"></h2>
+    </div>
+  </div>
 
-  <!-- Supabase + Main Script -->
+  <!-- LOGIN SUCCESS OVERLAY -->
+  <div id="loginSuccess" class="welcome-overlay" style="display:none;">
+    <div class="welcome-box fade-in">
+      <h2>You're logged in!</h2>
+      <p>Redirecting...</p>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="main.js"></script>
 
-  <div id="welcomeOverlay" class="welcome-overlay" style="display:none;">
-  <div class="welcome-box fade-in">
-    <h2 id="welcomeMessage"></h2>
-  </div>
-</div>
-
-  <div id="loginSuccess" class="welcome-overlay" style="display:none;">
-  <div class="welcome-box fade-in">
-    <h2>You're logged in!</h2>
-    <p>Redirecting...</p>
-  </div>
-</div>
-  
 </body>
 </html>
