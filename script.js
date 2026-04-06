@@ -150,10 +150,11 @@ async function checkSession() {
     const username = session.user.user_metadata?.username || "Local";
 
     if (becomeLocalLink) {
-      becomeLocalLink.textContent = `Signed in as ${username}`;
-      becomeLocalLink.removeAttribute("href");   // remove login link
-      becomeLocalLink.style.cursor = "default";  // no pointer
+     becomeLocalLink.textContent = `Signed in as ${username}`;
+     becomeLocalLink.removeAttribute("href");
+     becomeLocalLink.style.cursor = "default";
     }
+
 
     }
 
