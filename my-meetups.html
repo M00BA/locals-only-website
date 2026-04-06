@@ -27,11 +27,29 @@
         <div class="nav-toggle-line"></div>
       </button>
 
+      <!-- UPDATED NAVBAR (same as index.html) -->
       <nav class="main-nav">
+
         <a href="/" class="nav-link">Home</a>
         <a href="suggest-event.html" class="nav-link">Suggest Event</a>
         <a id="myMeetupsLink" href="my-meetups.html" class="nav-link active">My Meetups</a>
-        <a href="login.html" class="nav-link">Become a Local</a>
+
+        <!-- USER DROPDOWN -->
+        <div id="userDropdown" class="user-dropdown" style="display:none;">
+          <button id="userDropdownButton" class="user-dropdown-btn">
+            <span id="navbarUsername">User</span> ▼
+          </button>
+
+          <div id="userDropdownMenu" class="user-dropdown-menu">
+            <a href="my-meetups.html">My Meetups</a>
+            <a href="suggest-event.html">Suggest Event</a>
+            <a id="logoutButton">Logout</a>
+          </div>
+        </div>
+
+        <!-- If logged out -->
+        <a id="loginLink" href="login.html" class="nav-link">Become a Local</a>
+
       </nav>
 
     </div>
@@ -48,6 +66,10 @@
     <div id="meetupsContainer" class="events-grid fade-in">
       <!-- RSVPs will be injected here -->
     </div>
+
+    <p id="emptyMessage" class="about-text" style="display:none; text-align:center;">
+      You haven't RSVP’d to any meetups yet.
+    </p>
 
   </main>
 
@@ -69,17 +91,14 @@
         return;
       }
 
-      document.getElementById("myMeetupsLink").style.display = "inline-block";
-
       const email = session.user.email;
+      const container = document.getElementById("meetupsContainer");
+      const emptyMessage = document.getElementById("emptyMessage");
 
-      // Fetch RSVPs for this user
       const { data: rsvps, error } = await supabaseClient
         .from("rsvps")
         .select("*")
         .eq("email", email);
-
-      const container = document.getElementById("meetupsContainer");
 
       if (error) {
         container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
@@ -87,17 +106,16 @@
       }
 
       if (!rsvps || rsvps.length === 0) {
-        container.innerHTML = "<p class='about-text'>You haven't RSVP’d to any meetups yet.</p>";
+        emptyMessage.style.display = "block";
         return;
       }
 
-      // Render RSVP cards
       container.innerHTML = "";
       rsvps.forEach(rsvp => {
         const card = document.createElement("div");
         card.className = "event-card fade-in";
         card.innerHTML = `
-          <span class="event-tag">${rsvp.city || "Meetup"}</span>
+          <span class="event-tag">Joined</span>
           <h3 class="event-title">${rsvp.event_name}</h3>
           <p class="event-description">You're signed up for this meetup.</p>
         `;
@@ -105,6 +123,21 @@
       });
     });
   </script>
+
+  <!-- WELCOME OVERLAY -->
+  <div id="welcomeOverlay" class="welcome-overlay" style="display:none;">
+    <div class="welcome-box fade-in">
+      <h2 id="welcomeMessage"></h2>
+    </div>
+  </div>
+
+  <!-- LOGIN SUCCESS OVERLAY -->
+  <div id="loginSuccess" class="welcome-overlay" style="display:none;">
+    <div class="welcome-box fade-in">
+      <h2>You're logged in!</h2>
+      <p>Redirecting...</p>
+    </div>
+  </div>
 
 </body>
 </html>
