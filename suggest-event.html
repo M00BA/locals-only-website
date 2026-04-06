@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Suggest an Event – Locals Only</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="theme-night">
+
+  <!-- Shooting star -->
+  <div class="shooting-star"></div>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <div class="header-inner">
+
+      <div class="logo">
+        <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" />
+      </div>
+
+      <button class="nav-toggle">
+        <div class="nav-toggle-line"></div>
+        <div class="nav-toggle-line"></div>
+        <div class="nav-toggle-line"></div>
+      </button>
+
+      <nav class="main-nav">
+        <a href="/" class="nav-link">Home</a>
+        <a href="suggest-event.html" class="nav-link active">Suggest Event</a>
+        <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
+        <a href="login.html" class="nav-link">Become a Local</a>
+      </nav>
+
+    </div>
+  </header>
+
+  <!-- PAGE CONTENT -->
+  <main class="fade-in" style="max-width: 600px; margin: 120px auto; padding: 24px;">
+
+    <h1 style="text-align:center; margin-bottom: 12px;">Suggest a Meetup</h1>
+    <p class="about-text" style="text-align:center; margin-bottom: 32px;">
+      Have an idea for a cozy meetup in Hamburg or Lübeck?  
+      Share it with the community.
+    </p>
+
+    <div class="login-wrapper" style="margin-top:0;">
+
+      <label class="login-sub">Your Email</label>
+      <input id="suggestEmail" class="login-input" type="email" readonly />
+
+      <label class="login-sub">Your Username</label>
+      <input id="suggestUsername" class="login-input" type="text" readonly />
+
+      <label class="login-sub">Event Name</label>
+      <input id="eventName" class="login-input" type="text" placeholder="e.g. Sunset Walk" required />
+
+      <label class="login-sub">City</label>
+      <select id="eventCity" class="login-input" required>
+        <option value="">Choose a city</option>
+        <option value="Hamburg">Hamburg</option>
+        <option value="Lübeck">Lübeck</option>
+      </select>
+
+      <label class="login-sub">Description</label>
+      <textarea id="eventDescription" class="login-input" placeholder="Tell us about your idea..." style="height:120px;" required></textarea>
+
+      <button id="submitSuggestion" class="login-btn" style="margin-top: 12px;">Submit Suggestion</button>
+    </div>
+
+  </main>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script>
+    // Initialize Supabase
+    const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    // Require login
+    supabaseClient.auth.getSession().then(async ({ data }) => {
+      const session = data.session;
+
+      if (!session || !session.user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      // Fill user info
+      document.getElementById("suggestEmail").value = session.user.email;
+      document.getElementById("suggestUsername").value = session.user.user_metadata.username || "";
+      document.getElementById("myMeetupsLink").style.display = "inline-block";
+    });
+
+    // Submit suggestion
+    document.getElementById("submitSuggestion").addEventListener("click", async () => {
+      const name = document.getElementById("eventName").value.trim();
+      const city = document.getElementById("eventCity").value.trim();
+      const description = document.getElementById("eventDescription").value.trim();
+
+      if (!name || !city || !description) {
+        alert("Please fill out all fields.");
+        return;
+      }
+
+      const { data, error } = await supabaseClient.from("suggestions").insert([
+        {
+          name,
+          city,
+          description
+        }
+      ]);
+
+      if (error) {
+        alert("Error submitting suggestion.");
+      } else {
+        alert("Thanks! Your suggestion has been submitted.");
+        window.location.href = "/";
+      }
+    });
+  </script>
+
+</body>
+</html>
