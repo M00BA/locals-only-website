@@ -1,28 +1,18 @@
 /* ---------------------------------------------------
-   ROOT VARIABLES
+   1. ROOT VARIABLES (Night Mode Only)
 --------------------------------------------------- */
 :root {
   --font-main: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Light mode */
-  --light-bg-top: #e9e4df;
-  --light-bg-mid: #e2dbd5;
-  --light-bg-bottom: #d8cfc8;
-  --light-surface: rgba(255,255,255,0.75);
-  --light-text-main: #2a2624;
-  --light-text-muted: #6a625d;
-  --light-accent: #b48a6c;
-  --light-border: rgba(0,0,0,0.08);
-
-  /* Night mode */
-  --night-bg-top: #151528;
-  --night-bg-mid: #1b1b33;
-  --night-bg-bottom: #0b0b18;
-  --night-surface: rgba(18,18,34,0.92);
-  --night-text-main: #f5f0ff;
-  --night-text-muted: #b6b0d0;
-  --night-accent: #f2c98c;
-  --night-border: rgba(255,255,255,0.12);
+  /* Night mode palette (unchanged) */
+  --bg-top: #151528;
+  --bg-mid: #1b1b33;
+  --bg-bottom: #0b0b18;
+  --surface: rgba(18,18,34,0.92);
+  --text-main: #f5f0ff;
+  --text-muted: #b6b0d0;
+  --accent: #f2c98c;
+  --border-soft: rgba(255,255,255,0.12);
 
   /* Shared */
   --radius-md: 12px;
@@ -36,32 +26,7 @@
 }
 
 /* ---------------------------------------------------
-   THEME MAPPING
---------------------------------------------------- */
-body.theme-light {
-  --bg-top: var(--light-bg-top);
-  --bg-mid: var(--light-bg-mid);
-  --bg-bottom: var(--light-bg-bottom);
-  --surface: var(--light-surface);
-  --text-main: var(--light-text-main);
-  --text-muted: var(--light-text-muted);
-  --accent: var(--light-accent);
-  --border-soft: var(--light-border);
-}
-
-body.theme-night {
-  --bg-top: var(--night-bg-top);
-  --bg-mid: var(--night-bg-mid);
-  --bg-bottom: var(--night-bg-bottom);
-  --surface: var(--night-surface);
-  --text-main: var(--night-text-main);
-  --text-muted: var(--night-text-muted);
-  --accent: var(--night-accent);
-  --border-soft: var(--night-border);
-}
-
-/* ---------------------------------------------------
-   GLOBAL
+   2. GLOBAL RESET + BASE
 --------------------------------------------------- */
 *,
 *::before,
@@ -75,7 +40,7 @@ body {
   color: var(--text-main);
   background: linear-gradient(to bottom, var(--bg-top), var(--bg-mid), var(--bg-bottom));
   min-height: 100vh;
-  transition: background var(--transition-slow), color var(--transition-med);
+  overflow-x: hidden;
 }
 
 main {
@@ -88,19 +53,18 @@ main {
 }
 
 /* ---------------------------------------------------
-   STARFIELD (night mode only)
+   3. STARFIELD BACKGROUND
 --------------------------------------------------- */
-body.theme-night::before,
-body.theme-night::after {
+body::before,
+body::after {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: -2;
-  opacity: 1;
 }
 
-body.theme-night::before {
+body::before {
   background-image:
     radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.9), transparent),
     radial-gradient(1.5px 1.5px at 30% 80%, rgba(255,255,255,0.8), transparent),
@@ -109,7 +73,7 @@ body.theme-night::before {
   animation: starFloat 40s ease-in-out infinite, starPulse 6s ease-in-out infinite alternate;
 }
 
-body.theme-night::after {
+body::after {
   background-image:
     radial-gradient(1.5px 1.5px at 15% 30%, rgba(255,255,255,0.7), transparent),
     radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.5), transparent);
@@ -142,14 +106,17 @@ body.theme-night::after {
   z-index: 9999;
 }
 
+.shooting-star.active {
+  animation: shoot 1.2s ease-out forwards;
+}
+
 @keyframes shoot {
-  0% { opacity: 0; transform: translate(0,0) scale(1); }
-  10% { opacity: 1; }
-  100% { opacity: 0; transform: translate(350px,180px) scale(0.4); }
+  0% { opacity: 1; transform: translate(0,0) scale(1); }
+  100% { opacity: 0; transform: translate(300px,180px) scale(0.4); }
 }
 
 /* ---------------------------------------------------
-   HEADER
+   4. HEADER + NAVBAR
 --------------------------------------------------- */
 .site-header {
   position: sticky;
@@ -168,10 +135,17 @@ body.theme-night::after {
   align-items: center;
 }
 
+/* Refined logo sizing */
+.logo-image {
+  height: 110px;
+  width: auto;
+  display: block;
+}
+
 .logo {
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  height: 100px;
 }
 
 /* NAV */
@@ -180,8 +154,7 @@ body.theme-night::after {
   gap: 12px;
 }
 
-.nav-link,
-.mode-toggle {
+.nav-link {
   padding: 7px 16px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--accent);
@@ -189,10 +162,15 @@ body.theme-night::after {
   color: var(--text-main);
   cursor: pointer;
   transition: var(--transition-med);
+  text-decoration: none;
 }
 
-.nav-link:hover,
-.mode-toggle:hover {
+.nav-link:hover {
+  background: var(--accent);
+  color: #1b1220;
+}
+
+.nav-link.active {
   background: var(--accent);
   color: #1b1220;
 }
@@ -239,7 +217,7 @@ body.theme-night::after {
 }
 
 /* ---------------------------------------------------
-   HERO
+   5. HERO
 --------------------------------------------------- */
 .hero {
   text-align: center;
@@ -259,7 +237,7 @@ body.theme-night::after {
 }
 
 /* ---------------------------------------------------
-   EVENTS
+   6. EVENTS GRID
 --------------------------------------------------- */
 .section-header {
   display: flex;
@@ -354,30 +332,7 @@ body.theme-night::after {
 }
 
 /* ---------------------------------------------------
-   PAST MEETUPS
---------------------------------------------------- */
-.past-grid {
-  display: grid;
-  gap: 14px;
-}
-
-@media (min-width: 720px) {
-  .past-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.past-card {
-  background: var(--surface);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-soft);
-  padding: 18px;
-  text-align: center;
-  color: var(--text-muted);
-}
-
-/* ---------------------------------------------------
-   ABOUT
+   7. ABOUT
 --------------------------------------------------- */
 .about-text {
   max-width: 700px;
@@ -387,7 +342,7 @@ body.theme-night::after {
 }
 
 /* ---------------------------------------------------
-   FOOTER
+   8. FOOTER
 --------------------------------------------------- */
 .site-footer {
   padding: 40px 16px;
@@ -410,26 +365,112 @@ body.theme-night::after {
   color: var(--accent);
 }
 
-/* Force login card to stay visible */
-.fade-in {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-
-
 .footer-note {
   margin-top: 10px;
   color: var(--text-muted);
 }
 
 /* ---------------------------------------------------
-   FADE-IN
+   9. LOGIN + FORMS
+--------------------------------------------------- */
+.login-wrapper {
+  max-width: 420px;
+  margin: 120px auto;
+  background: var(--surface);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.login-title {
+  margin-bottom: 8px;
+}
+
+.login-sub {
+  color: var(--text-muted);
+  margin: 12px 0 6px;
+  display: block;
+  text-align: left;
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: var(--transition-med);
+}
+
+.login-btn:hover {
+  background: var(--accent);
+  color: #1b1220;
+}
+
+/* ---------------------------------------------------
+   10. MODAL (RSVP)
+--------------------------------------------------- */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 15, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: #1a1a22;
+  padding: 28px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  animation: modalPop 0.25s ease;
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.close {
+  float: right;
+  font-size: 26px;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.2s ease;
+}
+
+.close:hover {
+  color: #fff;
+}
+
+/* ---------------------------------------------------
+   11. FADE-IN ANIMATION (Fixed)
 --------------------------------------------------- */
 .fade-in {
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity var(--transition-slow), transform var(--transition-slow);
+  transform: translateY(10px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
 }
 
 .fade-in.visible {
@@ -437,28 +478,15 @@ body.theme-night::after {
   transform: translateY(0);
 }
 
-
 /* ---------------------------------------------------
-   LOGO (night mode default + light mode override)
+   12. RESPONSIVE
 --------------------------------------------------- */
+@media (max-width: 720px) {
+  .logo-image {
+    height: 90px;
+  }
 
-/* Default (night mode) */
-.logo-image {
-  content: url("images/Locals-only-icon(night mode).jpg");
-  height: 120px;      /* avant‑garde size */
-  width: auto;
-  display: block;
-}
-
-/* Light mode override */
-body.theme-light .logo-image {
-  content: url("images/Locals-only-icon(bright mode).jpg");
-}
-
-/* Logo container */
-.logo {
-  display: flex;
-  align-items: center;
-  height: 95px;        /* header breathing room */
-  overflow: visible;   /* allows the logo to break out of the header */
+  .login-wrapper {
+    margin: 80px 16px;
+  }
 }
