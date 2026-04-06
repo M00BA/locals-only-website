@@ -1,8 +1,8 @@
-// Prevent main script from running on login page
-if (window.location.pathname.includes("login.html")) {
+if (window.location.pathname.includes("login")) {
   console.log("Main script disabled on login page");
   return;
 }
+
 
 
 console.log("SCRIPT LOADED!");
