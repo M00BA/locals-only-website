@@ -1,9 +1,3 @@
-supabaseClient.auth.getSession().then(({ data }) => {
-  if (data.session) {
-    window.location.href = "/"; // instantly redirect
-  }
-});
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,32 +82,42 @@ supabaseClient.auth.getSession().then(({ data }) => {
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script>
-    const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  // 1. Initialize Supabase
+  const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    const loginButton = document.getElementById("loginButton");
-    const loginEmail = document.getElementById("loginEmail");
+  // 2. Redirect instantly if already logged in
+  supabaseClient.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      window.location.href = "/"; // instantly redirect home
+    }
+  });
 
-    loginButton.addEventListener("click", async () => {
-      const email = loginEmail.value.trim();
-      if (!email) return alert("Please enter your email.");
+  // 3. Your login button logic
+  const loginButton = document.getElementById("loginButton");
+  const loginEmail = document.getElementById("loginEmail");
 
-      const { error } = await supabaseClient.auth.signInWithOtp({
-        email,
-        options: {
-          emailRedirectTo: "https://locals-only.space"
-        }
-      });
+  loginButton.addEventListener("click", async () => {
+    const email = loginEmail.value.trim();
+    if (!email) return alert("Please enter your email.");
 
-      if (error) {
-        alert("Error sending magic link.");
-      } else {
-        alert("Magic link sent! Check your inbox.");
+    const { error } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: "https://locals-only.space"
       }
     });
-  </script>
+
+    if (error) {
+      alert("Error sending magic link.");
+    } else {
+      alert("Magic link sent! Check your inbox.");
+    }
+  });
+</script>
 
 </body>
 </html>
