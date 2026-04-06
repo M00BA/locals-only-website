@@ -94,18 +94,31 @@
 
   </main>
 
-  <!-- RSVP MODAL -->
-  <div id="rsvpModal" class="modal" style="display:none;">
-    <div class="modal-content">
-      <span id="closeRsvpModal" class="close">&times;</span>
-      <h2 id="rsvpEventName"></h2>
+<!-- RSVP MODAL -->
+<div id="rsvpModal" class="modal" style="display:none;">
+  <div class="modal-content">
 
-      <input id="rsvpEmail" class="login-input" type="email" readonly />
-      <input id="rsvpUsername" class="login-input" type="text" readonly />
+    <span id="closeRsvpModal" class="close">&times;</span>
 
-      <button id="submitRsvp" class="login-btn">Confirm RSVP</button>
-    </div>
+    <h2 id="rsvpEventName" class="modal-title"></h2>
+
+    <p class="about-text" style="margin-bottom: 20px;">
+      You're about to join this meetup. Your details look correct?
+    </p>
+
+    <label class="login-sub">Email</label>
+    <input id="rsvpEmail" class="login-input" type="email" readonly />
+
+    <label class="login-sub">Username</label>
+    <input id="rsvpUsername" class="login-input" type="text" readonly />
+
+    <button id="submitRsvp" class="login-btn" style="margin-top: 20px;">
+      Confirm RSVP
+    </button>
+
   </div>
+</div>
+
 
   <!-- Supabase + Main Script -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
