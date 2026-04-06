@@ -18,9 +18,21 @@ const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 supabaseClient.auth.getSession().then(({ data }) => {
   const session = data.session;
   const myMeetupsLink = document.getElementById("myMeetupsLink");
+  const loginLink = document.querySelector('a[href="login.html"]');
 
-  if (session && session.user && myMeetupsLink) {
-    myMeetupsLink.style.display = "inline-block";
+  if (session && session.user) {
+    const username = session.user.user_metadata?.username;
+
+    // Show username instead of "Become a Local"
+    if (loginLink && username) {
+      loginLink.textContent = username;
+      loginLink.href = "my-meetups.html";
+    }
+
+    // Show My Meetups link
+    if (myMeetupsLink) {
+      myMeetupsLink.style.display = "inline-block";
+    }
   }
 });
 
@@ -61,36 +73,28 @@ function spawnShootingStar() {
   const star = document.createElement("div");
   star.classList.add("shooting-star");
 
-  // Random starting position
   const startX = Math.random() * window.innerWidth * 0.4;
   const startY = Math.random() * window.innerHeight * 0.2;
 
-  // Random travel distance
-  const travelX = 200 + Math.random() * 300;
-  const travelY = 120 + Math.random() * 200;
-
-  // Random duration
   const duration = 0.9 + Math.random() * 0.6;
 
-  // Apply inline animation
   star.style.left = `${startX}px`;
   star.style.top = `${startY}px`;
   star.style.animation = `shoot ${duration}s ease-out forwards`;
 
   document.body.appendChild(star);
 
-  // Remove after animation
   setTimeout(() => star.remove(), duration * 1000 + 200);
 }
 
 function ambientStarsLoop() {
-  const count = 3 + Math.floor(Math.random() * 4); // 3–6 stars
+  const count = 3 + Math.floor(Math.random() * 4);
 
   for (let i = 0; i < count; i++) {
     setTimeout(spawnShootingStar, i * 250);
   }
 
-  const nextDelay = 6000 + Math.random() * 8000; // 6–14 seconds
+  const nextDelay = 6000 + Math.random() * 8000;
   setTimeout(ambientStarsLoop, nextDelay);
 }
 
@@ -138,9 +142,11 @@ if (rsvpModal && closeRsvpModal && submitRsvp) {
         return;
       }
 
+      const username = session.user.user_metadata?.username;
+
       rsvpEventName.textContent = btn.dataset.event;
       rsvpEmail.value = session.user.email;
-      rsvpUsername.value = session.user.user_metadata.username || "";
+      rsvpUsername.value = username || "";
 
       rsvpModal.style.display = "flex";
     });
