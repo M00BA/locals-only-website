@@ -13,16 +13,21 @@
   <!-- Shooting star element -->
   <div class="shooting-star"></div>
 
-  <div class="login-wrapper">
-    <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" style="height:120px; margin-bottom:12px;">
+ <div class="login-wrapper">
 
-    <h1 class="login-title">Become a Local</h1>
-    <p class="login-sub">Enter your email to receive a magic sign‑in link.</p>
+  <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" style="height:110px; margin-bottom:12px;">
 
-    <input type="email" id="loginEmail" class="login-input" placeholder="you@example.com" required>
+  <h1 class="login-title">Become a Local</h1>
+  <p class="login-sub">Enter your email and choose a username.</p>
 
-    <button id="loginButton" class="login-btn">Send Magic Link</button>
-  </div>
+  <label class="login-sub">Email</label>
+  <input type="email" id="loginEmail" class="login-input" placeholder="you@example.com" required>
+
+  <label class="login-sub">Username</label>
+  <input type="text" id="loginUsername" class="login-input" placeholder="your username" required>
+
+  <button id="loginButton" class="login-btn">Send Locals only link</button>
+</div>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
