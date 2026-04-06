@@ -17,34 +17,50 @@ const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 // ===============================
 supabaseClient.auth.getSession().then(({ data }) => {
   const session = data.session;
+
   const myMeetupsLink = document.getElementById("myMeetupsLink");
-  const loginLink = document.querySelector('a[href="login.html"]');
+  const loginLink = document.getElementById("loginLink");
+  const userDropdown = document.getElementById("userDropdown");
+  const navbarUsername = document.getElementById("navbarUsername");
 
   if (session && session.user) {
     const username = session.user.user_metadata?.username;
 
-    // Show username instead of "Become a Local"
-    if (loginLink && username) {
-      loginLink.textContent = username;
-      loginLink.href = "my-meetups.html";
-    }
+    // Hide login link
+    if (loginLink) loginLink.style.display = "none";
+
+    // Show dropdown
+    if (userDropdown) userDropdown.style.display = "inline-block";
+
+    // Set username
+    if (navbarUsername) navbarUsername.textContent = username;
 
     // Show My Meetups link
-    if (myMeetupsLink) {
-      myMeetupsLink.style.display = "inline-block";
-    }
+    if (myMeetupsLink) myMeetupsLink.style.display = "inline-block";
   }
 });
 
 // ===============================
-// Mobile Navigation Toggle
+// Username Dropdown Toggle
 // ===============================
-const navToggle = document.querySelector(".nav-toggle");
-const mainNav = document.querySelector(".main-nav");
+const userDropdownButton = document.getElementById("userDropdownButton");
+const userDropdownMenu = document.getElementById("userDropdownMenu");
 
-if (navToggle && mainNav) {
-  navToggle.addEventListener("click", () => {
-    mainNav.classList.toggle("open");
+if (userDropdownButton && userDropdownMenu) {
+  userDropdownButton.addEventListener("click", () => {
+    userDropdownMenu.style.display =
+      userDropdownMenu.style.display === "block" ? "none" : "block";
+  });
+}
+
+// ===============================
+// Logout
+// ===============================
+const logoutButton = document.getElementById("logoutButton");
+if (logoutButton) {
+  logoutButton.addEventListener("click", async () => {
+    await supabaseClient.auth.signOut();
+    window.location.href = "/";
   });
 }
 
@@ -67,7 +83,7 @@ const fadeObserver = new IntersectionObserver(
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
 // ===============================
-// Ambient Shooting Stars (3–6 stars every 6–14 seconds)
+// Ambient Shooting Stars
 // ===============================
 function spawnShootingStar() {
   const star = document.createElement("div");
@@ -121,7 +137,7 @@ filterButtons.forEach((btn) => {
 });
 
 // ===============================
-// RSVP Modal Logic (Homepage Only)
+// RSVP Modal Logic
 // ===============================
 const rsvpModal = document.getElementById("rsvpModal");
 const closeRsvpModal = document.getElementById("closeRsvpModal");
@@ -177,3 +193,71 @@ if (rsvpModal && closeRsvpModal && submitRsvp) {
     }
   });
 }
+
+// ===============================
+// My Meetups Page Logic
+// ===============================
+if (isMyMeetupsPage) {
+  supabaseClient.auth.getSession().then(async ({ data }) => {
+    const session = data.session;
+
+    if (!session || !session.user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const email = session.user.email;
+    const container = document.getElementById("meetupsContainer");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    const { data: rsvps, error } = await supabaseClient
+      .from("rsvps")
+      .select("*")
+      .eq("email", email);
+
+    if (error) {
+      container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
+      return;
+    }
+
+    if (!rsvps || rsvps.length === 0) {
+      emptyMessage.style.display = "block";
+      return;
+    }
+
+    container.innerHTML = "";
+    rsvps.forEach((rsvp) => {
+      const card = document.createElement("div");
+      card.className = "event-card fade-in";
+
+      card.innerHTML = `
+        <span class="event-tag">Joined</span>
+        <h3 class="event-title">${rsvp.event_name}</h3>
+        <p class="event-description">You're signed up for this meetup.</p>
+      `;
+
+      container.appendChild(card);
+    });
+  });
+}
+
+// ===============================
+// Welcome Animation (Homepage)
+// ===============================
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session?.user) {
+    const username = session.user.user_metadata?.username;
+    const overlay = document.getElementById("welcomeOverlay");
+    const msg = document.getElementById("welcomeMessage");
+
+    if (overlay && msg) {
+      msg.textContent = `Welcome back, ${username}!`;
+      overlay.style.display = "flex";
+
+      setTimeout(() => {
+        overlay.style.opacity = "0";
+        setTimeout(() => overlay.remove(), 600);
+      }, 1800);
+    }
+  }
+});
