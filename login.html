@@ -82,7 +82,6 @@
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   // 1. Initialize Supabase
   const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
@@ -91,10 +90,13 @@
 
   // 2. Redirect instantly if already logged in
   supabaseClient.auth.getSession().then(({ data }) => {
-    if (data.session) {
-      window.location.href = "/"; // instantly redirect home
+  if (data.session) {
+    setTimeout(() => {
+      window.location.href = "/";
+     }, 50);
     }
   });
+
 
   // 3. Your login button logic
   const loginButton = document.getElementById("loginButton");
