@@ -13,34 +13,39 @@ const isSuggestPage = window.location.pathname.includes("suggest-event.html");
 const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 
 // ===============================
-// Navbar Session Logic (with hydration delay)
+// NAVBAR UPDATE FUNCTION
+// ===============================
+function updateNavbar(session) {
+  const myMeetupsLink = document.getElementById("myMeetupsLink");
+  const loginLink = document.getElementById("loginLink");
+  const userDropdown = document.getElementById("userDropdown");
+  const navbarUsername = document.getElementById("navbarUsername");
+
+  if (!session || !session.user) return;
+
+  const username = session.user.user_metadata?.username;
+
+  if (loginLink) loginLink.style.display = "none";
+  if (userDropdown) userDropdown.style.display = "inline-block";
+  if (navbarUsername) navbarUsername.textContent = username || "User";
+  if (myMeetupsLink) myMeetupsLink.style.display = "inline-block";
+}
+
+// ===============================
+// Navbar Session Logic (hydration delay)
 // ===============================
 setTimeout(() => {
   supabaseClient.auth.getSession().then(({ data }) => {
-    const session = data.session;
-
-    const myMeetupsLink = document.getElementById("myMeetupsLink");
-    const loginLink = document.getElementById("loginLink");
-    const userDropdown = document.getElementById("userDropdown");
-    const navbarUsername = document.getElementById("navbarUsername");
-
-    if (session && session.user) {
-      const username = session.user.user_metadata?.username;
-
-      // Hide login link
-      if (loginLink) loginLink.style.display = "none";
-
-      // Show dropdown
-      if (userDropdown) userDropdown.style.display = "inline-block";
-
-      // Set username
-      if (navbarUsername) navbarUsername.textContent = username;
-
-      // Show My Meetups link
-      if (myMeetupsLink) myMeetupsLink.style.display = "inline-block";
-    }
+    updateNavbar(data.session);
   });
-}, 150);
+}, 200);
+
+// ===============================
+// Navbar Update on Auth Change (second hydration pass)
+// ===============================
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  updateNavbar(session);
+});
 
 // ===============================
 // Username Dropdown Toggle
