@@ -3,236 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <title>Locals Only – Hamburg & Lübeck</title>
-
-  <!-- Basic SEO -->
-  <meta name="description" content="Soft evenings, cozy meetups, and gentle community in Hamburg & Lübeck. Join small, warm gatherings with friendly people.">
-
-  <!-- Mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="images/locals-only-icon.png">
-
-  <!-- Open Graph (Social Preview) -->
-  <meta property="og:title" content="Locals Only – Hamburg & Lübeck">
-  <meta property="og:description" content="Soft evenings, cozy meetups, and gentle community in Hamburg & Lübeck.">
-  <meta property="og:image" content="https://locals-only.space/images/locals-only-social-club-logo.png">
-  <meta property="og:image:type" content="image/png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta property="og:url" content="https://locals-only.space">
-  <meta property="og:type" content="website">
-
-  <!-- Google Image -->
-  <meta itemprop="image" content="https://locals-only.space/images/locals-only-social-club-logo.png">
-
-  <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Locals Only – Hamburg & Lübeck">
-  <meta name="twitter:description" content="Soft evenings, cozy meetups, and gentle community in Hamburg & Lübeck.">
-  <meta name="twitter:image" content="https://locals-only.space/images/locals-only-social-club-logo.png">
-
-  <!-- Styles -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body class="theme-night">
+
+  <!-- Shooting star element -->
   <div class="shooting-star"></div>
 
   <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
 
-      <!-- LOGO -->
       <div class="logo">
-        <img 
-          src="images/Locals-only-icon(night mode).jpg"
-          alt="Locals Only Logo"
-          class="logo-image"
-        >
+        <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" />
       </div>
 
-      <button class="nav-toggle" aria-label="Toggle navigation">
-        <span class="nav-toggle-line"></span>
-        <span class="nav-toggle-line"></span>
+      <button class="nav-toggle">
+        <div class="nav-toggle-line"></div>
+        <div class="nav-toggle-line"></div>
+        <div class="nav-toggle-line"></div>
       </button>
 
-      <nav class="main-nav" aria-label="Main navigation">
-        <button class="nav-link" data-city-filter="hamburg">Hamburg</button>
-        <button class="nav-link" data-city-filter="luebeck">Lübeck</button>
-        <button class="nav-link" data-scroll-target="#about">About</button>
-
-        <button id="modeToggle" class="mode-toggle" type="button">
-          Light mode
-        </button>
-
-        <!-- AUTH BUTTONS -->
-        <a href="login.html" class="nav-link">Become a Local</a>
+      <nav class="main-nav">
+        <a href="/" class="nav-link">Home</a>
+        <a href="suggest-event.html" class="nav-link">Suggest Event</a>
         <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
+        <a href="login.html" class="nav-link">Become a Local</a>
       </nav>
 
     </div>
   </header>
 
+  <!-- HERO -->
+  <section class="hero fade-in">
+    <h1 class="hero-title">Meet Locals in Hamburg & Lübeck</h1>
+    <p class="hero-subtitle">Cozy, pressure‑free meetups for introverts, creatives, and kind people.</p>
+  </section>
+
+  <!-- EVENTS -->
   <main>
-
-    <!-- HERO -->
-    <section class="hero" id="top">
-      <div class="hero-inner fade-in">
-        <h1 class="hero-title">Soft evenings in Hamburg and Lübeck</h1>
-        <p class="hero-subtitle">
-          Small, cozy meetups for people who want gentle conversations, warm spaces, and real community.
-        </p>
-      </div>
-    </section>
-
-    <!-- UPCOMING MEETUPS -->
-    <section class="section" id="upcoming">
+    <section class="section fade-in">
       <div class="section-header">
-        <h2 class="section-title">Upcoming meetups</h2>
+        <h2>Upcoming Meetups</h2>
 
-        <div class="city-filters" aria-label="Filter events by city">
+        <div class="city-filters">
           <button class="city-filter-btn active" data-filter="all">All</button>
           <button class="city-filter-btn" data-filter="hamburg">Hamburg</button>
-          <button class="city-filter-btn" data-filter="luebeck">Lübeck</button>
+          <button class="city-filter-btn" data-filter="lübeck">Lübeck</button>
         </div>
       </div>
 
       <div class="events-grid">
 
-        <!-- LÜBECK: Picnic -->
-        <article class="event-card fade-in" data-city="luebeck">
-          <div class="event-tag">Lübeck</div>
-          <h3 class="event-title">Picnic Meetup</h3>
-          <p class="event-meta">Sunday · Stadtpark</p>
-          <p class="event-description">
-            A calm picnic in the park with blankets, snacks, and gentle conversation in a quiet corner of the city.
-          </p>
-          <button class="event-rsvp-btn" type="button" data-event="Picnic Meetup">
-            RSVP
-          </button>
-        </article>
-
-        <!-- LÜBECK: Board Game -->
-        <article class="event-card fade-in" data-city="luebeck">
-          <div class="event-tag">Lübeck</div>
-          <h3 class="event-title">Board Game Evening</h3>
-          <p class="event-meta">Friday · Cozy café</p>
-          <p class="event-description">
-            Slow paced games, warm drinks, and a relaxed table where you can join in at your own speed.
-          </p>
-          <button class="event-rsvp-btn" type="button" data-event="Board Game Evening">
-            RSVP
-          </button>
-        </article>
-
-        <!-- HAMBURG: Harbor Walk -->
-        <article class="event-card fade-in" data-city="hamburg">
-          <div class="event-tag">Hamburg</div>
-          <h3 class="event-title">Harbor Walk and Talk</h3>
-          <p class="event-meta">Saturday · Landungsbrücken</p>
-          <p class="event-description">
-            A gentle walk along the water with soft city lights, fresh air, and easy conversation while moving.
-          </p>
-          <button class="event-rsvp-btn" type="button" data-event="Harbor Walk and Talk">
-            RSVP
-          </button>
-        </article>
-
-        <!-- HAMBURG: Café -->
-        <article class="event-card fade-in" data-city="hamburg">
-          <div class="event-tag">Hamburg</div>
-          <h3 class="event-title">Café and Quiet Chat</h3>
-          <p class="event-meta">Wednesday · Small café</p>
-          <p class="event-description">
-            A small table, warm drinks, and gentle conversation in a calm café setting with soft background noise.
-          </p>
-          <button class="event-rsvp-btn" type="button" data-event="Café and Quiet Chat">
-            RSVP
-          </button>
-        </article>
-
-        <!-- FIRST REAL EVENT: Badminton -->
-        <article class="event-card fade-in" data-city="hamburg">
-          <div class="event-tag">Hamburg</div>
+        <!-- EVENT 1 -->
+        <div class="event-card fade-in" data-city="hamburg">
+          <span class="event-tag">Hamburg</span>
           <h3 class="event-title">Badminton Meetup</h3>
-          <p class="event-meta">Thursday · Sports Hall</p>
-          <p class="event-description">
-            A friendly badminton meetup with simple games, shared courts, and space to move at a comfortable pace.
-          </p>
-          <button class="event-rsvp-btn" type="button" data-event="Badminton Meetup">
-            RSVP
-          </button>
-        </article>
+          <p class="event-meta">Casual play for all levels</p>
+          <p class="event-description">A friendly, no‑pressure badminton meetup. Beginners welcome.</p>
+          <button class="event-rsvp-btn" data-event="Badminton Meetup">RSVP</button>
+        </div>
+
+        <!-- EVENT 2 -->
+        <div class="event-card fade-in" data-city="lübeck">
+          <span class="event-tag">Lübeck</span>
+          <h3 class="event-title">Coffee & Co‑Working</h3>
+          <p class="event-meta">Bring your laptop and chill</p>
+          <p class="event-description">A cozy co‑working session with warm drinks and good vibes.</p>
+          <button class="event-rsvp-btn" data-event="Coffee & Co‑Working">RSVP</button>
+        </div>
 
       </div>
     </section>
 
-    <!-- PAST MEETUPS -->
-    <section class="section" id="past">
-      <h2 class="section-title">Past meetups</h2>
-      <p class="section-subtitle">
-        Soon there will be photos, small recaps, and gentle memories from past evenings here.
-      </p>
-
-      <div class="past-grid">
-        <article class="past-card"><div class="past-placeholder">Coming soon</div></article>
-        <article class="past-card"><div class="past-placeholder">Coming soon</div></article>
-        <article class="past-card"><div class="past-placeholder">Coming soon</div></article>
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section class="section section-about" id="about">
-      <h2 class="section-title">About Locals Only</h2>
+    <!-- ABOUT SECTION -->
+    <section class="section fade-in">
+      <h2>About Locals Only</h2>
       <p class="about-text">
-        Locals Only began with a simple wish: to feel closer to people again. Hamburg and Lübeck are full of life,
-        but it is still easy to feel alone.
+        Locals Only is a small, cozy community for people in Hamburg and Lübeck who want to meet new friends without pressure.
+        No big crowds, no awkward networking — just warm, introvert‑friendly meetups where everyone is welcome.
       </p>
       <p class="about-text">
-        This project is for people who want small, cozy meetups, gentle conversations, and a place to feel welcome.
-        A calm space to meet others in a soft and friendly way.
+        We keep things simple: show up, be kind, and enjoy the moment. Whether you're new in town or just looking for gentle social energy,
+        you're in the right place.
       </p>
     </section>
+
   </main>
 
-  <!-- FOOTER -->
-  <footer class="site-footer">
-    <div class="footer-line"></div>
-    <div class="footer-inner">
-      <nav class="footer-nav" aria-label="Footer navigation">
-        <a href="#" class="footer-link">Impressum</a>
-        <a href="#" class="footer-link">Datenschutz</a>
-        <a href="#top" class="footer-link" data-scroll-target="#top">Contact</a>
-      </nav>
-      <p class="footer-note">Locals Only · Hamburg and Lübeck</p>
+  <!-- RSVP MODAL -->
+  <div id="rsvpModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span id="closeRsvpModal" class="close">&times;</span>
+      <h2 id="rsvpEventName"></h2>
+
+      <input id="rsvpEmail" class="login-input" type="email" readonly />
+      <input id="rsvpUsername" class="login-input" type="text" readonly />
+
+      <button id="submitRsvp" class="login-btn">Confirm RSVP</button>
     </div>
-  </footer>
-
-<!-- RSVP MODAL -->
-<div id="rsvpModal" class="modal">
-  <div class="modal-content">
-    <span id="closeRsvpModal" class="close">&times;</span>
-
-    <h2>RSVP</h2>
-    <p id="rsvpEventName" style="font-weight: bold;"></p>
-
-    <label>Email</label>
-    <input type="email" id="rsvpEmail" readonly />
-
-    <label>Username</label>
-    <input type="text" id="rsvpUsername" readonly />
-
-    <button id="submitRsvp">Confirm RSVP</button>
   </div>
-</div>
 
-<!-- Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<!-- Load external JS -->
-<script src="main.js?v=1"></script>
-
+  <!-- Supabase + Main Script -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="main.js"></script>
 
 </body>
 </html>
