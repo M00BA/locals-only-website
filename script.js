@@ -146,25 +146,33 @@ async function checkSession() {
   const { data } = await supabaseClient.auth.getSession();
   const session = data.session;
 
-  if (session) {
-    const username = session.user.user_metadata?.username || "Local";
+  if (!session) {
+    // Listen for future auth changes (e.g. after magic link)
+    supabaseClient.auth.onAuthStateChange((_event, newSession) => {
+      if (newSession) updateNavbar(newSession);
+    });
+    return;
+  }
 
-    if (becomeLocalLink) {
-     becomeLocalLink.textContent = `Signed in as ${username}`;
-     becomeLocalLink.removeAttribute("href");
-     becomeLocalLink.style.cursor = "default";
-    }
+  updateNavbar(session);
+}
 
+function updateNavbar(session) {
+  const username = session.user.user_metadata?.username || "Local";
 
-    }
+  if (becomeLocalLink) {
+    becomeLocalLink.textContent = `Signed in as ${username}`;
+    becomeLocalLink.removeAttribute("href");
+    becomeLocalLink.style.cursor = "default";
+  }
 
-    if (myMeetupsLink) {
-      myMeetupsLink.style.display = "inline-block";
-    }
+  if (myMeetupsLink) {
+    myMeetupsLink.style.display = "inline-block";
   }
 }
 
 checkSession();
+
 
 // -------------------------------------------------------------
 // RSVP MODAL
