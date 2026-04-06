@@ -151,8 +151,10 @@ async function checkSession() {
 
     if (becomeLocalLink) {
       becomeLocalLink.textContent = `Signed in as ${username}`;
-      becomeLocalLink.href = "#"; // no longer goes to login
-      becomeLocalLink.classList.add("nav-link");
+      becomeLocalLink.removeAttribute("href");   // remove login link
+      becomeLocalLink.style.cursor = "default";  // no pointer
+    }
+
     }
 
     if (myMeetupsLink) {
