@@ -14,6 +14,9 @@
   --accent: #f2c98c;
   --border-soft: rgba(255,255,255,0.12);
 
+  /* Needed for dropdown hover */
+  --surface-hover: rgba(255,255,255,0.12);
+
   /* Shared */
   --radius-md: 12px;
   --radius-lg: 18px;
@@ -24,6 +27,7 @@
   --transition-med: 220ms ease;
   --transition-slow: 320ms ease;
 }
+
 
 /* ---------------------------------------------------
    2. GLOBAL RESET + BASE
@@ -491,6 +495,9 @@ body::after {
   }
 }
 
+/* ---------------------------------------------------
+   USER DROPDOWN
+--------------------------------------------------- */
 .user-dropdown {
   position: relative;
   display: inline-block;
@@ -499,7 +506,7 @@ body::after {
 .user-dropdown-btn {
   background: none;
   border: none;
-  color: var(--text);
+  color: var(--text-main);
   font-size: 16px;
   cursor: pointer;
 }
@@ -518,13 +525,17 @@ body::after {
 .user-dropdown-menu a {
   display: block;
   padding: 8px 12px;
-  color: var(--text);
+  color: var(--text-main);
   text-decoration: none;
 }
 
 .user-dropdown-menu a:hover {
   background: var(--surface-hover);
 }
+
+/* ---------------------------------------------------
+   WELCOME OVERLAY
+--------------------------------------------------- */
 .welcome-overlay {
   position: fixed;
   inset: 0;
