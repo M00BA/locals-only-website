@@ -1,124 +1,32 @@
-if (window.location.pathname.includes("login")) {
-  console.log("Main script disabled on login page");
-  return;
-}
-
-console.log("SCRIPT LOADED!");
-
-// -------------------------------------------------------------
-// SUPABASE INIT
-// -------------------------------------------------------------
+// ===============================
+// Supabase Initialization
+// ===============================
 const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-// -------------------------------------------------------------
-// THEME TOGGLE (Smooth transitions + smooth logo fade)
-// -------------------------------------------------------------
-const modeToggle = document.getElementById("modeToggle");
-const body = document.body;
-const logoImage = document.querySelector(".logo-image");
+// ===============================
+// Page Detection
+// ===============================
+const isLoginPage = window.location.pathname.includes("login.html");
+const isSuggestPage = window.location.pathname.includes("suggest-event.html");
+const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 
-function applyTheme(theme) {
-  body.classList.remove("theme-light", "theme-night");
-  body.classList.add(theme);
+// ===============================
+// Navbar Session Logic
+// ===============================
+supabaseClient.auth.getSession().then(({ data }) => {
+  const session = data.session;
+  const myMeetupsLink = document.getElementById("myMeetupsLink");
 
-  if (logoImage) {
-    logoImage.style.opacity = 0;
-    setTimeout(() => {
-      logoImage.style.opacity = 1;
-    }, 200);
+  if (session && session.user && myMeetupsLink) {
+    myMeetupsLink.style.display = "inline-block";
   }
-
-  if (modeToggle) {
-    modeToggle.textContent = theme === "theme-light" ? "Night mode" : "Light mode";
-  }
-
-  localStorage.setItem("theme", theme);
-}
-
-if (modeToggle) {
-  modeToggle.addEventListener("click", () => {
-    const newTheme = body.classList.contains("theme-night") ? "theme-light" : "theme-night";
-    applyTheme(newTheme);
-    spawnShootingStar();
-  });
-}
-
-applyTheme(localStorage.getItem("theme") || "theme-night");
-
-// -------------------------------------------------------------
-// SHOOTING STARS (Random + triggered)
-// -------------------------------------------------------------
-function spawnShootingStar() {
-  const star = document.querySelector(".shooting-star");
-  if (!star) return;
-
-  star.style.animation = "none";
-  star.offsetHeight;
-  star.style.animation = "shoot 1.4s ease-out";
-}
-
-function randomStars() {
-  if (!body.classList.contains("theme-night")) return;
-
-  const count = Math.floor(Math.random() * 4) + 3; // 3–6 stars
-  for (let i = 0; i < count; i++) {
-    setTimeout(() => spawnShootingStar(), Math.random() * 1200);
-  }
-}
-
-function scheduleStars() {
-  randomStars();
-  const delay = Math.random() * 8000 + 6000; // 6–14 sec
-  setTimeout(scheduleStars, delay);
-}
-
-scheduleStars();
-
-// -------------------------------------------------------------
-// CITY FILTERS
-// -------------------------------------------------------------
-document.querySelectorAll(".city-filter-btn").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const filter = btn.dataset.filter;
-
-    document.querySelectorAll(".city-filter-btn").forEach(b => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    document.querySelectorAll(".event-card").forEach(card => {
-      if (filter === "all" || card.dataset.city === filter) {
-        card.style.display = "block";
-        setTimeout(() => card.classList.add("visible"), 10);
-      } else {
-        card.style.display = "none";
-      }
-    });
-
-    spawnShootingStar();
-  });
 });
 
-// -------------------------------------------------------------
-// FADE-IN ANIMATIONS
-// -------------------------------------------------------------
-const fadeEls = document.querySelectorAll(".fade-in");
-
-function revealOnScroll() {
-  fadeEls.forEach(el => {
-    const rect = el.getBoundingClientRect();
-    if (rect.top < window.innerHeight - 60) {
-      el.classList.add("visible");
-    }
-  });
-}
-
-window.addEventListener("scroll", revealOnScroll);
-window.addEventListener("load", revealOnScroll);
-
-// -------------------------------------------------------------
-// MOBILE NAV
-// -------------------------------------------------------------
+// ===============================
+// Mobile Navigation Toggle
+// ===============================
 const navToggle = document.querySelector(".nav-toggle");
 const mainNav = document.querySelector(".main-nav");
 
@@ -128,123 +36,138 @@ if (navToggle && mainNav) {
   });
 }
 
-// -------------------------------------------------------------
-// SMOOTH SCROLL
-// -------------------------------------------------------------
-document.querySelectorAll("[data-scroll-target]").forEach(link => {
-  link.addEventListener("click", (e) => {
-    e.preventDefault();
-    const target = document.querySelector(link.dataset.scrollTarget);
-    if (target) {
-      target.scrollIntoView({ behavior: "smooth" });
-    }
+// ===============================
+// Fade‑In Animation
+// ===============================
+const fadeElements = document.querySelectorAll(".fade-in");
+
+const fadeObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+      }
+    });
+  },
+  { threshold: 0.2 }
+);
+
+fadeElements.forEach((el) => fadeObserver.observe(el));
+
+// ===============================
+// Ambient Shooting Stars (3–6 stars every 6–14 seconds)
+// ===============================
+function spawnShootingStar() {
+  const star = document.createElement("div");
+  star.classList.add("shooting-star");
+
+  // Random starting position
+  const startX = Math.random() * window.innerWidth * 0.4;
+  const startY = Math.random() * window.innerHeight * 0.2;
+
+  // Random travel distance
+  const travelX = 200 + Math.random() * 300;
+  const travelY = 120 + Math.random() * 200;
+
+  // Random duration
+  const duration = 0.9 + Math.random() * 0.6;
+
+  // Apply inline animation
+  star.style.left = `${startX}px`;
+  star.style.top = `${startY}px`;
+  star.style.animation = `shoot ${duration}s ease-out forwards`;
+
+  document.body.appendChild(star);
+
+  // Remove after animation
+  setTimeout(() => star.remove(), duration * 1000 + 200);
+}
+
+function ambientStarsLoop() {
+  const count = 3 + Math.floor(Math.random() * 4); // 3–6 stars
+
+  for (let i = 0; i < count; i++) {
+    setTimeout(spawnShootingStar, i * 250);
+  }
+
+  const nextDelay = 6000 + Math.random() * 8000; // 6–14 seconds
+  setTimeout(ambientStarsLoop, nextDelay);
+}
+
+ambientStarsLoop();
+
+// ===============================
+// City Filters (Homepage Only)
+// ===============================
+const filterButtons = document.querySelectorAll(".city-filter-btn");
+const eventCards = document.querySelectorAll(".event-card");
+
+filterButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const filter = btn.dataset.filter;
+
+    filterButtons.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    eventCards.forEach((card) => {
+      const city = card.dataset.city;
+      card.style.display = filter === "all" || filter === city ? "block" : "none";
+    });
   });
 });
 
-// -------------------------------------------------------------
-// SESSION CHECK (Navbar text + My Meetups link)
-// -------------------------------------------------------------
-const myMeetupsLink = document.getElementById("myMeetupsLink");
-const becomeLocalLink = document.querySelector('a[href="login.html"]');
-
-async function checkSession() {
-  const { data } = await supabaseClient.auth.getSession();
-  const session = data.session;
-
-  if (!session) {
-    // Listen for future auth changes (e.g. after magic link)
-    supabaseClient.auth.onAuthStateChange((_event, newSession) => {
-      if (newSession) updateNavbar(newSession);
-    });
-    return;
-  }
-
-  updateNavbar(session);
-}
-
-function updateNavbar(session) {
-  const username = session.user.user_metadata?.username || "Local";
-
-  if (becomeLocalLink) {
-    becomeLocalLink.textContent = `Signed in as ${username}`;
-    becomeLocalLink.removeAttribute("href");
-    becomeLocalLink.style.cursor = "default";
-  }
-
-  if (myMeetupsLink) {
-    myMeetupsLink.style.display = "inline-block";
-  }
-}
-
-checkSession();
-
-
-// -------------------------------------------------------------
-// RSVP MODAL
-// -------------------------------------------------------------
+// ===============================
+// RSVP Modal Logic (Homepage Only)
+// ===============================
 const rsvpModal = document.getElementById("rsvpModal");
 const closeRsvpModal = document.getElementById("closeRsvpModal");
-const rsvpEventName = document.getElementById("rsvpEventName");
-const rsvpEmail = document.getElementById("rsvpEmail");
-const rsvpUsername = document.getElementById("rsvpUsername");
 const submitRsvp = document.getElementById("submitRsvp");
 
-document.querySelectorAll(".event-rsvp-btn").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    const eventName = btn.dataset.event;
-    if (rsvpEventName) rsvpEventName.textContent = eventName;
+if (rsvpModal && closeRsvpModal && submitRsvp) {
+  const rsvpButtons = document.querySelectorAll(".event-rsvp-btn");
+  const rsvpEventName = document.getElementById("rsvpEventName");
+  const rsvpEmail = document.getElementById("rsvpEmail");
+  const rsvpUsername = document.getElementById("rsvpUsername");
 
-    const { data } = await supabaseClient.auth.getSession();
-    const session = data.session;
+  rsvpButtons.forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const session = (await supabaseClient.auth.getSession()).data.session;
 
-    if (!session) {
-      alert("Please sign in first.");
-      return;
-    }
+      if (!session || !session.user) {
+        window.location.href = "login.html";
+        return;
+      }
 
-    if (rsvpEmail) rsvpEmail.value = session.user.email;
-    if (rsvpUsername) rsvpUsername.value = session.user.user_metadata?.username || "Local";
+      rsvpEventName.textContent = btn.dataset.event;
+      rsvpEmail.value = session.user.email;
+      rsvpUsername.value = session.user.user_metadata.username || "";
 
-    if (rsvpModal) {
       rsvpModal.style.display = "flex";
-      spawnShootingStar();
-    }
+    });
   });
-});
 
-if (closeRsvpModal && rsvpModal) {
   closeRsvpModal.addEventListener("click", () => {
     rsvpModal.style.display = "none";
   });
 
-  window.addEventListener("click", (e) => {
-    if (e.target === rsvpModal) rsvpModal.style.display = "none";
-  });
-}
-
-if (submitRsvp) {
   submitRsvp.addEventListener("click", async () => {
-    const { data } = await supabaseClient.auth.getSession();
-    const session = data.session;
+    const eventName = rsvpEventName.textContent;
+    const email = rsvpEmail.value;
+    const username = rsvpUsername.value;
 
-    if (!session) {
-      alert("Please sign in first.");
-      return;
-    }
-
-    const { error } = await supabaseClient.from("rsvps").insert({
-      user_id: session.user.id,
-      email: session.user.email,
-      username: session.user.user_metadata?.username || "Local",
-      event_name: rsvpEventName ? rsvpEventName.textContent : ""
-    });
+    const { error } = await supabaseClient.from("rsvps").insert([
+      {
+        event_name: eventName,
+        email,
+        username
+      }
+    ]);
 
     if (error) {
       alert("Error saving RSVP.");
     } else {
-      alert("You're in!");
-      if (rsvpModal) rsvpModal.style.display = "none";
-      spawnShootingStar();
+      alert("You're signed up!");
+      rsvpModal.style.display = "none";
     }
   });
 }
