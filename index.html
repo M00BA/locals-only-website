@@ -27,14 +27,25 @@
         <div class="nav-toggle-line"></div>
       </button>
 
-      <nav class="main-nav">
-        <a href="/" class="nav-link">Home</a>
-        <a href="suggest-event.html" class="nav-link">Suggest Event</a>
-        <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
-        <a href="login.html" class="nav-link">Become a Local</a>
-      </nav>
+      <a href="/" class="nav-link">Home</a>
+<a href="suggest-event.html" class="nav-link">Suggest Event</a>
+<a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
 
-    </div>
+<!-- USER DROPDOWN (hidden until logged in) -->
+<div id="userDropdown" class="user-dropdown" style="display:none;">
+  <button id="userDropdownButton" class="user-dropdown-btn">
+    <span id="navbarUsername">User</span> ▼
+  </button>
+
+  <div id="userDropdownMenu" class="user-dropdown-menu">
+    <a href="my-meetups.html">My Meetups</a>
+    <a href="suggest-event.html">Suggest Event</a>
+    <a id="logoutButton">Logout</a>
+  </div>
+</div>
+
+<!-- If logged out -->
+<a id="loginLink" href="login.html" class="nav-link">Become a Local</a>
   </header>
 
   <!-- HERO -->
