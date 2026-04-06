@@ -61,7 +61,7 @@
       const { error } = await supabaseClient.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: "https://locals-only.space",
+          emailRedirectTo: "https://locals-only.space/index.html",
           data: { username } // store username in metadata
         }
       });
