@@ -1,3 +1,9 @@
+supabaseClient.auth.getSession().then(({ data }) => {
+  if (data.session) {
+    window.location.href = "/"; // instantly redirect
+  }
+});
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
