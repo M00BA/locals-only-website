@@ -62,7 +62,7 @@
         email,
         options: {
           emailRedirectTo: "https://locals-only.space/index.html",
-          data: { username } // store username in metadata
+          data: { username }
         }
       });
 
@@ -73,13 +73,55 @@
       }
     });
 
-    // Login success overlay after magic link
-    supabaseClient.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") {
+    /* ---------------------------------------------------
+       SAFARI STORAGE TEST + POPUP
+    --------------------------------------------------- */
+    function isSafari() {
+      return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    }
+
+    function storageBlocked() {
+      try {
+        localStorage.setItem("ls_test", "1");
+        localStorage.removeItem("ls_test");
+        return false;
+      } catch (e) {
+        return true;
+      }
+    }
+
+    function showSafariPopup() {
+      const popup = document.getElementById("safariStoragePopup");
+      if (!popup) return;
+
+      popup.classList.add("visible");
+
+      popup.addEventListener("click", () => {
+        // User interaction unlocks storage in Safari
+        popup.classList.remove("visible");
+      });
+    }
+
+    // Run test on page load
+    window.addEventListener("DOMContentLoaded", () => {
+      if (isSafari() && storageBlocked()) {
+        showSafariPopup();
+      }
+    });
+
+    /* ---------------------------------------------------
+       LOGIN SUCCESS OVERLAY + SAFE REDIRECT DELAY
+    --------------------------------------------------- */
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session?.user) {
         const box = document.getElementById("loginSuccess");
         if (box) {
           box.style.display = "flex";
-          setTimeout(() => window.location.href = "/", 1500);
+
+          // ⭐ SAFARI-SAFE DELAY
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 1200);
         }
       }
     });
@@ -91,6 +133,11 @@
       <h2>You're logged in!</h2>
       <p>Redirecting...</p>
     </div>
+  </div>
+
+  <!-- SAFARI STORAGE POPUP -->
+  <div id="safariStoragePopup" class="safari-storage-popup">
+    Tap to enable login persistence
   </div>
 
 </body>
