@@ -31,7 +31,7 @@
         <a href="/" class="nav-link">Home</a>
         <a href="suggest-event.html" class="nav-link active">Suggest Event</a>
         <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
-        <a href="login.html" class="nav-link">Become a Local</a>
+        <a id="loginLink" href="login.html" class="nav-link">Become a Local</a>
       </nav>
 
     </div>
@@ -42,8 +42,8 @@
 
     <h1 style="text-align:center; margin-bottom: 12px;">Suggest a Meetup</h1>
     <p class="about-text" style="text-align:center; margin-bottom: 32px;">
-      Have an idea for a cozy meetup in Hamburg or Lübeck?  
-      Share it with the community.
+      Got an idea for a cozy meetup in Hamburg or Lübeck?  
+      Share it with the community — we love warm, simple ideas.
     </p>
 
     <div class="login-wrapper" style="margin-top:0;">
@@ -55,7 +55,7 @@
       <input id="suggestUsername" class="login-input" type="text" readonly />
 
       <label class="login-sub">Event Name</label>
-      <input id="eventName" class="login-input" type="text" placeholder="e.g. Sunset Walk" required />
+      <input id="eventName" class="login-input" type="text" placeholder="e.g. Sunset Walk, Board Game Night" required />
 
       <label class="login-sub">City</label>
       <select id="eventCity" class="login-input" required>
@@ -81,7 +81,7 @@
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    // Require login
+    // Require login + fill user info
     supabaseClient.auth.getSession().then(async ({ data }) => {
       const session = data.session;
 
@@ -90,7 +90,6 @@
         return;
       }
 
-      // Fill user info
       document.getElementById("suggestEmail").value = session.user.email;
       document.getElementById("suggestUsername").value = session.user.user_metadata.username || "";
       document.getElementById("myMeetupsLink").style.display = "inline-block";
@@ -98,18 +97,30 @@
 
     // Submit suggestion
     document.getElementById("submitSuggestion").addEventListener("click", async () => {
-      const name = document.getElementById("eventName").value.trim();
+      const session = (await supabaseClient.auth.getSession()).data.session;
+
+      if (!session || !session.user) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      const email = session.user.email;
+      const username = session.user.user_metadata.username;
+
+      const title = document.getElementById("eventName").value.trim();
       const city = document.getElementById("eventCity").value.trim();
       const description = document.getElementById("eventDescription").value.trim();
 
-      if (!name || !city || !description) {
+      if (!title || !city || !description) {
         alert("Please fill out all fields.");
         return;
       }
 
-      const { data, error } = await supabaseClient.from("suggestions").insert([
+      const { error } = await supabaseClient.from("suggestions").insert([
         {
-          name,
+          email,
+          username,
+          title,
           city,
           description
         }
