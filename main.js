@@ -144,6 +144,31 @@ filterButtons.forEach((btn) => {
 });
 
 // ===============================
+// ⭐ NEW: Load Attendee Counts
+// ===============================
+async function loadAttendingCounts() {
+  const countElements = document.querySelectorAll(".attending-count");
+
+  for (const el of countElements) {
+    const eventName = el.dataset.event;
+
+    const { count, error } = await supabaseClient
+      .from("rsvps")
+      .select("*", { count: "exact", head: true })
+      .eq("event_name", eventName);
+
+    if (!error) {
+      el.textContent = `${count} attending`;
+    }
+  }
+}
+
+// Run on homepage load
+if (!isMyMeetupsPage && !isLoginPage && !isSuggestPage) {
+  loadAttendingCounts();
+}
+
+// ===============================
 // RSVP Modal Logic
 // ===============================
 const rsvpModal = document.getElementById("rsvpModal");
@@ -197,6 +222,9 @@ if (rsvpModal && closeRsvpModal && submitRsvp) {
     } else {
       alert("You're signed up!");
       rsvpModal.style.display = "none";
+
+      // ⭐ NEW: Update attendee count immediately
+      loadAttendingCounts();
     }
   });
 }
