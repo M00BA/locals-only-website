@@ -496,6 +496,37 @@ body::after {
 }
 
 /* ---------------------------------------------------
+   SAFARI STORAGE POPUP (Minimal, Bottom-Center)
+--------------------------------------------------- */
+.safari-storage-popup {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  color: var(--text-main);
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  font-size: 0.85rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 99999;
+}
+
+.safari-storage-popup.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.safari-storage-popup:active {
+  transform: translateX(-50%) scale(0.97);
+}
+
+
+/* ---------------------------------------------------
    USER DROPDOWN
 --------------------------------------------------- */
 .user-dropdown {
