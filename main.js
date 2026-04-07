@@ -13,6 +13,41 @@ const isSuggestPage = window.location.pathname.includes("suggest-event.html");
 const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 
 // ===============================
+// SAFARI STORAGE TEST
+// ===============================
+function isSafari() {
+  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+}
+
+function storageBlocked() {
+  try {
+    localStorage.setItem("ls_test", "1");
+    localStorage.removeItem("ls_test");
+    return false;
+  } catch (e) {
+    return true;
+  }
+}
+
+function showSafariPopup() {
+  const popup = document.getElementById("safariStoragePopup");
+  if (!popup) return;
+
+  popup.classList.add("visible");
+
+  popup.addEventListener("click", () => {
+    popup.classList.remove("visible");
+  });
+}
+
+// Run test on every page
+window.addEventListener("DOMContentLoaded", () => {
+  if (isSafari() && storageBlocked()) {
+    showSafariPopup();
+  }
+});
+
+// ===============================
 // NAVBAR UPDATE FUNCTION
 // ===============================
 function updateNavbar(session) {
@@ -41,7 +76,7 @@ setTimeout(() => {
 }, 200);
 
 // ===============================
-// Navbar Update on Auth Change (second hydration pass)
+// Navbar Update on Auth Change
 // ===============================
 supabaseClient.auth.onAuthStateChange((event, session) => {
   updateNavbar(session);
@@ -144,7 +179,7 @@ filterButtons.forEach((btn) => {
 });
 
 // ===============================
-// ⭐ NEW: Load Attendee Counts
+// Load Attendee Counts
 // ===============================
 async function loadAttendingCounts() {
   const countElements = document.querySelectorAll(".attending-count");
@@ -163,7 +198,6 @@ async function loadAttendingCounts() {
   }
 }
 
-// Run on homepage load
 if (!isMyMeetupsPage && !isLoginPage && !isSuggestPage) {
   loadAttendingCounts();
 }
@@ -222,8 +256,6 @@ if (rsvpModal && closeRsvpModal && submitRsvp) {
     } else {
       alert("You're signed up!");
       rsvpModal.style.display = "none";
-
-      // ⭐ NEW: Update attendee count immediately
       loadAttendingCounts();
     }
   });
