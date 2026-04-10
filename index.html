@@ -31,7 +31,10 @@
       <nav class="main-nav">
 
         <a href="/" class="nav-link">Home</a>
-        <a href="suggest-event.html" class="nav-link">Suggest Event</a>
+
+        <!-- CHANGED: now opens modal -->
+        <a id="openSuggest" class="nav-link">Suggest Event</a>
+
         <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
 
         <!-- USER DROPDOWN (hidden until logged in) -->
@@ -42,7 +45,7 @@
 
           <div id="userDropdownMenu" class="user-dropdown-menu">
             <a href="my-meetups.html">My Meetups</a>
-            <a href="suggest-event.html">Suggest Event</a>
+            <a id="openSuggest">Suggest Event</a>
             <a id="logoutButton">Logout</a>
           </div>
         </div>
@@ -107,7 +110,7 @@
         <div class="event-card fade-in" data-city="lübeck">
           <span class="event-tag">Lübeck</span>
           <h3 class="event-title">Bachelor Exam Concert — Oboe Solo Performance</h3>
-          <p class="event-description"> A special bachelor exam concert featuring an oboe performance in the Kammermusiksaal at Musikhochschule Lübeck.</p>
+          <p class="event-description">A special bachelor exam concert featuring an oboe performance in the Kammermusiksaal at Musikhochschule Lübeck.</p>
 
           <p class="attending-count" data-event="Bachelor Exam Concert — Oboe Solo Performance">0 attending</p>
 
@@ -169,6 +172,33 @@
     <div class="welcome-box fade-in">
       <h2>You're logged in!</h2>
       <p>Redirecting...</p>
+    </div>
+  </div>
+
+  <!-- SUGGEST EVENT MODAL -->
+  <div id="suggestModal" class="modal" style="display:none;">
+    <div class="modal-content">
+
+      <span id="closeSuggestModal" class="close">&times;</span>
+
+      <h2 class="modal-title">Suggest a Meetup</h2>
+
+      <label class="login-sub">Your Name</label>
+      <input id="suggestName" class="login-input" type="text" placeholder="e.g. Mooba" />
+
+      <label class="login-sub">Your Email</label>
+      <input id="suggestEmail" class="login-input" type="email" readonly />
+
+      <label class="login-sub">Event Idea</label>
+      <input id="suggestTitle" class="login-input" type="text" placeholder="e.g. Sunset Walk" />
+
+      <label class="login-sub">Description</label>
+      <textarea id="suggestDescription" class="login-input" placeholder="Tell us about your idea..." style="height:120px;"></textarea>
+
+      <button id="submitSuggestion" class="login-btn" style="margin-top: 20px;">
+        Send Suggestion
+      </button>
+
     </div>
   </div>
 
