@@ -5,6 +5,16 @@
   <title>Locals Only – Hamburg & Lübeck</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- META DESCRIPTION -->
+  <meta name="description" content="Locals Only — cozy, introvert‑friendly meetups in Hamburg & Lübeck. Join small, warm gatherings without pressure." />
+
+  <!-- OPEN GRAPH -->
+  <meta property="og:title" content="Locals Only — Hamburg & Lübeck Meetups" />
+  <meta property="og:description" content="Cozy, introvert‑friendly meetups for people who want gentle social energy." />
+  <meta property="og:image" content="https://locals-only.space/og-image.jpg" />
+  <meta property="og:url" content="https://locals-only.space" />
+  <meta property="og:type" content="website" />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -18,10 +28,10 @@
     <div class="header-inner">
 
       <div class="logo">
-        <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" />
+        <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" alt="Locals Only logo" />
       </div>
 
-      <button class="nav-toggle">
+      <button class="nav-toggle" aria-label="Open navigation menu">
         <div class="nav-toggle-line"></div>
         <div class="nav-toggle-line"></div>
         <div class="nav-toggle-line"></div>
@@ -61,7 +71,9 @@
 
   <!-- HERO -->
   <section class="hero fade-in">
-    <h1 class="hero-title">Meet Locals in Hamburg & Lübeck</h1>
+    <h1 class="hero-title">
+      Meet Locals in <span class="hero-highlight">Hamburg & Lübeck</span>
+    </h1>
     <p class="hero-subtitle">Socializing for people who hate socializing but still want friends.</p>
   </section>
 
@@ -87,7 +99,6 @@
           <p class="event-meta">Casual play for all levels</p>
           <p class="event-description">A friendly no pressure badminton hangout. Beginners and shy players are totally welcome.</p>
 
-          <!-- ATTENDING COUNT -->
           <p class="attending-count" data-event="Badminton Meetup">0 attending</p>
 
           <button class="event-rsvp-btn" data-event="Badminton Meetup">RSVP</button>
@@ -100,13 +111,12 @@
           <p class="event-meta">Bring your laptop and chill</p>
           <p class="event-description">A cozy co working session with warm drinks and good vibes all around.</p>
 
-          <!-- ATTENDING COUNT -->
           <p class="attending-count" data-event="Coffee & Co‑Working">0 attending</p>
 
           <button class="event-rsvp-btn" data-event="Coffee & Co‑Working">RSVP</button>
         </div>
 
-        <!-- ⭐ NEW EVENT: CONCERT 29 APRIL -->
+        <!-- EVENT 3 -->
         <div class="event-card fade-in" data-city="lübeck">
           <span class="event-tag">Lübeck</span>
           <h3 class="event-title">Bachelor Exam Concert — Oboe Solo Performance</h3>
@@ -134,6 +144,9 @@
     </section>
 
   </main>
+
+  <!-- FLOATING SUGGEST BUTTON (MOBILE FAB) -->
+  <button id="fabSuggest" class="fab-suggest">＋ Suggest</button>
 
   <!-- RSVP MODAL -->
   <div id="rsvpModal" class="modal" style="display:none;">
