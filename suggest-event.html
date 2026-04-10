@@ -46,60 +46,61 @@
       Share it with the community — we love warm, simple ideas.
     </p>
 
-<div class="login-wrapper" style="margin-top:0;">
+    <!-- FORM -->
+    <div class="login-wrapper" style="margin-top:0;">
 
-  <label class="login-sub">Your Name</label>
-  <input id="suggestName" class="login-input" type="text" placeholder="e.g. Mooba" />
+      <label class="login-sub">Your Name</label>
+      <input id="suggestName" class="login-input" type="text" placeholder="e.g. Mooba" />
 
-  <label class="login-sub">Your Email</label>
-  <input id="suggestEmail" class="login-input" type="email" readonly />
+      <label class="login-sub">Your Email</label>
+      <input id="suggestEmail" class="login-input" type="email" readonly />
 
-  <label class="login-sub">Event Name</label>
-  <input id="eventName" class="login-input" type="text" placeholder="e.g. Sunset Walk" />
+      <label class="login-sub">Event Name</label>
+      <input id="eventName" class="login-input" type="text" placeholder="e.g. Sunset Walk" />
 
-  <label class="login-sub">Location</label>
-  <input id="eventLocation" class="login-input" type="text" placeholder="e.g. Planten un Blomen" />
+      <label class="login-sub">Location</label>
+      <input id="eventLocation" class="login-input" type="text" placeholder="e.g. Planten un Blomen" />
 
-  <label class="login-sub">City</label>
-  <select id="eventCity" class="login-input">
-    <option value="">Choose a city</option>
-    <option value="Hamburg">Hamburg</option>
-    <option value="Lübeck">Lübeck</option>
-  </select>
+      <label class="login-sub">City</label>
+      <select id="eventCity" class="login-input">
+        <option value="">Choose a city</option>
+        <option value="Hamburg">Hamburg</option>
+        <option value="Lübeck">Lübeck</option>
+      </select>
 
-  <label class="login-sub">Date</label>
-  <input id="eventDate" class="login-input" type="date" />
+      <label class="login-sub">Date</label>
+      <input id="eventDate" class="login-input" type="date" />
 
-  <label class="login-sub">Time</label>
-  <input id="eventTime" class="login-input" type="time" />
+      <label class="login-sub">Time</label>
+      <input id="eventTime" class="login-input" type="time" />
 
-  <label class="login-sub">Description</label>
-  <textarea id="eventDescription" class="login-input" placeholder="Tell us about your idea..." style="height:120px;"></textarea>
+      <label class="login-sub">Description</label>
+      <textarea id="eventDescription" class="login-input" placeholder="Tell us about your idea..." style="height:120px;"></textarea>
 
-  <button id="submitSuggestion" class="login-btn" style="margin-top: 12px;">Submit Suggestion</button>
-</div>
+      <button id="submitSuggestion" class="login-btn" style="margin-top: 12px;">Submit Suggestion</button>
+    </div>
 
-<!-- Success Overlay -->
-<div id="suggestSuccess" class="welcome-overlay" style="display:none;">
-  <div class="welcome-box fade-in">
-    <h2>Thanks for the suggestion!</h2>
-    <p>We’ll look into it asap.</p>
-  </div>
-</div>
-
+    <!-- SUCCESS OVERLAY -->
+    <div id="suggestSuccess" class="welcome-overlay" style="display:none;">
+      <div class="welcome-box fade-in">
+        <h2>Thanks for the suggestion!</h2>
+        <p>We’ll look into it asap.</p>
+      </div>
+    </div>
 
   </main>
 
   <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+  <!-- FINAL JS BLOCK -->
   <script>
     // Initialize Supabase
     const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    // Require login + fill user info
+    // Load user info into the form
     supabaseClient.auth.getSession().then(async ({ data }) => {
       const session = data.session;
 
@@ -109,7 +110,6 @@
       }
 
       document.getElementById("suggestEmail").value = session.user.email;
-      document.getElementById("suggestUsername").value = session.user.user_metadata.username || "";
       document.getElementById("myMeetupsLink").style.display = "inline-block";
     });
 
@@ -125,11 +125,15 @@
       const email = session.user.email;
       const username = session.user.user_metadata.username;
 
+      const name = document.getElementById("suggestName").value.trim();
       const title = document.getElementById("eventName").value.trim();
+      const location = document.getElementById("eventLocation").value.trim();
       const city = document.getElementById("eventCity").value.trim();
+      const date = document.getElementById("eventDate").value;
+      const time = document.getElementById("eventTime").value;
       const description = document.getElementById("eventDescription").value.trim();
 
-      if (!title || !city || !description) {
+      if (!name || !title || !location || !city || !date || !time || !description) {
         alert("Please fill out all fields.");
         return;
       }
@@ -138,8 +142,12 @@
         {
           email,
           username,
+          name,
           title,
+          location,
           city,
+          date,
+          time,
           description
         }
       ]);
@@ -147,8 +155,15 @@
       if (error) {
         alert("Error submitting suggestion.");
       } else {
-        alert("Thanks! Your suggestion has been submitted.");
-        window.location.href = "/";
+        const overlay = document.getElementById("suggestSuccess");
+        overlay.style.display = "flex";
+
+        setTimeout(() => {
+          overlay.style.opacity = "0";
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 600);
+        }, 1800);
       }
     });
   </script>
