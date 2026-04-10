@@ -185,3 +185,548 @@ body::after {
   flex-direction: column;
   gap: 4px;
   background: none;
+   border: none;
+}
+
+.nav-toggle-line {
+  width: 22px;
+  height: 2px;
+  background: var(--text-main);
+  border-radius: 999px;
+}
+
+@media (max-width: 720px) {
+  .nav-toggle { display: flex; }
+
+  .main-nav {
+    position: absolute;
+    top: 52px;
+    right: 16px;
+    flex-direction: column;
+    background: var(--surface);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-6px);
+    transition: var(--transition-med);
+  }
+
+  .main-nav.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+}
+
+/* ---------------------------------------------------
+   5. HERO
+--------------------------------------------------- */
+.hero {
+  text-align: center;
+  margin: 80px auto 60px;
+  max-width: 700px;
+  padding: 0 16px;
+}
+
+.hero-title {
+  margin: 0 0 10px;
+  font-size: 1.9rem;
+}
+
+.hero-subtitle {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------
+   6. EVENTS GRID
+--------------------------------------------------- */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.city-filters {
+  display: flex;
+  gap: 8px;
+}
+
+.city-filter-btn {
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  background: rgba(0,0,0,0.04);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-med);
+}
+
+.city-filter-btn.active {
+  background: var(--accent);
+  color: #1b1220;
+}
+
+.events-grid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 720px) {
+  .events-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.event-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-soft);
+  padding: 18px;
+  box-shadow: var(--shadow-soft);
+  transition: var(--transition-med);
+}
+
+.event-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
+
+.event-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: #1b1220;
+  font-size: 0.75rem;
+  margin-bottom: 6px;
+}
+
+.event-title {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+
+.event-meta {
+  margin: 0 0 8px;
+  color: var(--text-muted);
+}
+
+.event-description {
+  margin: 0 0 12px;
+  line-height: 1.5;
+}
+
+.event-rsvp-btn {
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: var(--transition-med);
+}
+
+.event-rsvp-btn:hover {
+  background: var(--accent);
+  color: #1b1220;
+}
+
+/* ---------------------------------------------------
+   7. ABOUT
+--------------------------------------------------- */
+.about-text {
+  max-width: 700px;
+  margin: 12px 0;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------
+   8. FOOTER
+--------------------------------------------------- */
+.site-footer {
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.footer-line {
+  height: 1px;
+  background: var(--border-soft);
+  margin-bottom: 16px;
+}
+
+.footer-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  margin-right: 12px;
+}
+
+.footer-link:hover {
+  color: var(--accent);
+}
+
+.footer-note {
+  margin-top: 10px;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------
+   9. LOGIN + FORMS
+--------------------------------------------------- */
+.login-wrapper {
+  max-width: 420px;
+  margin: 120px auto;
+  background: var(--surface);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  text-align: center;
+}
+
+.login-title {
+  margin-bottom: 8px;
+}
+
+.login-sub {
+  color: var(--text-muted);
+  margin: 12px 0 6px;
+  display: block;
+  text-align: left;
+}
+
+.login-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.login-btn {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  transition: var(--transition-med);
+}
+
+.login-btn:hover {
+  background: var(--accent);
+  color: #1b1220;
+}
+
+/* ---------------------------------------------------
+   10. MODAL (RSVP)
+--------------------------------------------------- */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 10, 15, 0.75);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: #1a1a22;
+  padding: 28px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 420px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  animation: modalPop 0.25s ease;
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.92); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.close {
+  float: right;
+  font-size: 26px;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.2s ease;
+}
+
+.close:hover {
+  color: #fff;
+}
+
+/* ---------------------------------------------------
+   11. FADE-IN ANIMATION (Fixed)
+--------------------------------------------------- */
+.fade-in {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+.fade-in.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------------------------------------------------
+   12. RESPONSIVE
+--------------------------------------------------- */
+@media (max-width: 720px) {
+  .logo-image {
+    height: 90px;
+  }
+
+  .login-wrapper {
+    margin: 80px 16px;
+  }
+}
+
+/* ---------------------------------------------------
+   SAFARI STORAGE POPUP (Minimal, Bottom-Center)
+--------------------------------------------------- */
+.safari-storage-popup {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  color: var(--text-main);
+  padding: 10px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-soft);
+  box-shadow: var(--shadow-soft);
+  font-size: 0.85rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 99999;
+}
+
+.safari-storage-popup.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.safari-storage-popup:active {
+  transform: translateX(-50%) scale(0.97);
+}
+
+
+/* ---------------------------------------------------
+   USER DROPDOWN
+--------------------------------------------------- */
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-dropdown-btn {
+  background: none;
+  border: none;
+  color: var(--text-main);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.user-dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  background: var(--surface);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+  z-index: 999;
+}
+
+.user-dropdown-menu a {
+  display: block;
+  padding: 8px 12px;
+  color: var(--text-main);
+  text-decoration: none;
+}
+
+.user-dropdown-menu a:hover {
+  background: var(--surface-hover);
+}
+
+/* ---------------------------------------------------
+   WELCOME OVERLAY
+--------------------------------------------------- */
+.welcome-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.6s ease;
+}
+
+.welcome-box {
+  background: var(--surface);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  text-align: center;
+  box-shadow: var(--shadow-soft);
+}
+
+/* ---------------------------------------------------
+   CANCEL RSVP BUTTON (Gold Outline)
+--------------------------------------------------- */
+.cancel-btn {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: var(--transition-med);
+}
+
+.cancel-btn:hover {
+  background: rgba(242, 201, 140, 0.12); /* soft gold glow */
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* ---------------------------------------------------
+   TOAST NOTIFICATION
+--------------------------------------------------- */
+.toast {
+  position: fixed;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  color: var(--text-main);
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  box-shadow: var(--shadow-soft);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  z-index: 99999;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+/* ---------------------------------------------------
+   MOBILE OPTIMIZATION (max-width: 480px)
+--------------------------------------------------- */
+@media (max-width: 480px) {
+
+  body {
+    font-size: 16px;
+  }
+
+  /* HERO */
+  .hero {
+    margin: 60px auto 40px;
+    padding: 0 10px;
+  }
+
+  .hero-title {
+    font-size: 1.9rem;
+    line-height: 1.2;
+    padding: 0 10px;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    padding: 0 20px;
+  }
+
+  /* NAV */
+  .nav-link {
+    padding: 14px 0;
+    font-size: 1.1rem;
+  }
+
+  .nav-toggle-line {
+    width: 28px;
+    height: 3px;
+  }
+
+  /* LOGO */
+  .logo-image {
+    height: 60px;
+  }
+
+  /* CITY FILTERS */
+  .city-filters {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+  }
+
+  .city-filter-btn {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    font-size: 0.9rem;
+  }
+
+  /* EVENT CARDS */
+  .event-card {
+    padding: 18px;
+    margin: 12px 0;
+  }
+
+  .event-title {
+    font-size: 1.2rem;
+  }
+
+  .event-description {
+    font-size: 0.95rem;
+    line-height: 1.4;
+  }
+
+  .event-rsvp-btn {
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  /* ABOUT */
+  .about-text {
+    font-size: 1rem;
+    line-height: 1.55;
+    padding: 0 10px;
+  }
+
+  /* MODALS */
+  .modal-content {
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  .login-input,
+  textarea {
+    font-size: 1rem;
+  }
+
+  .modal-title {
+    font-size: 1.4rem;
+  }
+}
