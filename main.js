@@ -101,7 +101,7 @@ const fadeObserver = new IntersectionObserver(
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
 // ===============================
-// Shooting Stars
+// Shooting Stars (with mobile cap)
 // ===============================
 function spawnShootingStar() {
   const star = document.createElement("div");
@@ -118,6 +118,12 @@ function spawnShootingStar() {
   document.body.appendChild(star);
   setTimeout(() => star.remove(), duration * 1000 + 200);
 }
+
+function ambientStarsLoop() {
+  const isMobile = window.innerWidth < 720;
+  const count = isMobile ? 2 : 3 + Math.floor(Math.random() * 4);
+
+  for (let i = 0; i < count; i++) setTimeout
 
 function ambientStarsLoop() {
   const count = 3 + Math.floor(Math.random() * 4);
