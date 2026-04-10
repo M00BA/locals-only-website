@@ -585,3 +585,47 @@ body::after {
   text-align: center;
   box-shadow: var(--shadow-soft);
 }
+
+/* ---------------------------------------------------
+   CANCEL RSVP BUTTON (Gold Outline)
+--------------------------------------------------- */
+.cancel-btn {
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition: var(--transition-med);
+}
+
+.cancel-btn:hover {
+  background: rgba(242, 201, 140, 0.12); /* soft gold glow */
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+/* ---------------------------------------------------
+   TOAST NOTIFICATION
+--------------------------------------------------- */
+.toast {
+  position: fixed;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface);
+  color: var(--text-main);
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  box-shadow: var(--shadow-soft);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  z-index: 99999;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
