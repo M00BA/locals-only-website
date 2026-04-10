@@ -46,29 +46,47 @@
       Share it with the community — we love warm, simple ideas.
     </p>
 
-    <div class="login-wrapper" style="margin-top:0;">
+<div class="login-wrapper" style="margin-top:0;">
 
-      <label class="login-sub">Your Email</label>
-      <input id="suggestEmail" class="login-input" type="email" readonly />
+  <label class="login-sub">Your Name</label>
+  <input id="suggestName" class="login-input" type="text" placeholder="e.g. Mooba" />
 
-      <label class="login-sub">Your Username</label>
-      <input id="suggestUsername" class="login-input" type="text" readonly />
+  <label class="login-sub">Your Email</label>
+  <input id="suggestEmail" class="login-input" type="email" readonly />
 
-      <label class="login-sub">Event Name</label>
-      <input id="eventName" class="login-input" type="text" placeholder="e.g. Sunset Walk, Board Game Night" required />
+  <label class="login-sub">Event Name</label>
+  <input id="eventName" class="login-input" type="text" placeholder="e.g. Sunset Walk" />
 
-      <label class="login-sub">City</label>
-      <select id="eventCity" class="login-input" required>
-        <option value="">Choose a city</option>
-        <option value="Hamburg">Hamburg</option>
-        <option value="Lübeck">Lübeck</option>
-      </select>
+  <label class="login-sub">Location</label>
+  <input id="eventLocation" class="login-input" type="text" placeholder="e.g. Planten un Blomen" />
 
-      <label class="login-sub">Description</label>
-      <textarea id="eventDescription" class="login-input" placeholder="Tell us about your idea..." style="height:120px;" required></textarea>
+  <label class="login-sub">City</label>
+  <select id="eventCity" class="login-input">
+    <option value="">Choose a city</option>
+    <option value="Hamburg">Hamburg</option>
+    <option value="Lübeck">Lübeck</option>
+  </select>
 
-      <button id="submitSuggestion" class="login-btn" style="margin-top: 12px;">Submit Suggestion</button>
-    </div>
+  <label class="login-sub">Date</label>
+  <input id="eventDate" class="login-input" type="date" />
+
+  <label class="login-sub">Time</label>
+  <input id="eventTime" class="login-input" type="time" />
+
+  <label class="login-sub">Description</label>
+  <textarea id="eventDescription" class="login-input" placeholder="Tell us about your idea..." style="height:120px;"></textarea>
+
+  <button id="submitSuggestion" class="login-btn" style="margin-top: 12px;">Submit Suggestion</button>
+</div>
+
+<!-- Success Overlay -->
+<div id="suggestSuccess" class="welcome-overlay" style="display:none;">
+  <div class="welcome-box fade-in">
+    <h2>Thanks for the suggestion!</h2>
+    <p>We’ll look into it asap.</p>
+  </div>
+</div>
+
 
   </main>
 
