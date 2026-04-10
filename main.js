@@ -13,7 +13,7 @@ const isSuggestPage = window.location.pathname.includes("suggest-event.html");
 const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 
 // ===============================
-// SAFARI STORAGE TEST
+// Safari Storage Test
 // ===============================
 function isSafari() {
   return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
@@ -34,21 +34,15 @@ function showSafariPopup() {
   if (!popup) return;
 
   popup.classList.add("visible");
-
-  popup.addEventListener("click", () => {
-    popup.classList.remove("visible");
-  });
+  popup.addEventListener("click", () => popup.classList.remove("visible"));
 }
 
-// Run test on every page
 window.addEventListener("DOMContentLoaded", () => {
-  if (isSafari() && storageBlocked()) {
-    showSafariPopup();
-  }
+  if (isSafari() && storageBlocked()) showSafariPopup();
 });
 
 // ===============================
-// NAVBAR UPDATE FUNCTION
+// Navbar Update
 // ===============================
 function updateNavbar(session) {
   const myMeetupsLink = document.getElementById("myMeetupsLink");
@@ -66,24 +60,14 @@ function updateNavbar(session) {
   if (myMeetupsLink) myMeetupsLink.style.display = "inline-block";
 }
 
-// ===============================
-// Navbar Session Logic (hydration delay)
-// ===============================
 setTimeout(() => {
-  supabaseClient.auth.getSession().then(({ data }) => {
-    updateNavbar(data.session);
-  });
+  supabaseClient.auth.getSession().then(({ data }) => updateNavbar(data.session));
 }, 200);
 
-// ===============================
-// Navbar Update on Auth Change
-// ===============================
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  updateNavbar(session);
-});
+supabaseClient.auth.onAuthStateChange((event, session) => updateNavbar(session));
 
 // ===============================
-// Username Dropdown Toggle
+// Dropdown Toggle
 // ===============================
 const userDropdownButton = document.getElementById("userDropdownButton");
 const userDropdownMenu = document.getElementById("userDropdownMenu");
@@ -110,22 +94,14 @@ if (logoutButton) {
 // Fade‑In Animation
 // ===============================
 const fadeElements = document.querySelectorAll(".fade-in");
-
 const fadeObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-      }
-    });
-  },
+  (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("visible")),
   { threshold: 0.2 }
 );
-
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
 // ===============================
-// Ambient Shooting Stars
+// Shooting Stars
 // ===============================
 function spawnShootingStar() {
   const star = document.createElement("div");
@@ -133,7 +109,6 @@ function spawnShootingStar() {
 
   const startX = Math.random() * window.innerWidth * 0.4;
   const startY = Math.random() * window.innerHeight * 0.2;
-
   const duration = 0.9 + Math.random() * 0.6;
 
   star.style.left = `${startX}px`;
@@ -141,25 +116,18 @@ function spawnShootingStar() {
   star.style.animation = `shoot ${duration}s ease-out forwards`;
 
   document.body.appendChild(star);
-
   setTimeout(() => star.remove(), duration * 1000 + 200);
 }
 
 function ambientStarsLoop() {
   const count = 3 + Math.floor(Math.random() * 4);
-
-  for (let i = 0; i < count; i++) {
-    setTimeout(spawnShootingStar, i * 250);
-  }
-
-  const nextDelay = 6000 + Math.random() * 8000;
-  setTimeout(ambientStarsLoop, nextDelay);
+  for (let i = 0; i < count; i++) setTimeout(spawnShootingStar, i * 250);
+  setTimeout(ambientStarsLoop, 6000 + Math.random() * 8000);
 }
-
 ambientStarsLoop();
 
 // ===============================
-// City Filters (Homepage Only)
+// City Filters
 // ===============================
 const filterButtons = document.querySelectorAll(".city-filter-btn");
 const eventCards = document.querySelectorAll(".event-card");
@@ -179,6 +147,22 @@ filterButtons.forEach((btn) => {
 });
 
 // ===============================
+// Toast Notification
+// ===============================
+function showToast(message) {
+  const toast = document.createElement("div");
+  toast.className = "toast";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => toast.classList.add("visible"), 10);
+  setTimeout(() => {
+    toast.classList.remove("visible");
+    setTimeout(() => toast.remove(), 300);
+  }, 2000);
+}
+
+// ===============================
 // Load Attendee Counts
 // ===============================
 async function loadAttendingCounts() {
@@ -192,9 +176,7 @@ async function loadAttendingCounts() {
       .select("*", { count: "exact", head: true })
       .eq("event_name", eventName);
 
-    if (!error) {
-      el.textContent = `${count} attending`;
-    }
+    if (!error) el.textContent = `${count} attending`;
   }
 }
 
@@ -203,11 +185,68 @@ if (!isMyMeetupsPage && !isLoginPage && !isSuggestPage) {
 }
 
 // ===============================
+// RSVP + CANCEL LOGIC
+// ===============================
+async function cancelRsvp(eventName) {
+  const session = (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+
+  const email = session.user.email;
+
+  const { error } = await supabaseClient
+    .from("rsvps")
+    .delete()
+    .eq("email", email)
+    .eq("event_name", eventName);
+
+  if (error) {
+    showToast("Error canceling RSVP.");
+  } else {
+    showToast("RSVP canceled.");
+    loadAttendingCounts();
+    updateRsvpButtons();
+  }
+}
+
+async function updateRsvpButtons() {
+  const session = (await supabaseClient.auth.getSession()).data.session;
+  if (!session) return;
+
+  const email = session.user.email;
+
+  const { data: rsvps } = await supabaseClient
+    .from("rsvps")
+    .select("event_name")
+    .eq("email", email);
+
+  const userEvents = rsvps.map((r) => r.event_name);
+
+  document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
+    const eventName = btn.dataset.event;
+
+    if (userEvents.includes(eventName)) {
+      btn.textContent = "Cancel RSVP";
+      btn.classList.add("cancel-btn");
+      btn.onclick = () => cancelRsvp(eventName);
+    } else {
+      btn.textContent = "RSVP";
+      btn.classList.remove("cancel-btn");
+      btn.onclick = () => openRsvpModal(eventName);
+    }
+  });
+}
+
+// ===============================
 // RSVP Modal Logic
 // ===============================
 const rsvpModal = document.getElementById("rsvpModal");
 const closeRsvpModal = document.getElementById("closeRsvpModal");
 const submitRsvp = document.getElementById("submitRsvp");
+
+function openRsvpModal(eventName) {
+  rsvpEventName.textContent = eventName;
+  rsvpModal.style.display = "flex";
+}
 
 if (rsvpModal && closeRsvpModal && submitRsvp) {
   const rsvpButtons = document.querySelectorAll(".event-rsvp-btn");
@@ -244,25 +283,22 @@ if (rsvpModal && closeRsvpModal && submitRsvp) {
     const username = rsvpUsername.value;
 
     const { error } = await supabaseClient.from("rsvps").insert([
-      {
-        event_name: eventName,
-        email,
-        username
-      }
+      { event_name: eventName, email, username }
     ]);
 
     if (error) {
-      alert("Error saving RSVP.");
+      showToast("Error saving RSVP.");
     } else {
-      alert("You're signed up!");
+      showToast("You're signed up!");
       rsvpModal.style.display = "none";
       loadAttendingCounts();
+      updateRsvpButtons();
     }
   });
 }
 
 // ===============================
-// My Meetups Page Logic
+// My Meetups Page
 // ===============================
 if (isMyMeetupsPage) {
   supabaseClient.auth.getSession().then(async ({ data }) => {
@@ -309,7 +345,7 @@ if (isMyMeetupsPage) {
 }
 
 // ===============================
-// Welcome Animation (Homepage)
+// Welcome Animation
 // ===============================
 supabaseClient.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_IN" && session?.user) {
@@ -328,3 +364,8 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
     }
   }
 });
+
+// ===============================
+// Initialize RSVP Button States
+// ===============================
+updateRsvpButtons();
