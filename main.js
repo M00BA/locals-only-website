@@ -104,7 +104,7 @@ const fadeObserver = new IntersectionObserver(
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
 // ===============================
-// Shooting Stars (FIXED TEMPLATE STRINGS + MOBILE CAP ADDED LATER)
+// Shooting Stars
 // ===============================
 function spawnShootingStar() {
   const star = document.createElement("div");
@@ -358,4 +358,81 @@ if (isMyMeetupsPage) {
 supabaseClient.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_IN" && session?.user) {
     const username = session.user.user_metadata?.username;
-    const overlay = document.getElementById("welcomeOverlay
+    const overlay = document.getElementById("welcomeOverlay");
+    const msg = document.getElementById("welcomeMessage");
+
+    if (overlay && msg) {
+      msg.textContent = `Welcome back, ${username}!`;
+      overlay.style.display = "flex";
+
+      setTimeout(() => {
+        overlay.style.opacity = "0";
+        setTimeout(() => overlay.remove(), 600);
+      }, 1800);
+    }
+  }
+});
+
+// ===============================
+// Initialize RSVP Button States
+// ===============================
+updateRsvpButtons();
+
+// ===============================
+// Suggest Event Modal Logic
+// ===============================
+const suggestModal = document.getElementById("suggestModal");
+const openSuggest = document.getElementById("openSuggest");
+const closeSuggestModal = document.getElementById("closeSuggestModal");
+
+if (openSuggest) {
+  openSuggest.addEventListener("click", async () => {
+    const session = (await supabaseClient.auth.getSession()).data.session;
+
+    if (!session) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    document.getElementById("suggestEmail").value = session.user.email;
+    suggestModal.style.display = "flex";
+  });
+}
+
+if (closeSuggestModal) {
+  closeSuggestModal.addEventListener("click", () => {
+    suggestModal.style.display = "none";
+  });
+}
+
+// ===============================
+// Submit Suggestion (Email API)
+// ===============================
+const submitSuggestion = document.getElementById("submitSuggestion");
+
+if (submitSuggestion) {
+  submitSuggestion.addEventListener("click", async () => {
+    const name = document.getElementById("suggestName").value.trim();
+    const email = document.getElementById("suggestEmail").value.trim();
+    const title = document.getElementById("suggestTitle").value.trim();
+    const description = document.getElementById("suggestDescription").value.trim();
+
+    if (!name || !email || !title || !description) {
+      showToast("Please fill out all fields.");
+      return;
+    }
+
+    const res = await fetch("/api/sendSuggestion", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, title, description })
+    });
+
+    if (res.ok) {
+      showToast("Suggestion sent!");
+      suggestModal.style.display = "none";
+    } else {
+      showToast("Error sending suggestion.");
+    }
+  });
+}
