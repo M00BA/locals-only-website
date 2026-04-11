@@ -50,13 +50,13 @@ function updateNavbar(session) {
   const userDropdown = document.getElementById("userDropdown");
   const navbarUsername = document.getElementById("navbarUsername");
 
-  if (!session  !session.user) return;
+  if (!session || !session.user) return;
 
   const username = session.user.user_metadata?.username;
 
   if (loginLink) loginLink.style.display = "none";
   if (userDropdown) userDropdown.style.display = "inline-block";
-  if (navbarUsername) navbarUsername.textContent = username  "User";
+  if (navbarUsername) navbarUsername.textContent = username || "User";
   if (myMeetupsLink) myMeetupsLink.style.display = "inline-block";
 }
 
@@ -95,13 +95,16 @@ if (logoutButton) {
 // ===============================
 const fadeElements = document.querySelectorAll(".fade-in");
 const fadeObserver = new IntersectionObserver(
-  (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("visible")),
+  (entries) =>
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) entry.target.classList.add("visible");
+    }),
   { threshold: 0.2 }
 );
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
 // ===============================
-// Shooting Stars
+// Shooting Stars (FIXED TEMPLATE STRINGS + MOBILE CAP ADDED LATER)
 // ===============================
 function spawnShootingStar() {
   const star = document.createElement("div");
@@ -111,17 +114,22 @@ function spawnShootingStar() {
   const startY = Math.random() * window.innerHeight * 0.2;
   const duration = 0.9 + Math.random() * 0.6;
 
-  star.style.left = ${startX}px;
-  star.style.top = ${startY}px;
-  star.style.animation = shoot ${duration}s ease-out forwards;
+  star.style.left = `${startX}px`;
+  star.style.top = `${startY}px`;
+  star.style.animation = `shoot ${duration}s ease-out forwards`;
 
   document.body.appendChild(star);
   setTimeout(() => star.remove(), duration * 1000 + 200);
 }
 
 function ambientStarsLoop() {
-  const count = 3 + Math.floor(Math.random() * 4);
-  for (leti = 0; i < count; i++) setTimeout(spawnShootingStar, i * 250);
+  const isMobile = window.innerWidth < 720;
+  const count = isMobile ? 2 : 3 + Math.floor(Math.random() * 4);
+
+  for (let i = 0; i < count; i++) {
+    setTimeout(spawnShootingStar, i * 250);
+  }
+
   setTimeout(ambientStarsLoop, 6000 + Math.random() * 8000);
 }
 ambientStarsLoop();
@@ -176,7 +184,7 @@ async function loadAttendingCounts() {
       .select("*", { count: "exact", head: true })
       .eq("event_name", eventName);
 
-    if (!error) el.textContent = ${count} attending;
+    if (!error) el.textContent = `${count} attending`;
   }
 }
 
@@ -258,7 +266,7 @@ if (rsvpModal && closeRsvpModal && submitRsvp) {
     btn.addEventListener("click", async () => {
       const session = (await supabaseClient.auth.getSession()).data.session;
 
-      if (!session  !session.user) {
+      if (!session || !session.user) {
         window.location.href = "login.html";
         return;
       }
@@ -267,7 +275,7 @@ if (rsvpModal && closeRsvpModal && submitRsvp) {
 
       rsvpEventName.textContent = btn.dataset.event;
       rsvpEmail.value = session.user.email;
-      rsvpUsername.value = username  "";
+      rsvpUsername.value = username || "";
 
       rsvpModal.style.display = "flex";
     });
@@ -304,7 +312,7 @@ if (isMyMeetupsPage) {
   supabaseClient.auth.getSession().then(async ({ data }) => {
     const session = data.session;
 
-    if (!session  !session.user) {
+    if (!session || !session.user) {
       window.location.href = "login.html";
       return;
     }
@@ -323,7 +331,7 @@ if (isMyMeetupsPage) {
       return;
     }
 
-    if (!rsvps  rsvps.length === 0) {
+    if (!rsvps || rsvps.length === 0) {
       emptyMessage.style.display = "block";
       return;
     }
@@ -333,11 +341,11 @@ if (isMyMeetupsPage) {
       const card = document.createElement("div");
       card.className = "event-card fade-in";
 
-      card.innerHTML = 
+      card.innerHTML = `
         <span class="event-tag">Joined</span>
         <h3 class="event-title">${rsvp.event_name}</h3>
         <p class="event-description">You're signed up for this meetup.</p>
-      ;
+      `;
 
       container.appendChild(card);
     });
@@ -350,81 +358,4 @@ if (isMyMeetupsPage) {
 supabaseClient.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_IN" && session?.user) {
     const username = session.user.user_metadata?.username;
-    const overlay = document.getElementById("welcomeOverlay");
-    const msg = document.getElementById("welcomeMessage");
-
-    if (overlay && msg) {
-      msg.textContent = Welcome back, ${username}!;
-      overlay.style.display = "flex";
-
-      setTimeout(() => {
-        overlay.style.opacity = "0";
-        setTimeout(() => overlay.remove(), 600);
-      }, 1800);
-    }
-  }
-});
-
-// ===============================
-// Initialize RSVP Button States
-// ===============================
-updateRsvpButtons();
-
-// ===============================
-// Suggest Event Modal Logic
-// ===============================
-const suggestModal = document.getElementById("suggestModal");
-const openSuggest = document.getElementById("openSuggest");
-const closeSuggestModal = document.getElementById("closeSuggestModal");
-
-if (openSuggest) {
-  openSuggest.addEventListener("click", async () => {
-    const session = (await supabaseClient.auth.getSession()).data.session;
-
-    if (!session) {
-      window.location.href = "login.html";
-      return;
-    }
-
-    document.getElementById("suggestEmail").value = session.user.email;
-    suggestModal.style.display = "flex";
-  });
-}
-
-if (closeSuggestModal) {
-  closeSuggestModal.addEventListener("click", () => {
-    suggestModal.style.display = "none";
-  });
-}
-
-// ===============================
-// Submit Suggestion (Email API)
-// ===============================
-const submitSuggestion = document.getElementById("submitSuggestion");
-
-if (submitSuggestion) {
-  submitSuggestion.addEventListener("click", async () => {
-    const name = document.getElementById("suggestName").value.trim();
-    const email = document.getElementById("suggestEmail").value.trim();
-    const title = document.getElementById("suggestTitle").value.trim();
-    const description = document.getElementById("suggestDescription").value.trim();
-
-    if (!name  !email  !title || !description) {
-      showToast("Please fill out all fields.");
-      return;
-    }
-
-    const res = await fetch("/api/sendSuggestion", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, title, description })
-    });
-
-    if (res.ok) {
-      showToast("Suggestion sent!");
-      suggestModal.style.display = "none";
-    } else {
-      showToast("Error sending suggestion.");
-    }
-  });
-}
+    const overlay = document.getElementById("welcomeOverlay
