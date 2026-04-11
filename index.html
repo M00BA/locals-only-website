@@ -5,6 +5,16 @@
   <title>Locals Only – Hamburg & Lübeck</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- META DESCRIPTION -->
+  <meta name="description" content="Locals Only — cozy, introvert‑friendly meetups in Hamburg & Lübeck. Join small, warm gatherings without pressure." />
+
+  <!-- OPEN GRAPH -->
+  <meta property="og:title" content="Locals Only — Hamburg & Lübeck Meetups" />
+  <meta property="og:description" content="Cozy, introvert‑friendly meetups for people who want gentle social energy." />
+  <meta property="og:image" content="https://locals-only.space/og-image.jpg" />
+  <meta property="og:url" content="https://locals-only.space" />
+  <meta property="og:type" content="website" />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -18,26 +28,25 @@
     <div class="header-inner">
 
       <div class="logo">
-        <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" />
+        <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" alt="Locals Only logo" />
       </div>
 
-      <button class="nav-toggle">
+      <button class="nav-toggle" aria-label="Open navigation menu">
         <div class="nav-toggle-line"></div>
         <div class="nav-toggle-line"></div>
         <div class="nav-toggle-line"></div>
       </button>
 
-      <!-- FIXED NAV WRAPPER -->
+      <!-- NAV -->
       <nav class="main-nav">
 
         <a href="/" class="nav-link">Home</a>
 
-        <!-- CHANGED: now opens modal -->
         <a id="openSuggest" class="nav-link">Suggest Event</a>
 
         <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
 
-        <!-- USER DROPDOWN (hidden until logged in) -->
+        <!-- USER DROPDOWN -->
         <div id="userDropdown" class="user-dropdown" style="display:none;">
           <button id="userDropdownButton" class="user-dropdown-btn">
             <span id="navbarUsername">User</span> ▼
@@ -50,18 +59,18 @@
           </div>
         </div>
 
-        <!-- If logged out -->
         <a id="loginLink" href="login.html" class="nav-link">Become a Local</a>
 
       </nav>
-      <!-- END NAV -->
 
     </div>
   </header>
 
   <!-- HERO -->
   <section class="hero fade-in">
-    <h1 class="hero-title">Meet Locals in Hamburg & Lübeck</h1>
+    <h1 class="hero-title">
+      Meet Locals in <span class="hero-highlight">Hamburg & Lübeck</span>
+    </h1>
     <p class="hero-subtitle">Socializing for people who hate socializing but still want friends.</p>
   </section>
 
@@ -87,7 +96,6 @@
           <p class="event-meta">Casual play for all levels</p>
           <p class="event-description">A friendly no pressure badminton hangout. Beginners and shy players are totally welcome.</p>
 
-          <!-- ATTENDING COUNT -->
           <p class="attending-count" data-event="Badminton Meetup">0 attending</p>
 
           <button class="event-rsvp-btn" data-event="Badminton Meetup">RSVP</button>
@@ -100,13 +108,12 @@
           <p class="event-meta">Bring your laptop and chill</p>
           <p class="event-description">A cozy co working session with warm drinks and good vibes all around.</p>
 
-          <!-- ATTENDING COUNT -->
           <p class="attending-count" data-event="Coffee & Co‑Working">0 attending</p>
 
           <button class="event-rsvp-btn" data-event="Coffee & Co‑Working">RSVP</button>
         </div>
 
-        <!-- ⭐ NEW EVENT: CONCERT 29 APRIL -->
+        <!-- EVENT 3 -->
         <div class="event-card fade-in" data-city="lübeck">
           <span class="event-tag">Lübeck</span>
           <h3 class="event-title">Bachelor Exam Concert — Oboe Solo Performance</h3>
@@ -120,7 +127,7 @@
       </div>
     </section>
 
-    <!-- ABOUT SECTION -->
+    <!-- ABOUT -->
     <section class="section fade-in">
       <h2>About Locals Only</h2>
       <p class="about-text">
@@ -128,12 +135,15 @@
         No big crowds and no awkward networking just calm introvert friendly meetups where everyone can relax.
       </p>
       <p class="about-text">
-       We keep it simple show up be kind and enjoy the moment. Whether you are new in town or just want gentle social energy 
-       you are in the right place.
+        We keep it simple show up be kind and enjoy the moment. Whether you are new in town or just want gentle social energy 
+        you are in the right place.
       </p>
     </section>
 
   </main>
+
+  <!-- FLOATING SUGGEST BUTTON (MOBILE FAB) -->
+  <button id="fabSuggest" class="fab-suggest">＋ Suggest</button>
 
   <!-- RSVP MODAL -->
   <div id="rsvpModal" class="modal" style="display:none;">
