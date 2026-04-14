@@ -32,7 +32,6 @@ function storageBlocked() {
 function showSafariPopup() {
   const popup = document.getElementById("safariStoragePopup");
   if (!popup) return;
-
   popup.classList.add("visible");
   popup.addEventListener("click", () => popup.classList.remove("visible"));
 }
@@ -77,6 +76,13 @@ if (userDropdownButton && userDropdownMenu) {
     userDropdownMenu.style.display =
       userDropdownMenu.style.display === "block" ? "none" : "block";
   });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (!userDropdownButton.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+      userDropdownMenu.style.display = "none";
+    }
+  });
 }
 
 // ===============================
@@ -88,6 +94,13 @@ const mainNav = document.querySelector(".main-nav");
 if (navToggle && mainNav) {
   navToggle.addEventListener("click", () => {
     mainNav.classList.toggle("open");
+  });
+
+  // Close nav when any link inside it is tapped
+  mainNav.querySelectorAll("a, button").forEach((el) => {
+    el.addEventListener("click", () => {
+      mainNav.classList.remove("open");
+    });
   });
 }
 
@@ -103,7 +116,7 @@ if (logoutButton) {
 }
 
 // ===============================
-// Fade‑In Animation
+// Fade-In Animation
 // ===============================
 const fadeElements = document.querySelectorAll(".fade-in");
 const fadeObserver = new IntersectionObserver(
@@ -116,7 +129,7 @@ const fadeObserver = new IntersectionObserver(
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
 // ===============================
-// Shooting Stars
+// Shooting Stars (capped at 2 on mobile)
 // ===============================
 function spawnShootingStar() {
   const star = document.createElement("div");
@@ -136,7 +149,7 @@ function spawnShootingStar() {
 
 function ambientStarsLoop() {
   const isMobile = window.innerWidth < 720;
-  const count = isMobile ? 2 : 3 + Math.floor(Math.random() * 4);
+  const count = isMobile ? 1 + Math.floor(Math.random() * 2) : 3 + Math.floor(Math.random() * 4);
 
   for (let i = 0; i < count; i++) {
     setTimeout(spawnShootingStar, i * 250);
@@ -205,18 +218,32 @@ if (!isMyMeetupsPage && !isLoginPage && !isSuggestPage) {
 }
 
 // ===============================
-// RSVP + CANCEL LOGIC
+// RSVP Modal — all refs declared at top level (FIX for crash)
+// ===============================
+const rsvpModal = document.getElementById("rsvpModal");
+const rsvpEventName = document.getElementById("rsvpEventName");
+const rsvpEmail = document.getElementById("rsvpEmail");
+const rsvpUsername = document.getElementById("rsvpUsername");
+const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
+const submitRsvpBtn = document.getElementById("submitRsvp");
+
+function openRsvpModal(eventName) {
+  if (!rsvpModal || !rsvpEventName) return;
+  rsvpEventName.textContent = eventName;
+  rsvpModal.style.display = "flex";
+}
+
+// ===============================
+// RSVP + Cancel Logic
 // ===============================
 async function cancelRsvp(eventName) {
   const session = (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
 
-  const email = session.user.email;
-
   const { error } = await supabaseClient
     .from("rsvps")
     .delete()
-    .eq("email", email)
+    .eq("email", session.user.email)
     .eq("event_name", eventName);
 
   if (error) {
@@ -232,12 +259,12 @@ async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
 
-  const email = session.user.email;
-
   const { data: rsvps } = await supabaseClient
     .from("rsvps")
     .select("event_name")
-    .eq("email", email);
+    .eq("email", session.user.email);
+
+  if (!rsvps) return;
 
   const userEvents = rsvps.map((r) => r.event_name);
 
@@ -256,48 +283,37 @@ async function updateRsvpButtons() {
   });
 }
 
-// ===============================
-// RSVP Modal Logic
-// ===============================
-const rsvpModal = document.getElementById("rsvpModal");
-const closeRsvpModal = document.getElementById("closeRsvpModal");
-const submitRsvp = document.getElementById("submitRsvp");
+// Wire up initial RSVP button clicks
+document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const session = (await supabaseClient.auth.getSession()).data.session;
 
-function openRsvpModal(eventName) {
-  rsvpEventName.textContent = eventName;
-  rsvpModal.style.display = "flex";
+    if (!session || !session.user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const username = session.user.user_metadata?.username;
+
+    if (rsvpEventName) rsvpEventName.textContent = btn.dataset.event;
+    if (rsvpEmail) rsvpEmail.value = session.user.email;
+    if (rsvpUsername) rsvpUsername.value = username || "";
+    if (rsvpModal) rsvpModal.style.display = "flex";
+  });
+});
+
+// Close RSVP modal
+if (closeRsvpModalBtn) {
+  closeRsvpModalBtn.addEventListener("click", () => {
+    if (rsvpModal) rsvpModal.style.display = "none";
+  });
 }
 
-if (rsvpModal && closeRsvpModal && submitRsvp) {
-  const rsvpButtons = document.querySelectorAll(".event-rsvp-btn");
-  const rsvpEventName = document.getElementById("rsvpEventName");
-  const rsvpEmail = document.getElementById("rsvpEmail");
-  const rsvpUsername = document.getElementById("rsvpUsername");
+// Submit RSVP
+if (submitRsvpBtn) {
+  submitRsvpBtn.addEventListener("click", async () => {
+    if (!rsvpEventName || !rsvpEmail || !rsvpUsername) return;
 
-  rsvpButtons.forEach((btn) => {
-    btn.addEventListener("click", async () => {
-      const session = (await supabaseClient.auth.getSession()).data.session;
-
-      if (!session || !session.user) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      const username = session.user.user_metadata?.username;
-
-      rsvpEventName.textContent = btn.dataset.event;
-      rsvpEmail.value = session.user.email;
-      rsvpUsername.value = username || "";
-
-      rsvpModal.style.display = "flex";
-    });
-  });
-
-  closeRsvpModal.addEventListener("click", () => {
-    rsvpModal.style.display = "none";
-  });
-
-  submitRsvp.addEventListener("click", async () => {
     const eventName = rsvpEventName.textContent;
     const email = rsvpEmail.value;
     const username = rsvpUsername.value;
@@ -310,7 +326,7 @@ if (rsvpModal && closeRsvpModal && submitRsvp) {
       showToast("Error saving RSVP.");
     } else {
       showToast("You're signed up!");
-      rsvpModal.style.display = "none";
+      if (rsvpModal) rsvpModal.style.display = "none";
       loadAttendingCounts();
       updateRsvpButtons();
     }
@@ -329,38 +345,37 @@ if (isMyMeetupsPage) {
       return;
     }
 
-    const email = session.user.email;
     const container = document.getElementById("meetupsContainer");
     const emptyMessage = document.getElementById("emptyMessage");
 
     const { data: rsvps, error } = await supabaseClient
       .from("rsvps")
       .select("*")
-      .eq("email", email);
+      .eq("email", session.user.email);
 
     if (error) {
-      container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
+      if (container) container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
       return;
     }
 
     if (!rsvps || rsvps.length === 0) {
-      emptyMessage.style.display = "block";
+      if (emptyMessage) emptyMessage.style.display = "block";
       return;
     }
 
-    container.innerHTML = "";
-    rsvps.forEach((rsvp) => {
-      const card = document.createElement("div");
-      card.className = "event-card fade-in";
-
-      card.innerHTML = `
-        <span class="event-tag">Joined</span>
-        <h3 class="event-title">${rsvp.event_name}</h3>
-        <p class="event-description">You're signed up for this meetup.</p>
-      `;
-
-      container.appendChild(card);
-    });
+    if (container) {
+      container.innerHTML = "";
+      rsvps.forEach((rsvp) => {
+        const card = document.createElement("div");
+        card.className = "event-card fade-in";
+        card.innerHTML = `
+          <span class="event-tag">Joined</span>
+          <h3 class="event-title">${rsvp.event_name}</h3>
+          <p class="event-description">You're signed up for this meetup.</p>
+        `;
+        container.appendChild(card);
+      });
+    }
   });
 }
 
@@ -374,7 +389,7 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
     const msg = document.getElementById("welcomeMessage");
 
     if (overlay && msg) {
-      msg.textContent = `Welcome back, ${username}!`;
+      msg.textContent = `Welcome back, ${username || "friend"}!`;
       overlay.style.display = "flex";
 
       setTimeout(() => {
@@ -391,43 +406,53 @@ supabaseClient.auth.onAuthStateChange((event, session) => {
 updateRsvpButtons();
 
 // ===============================
-// Suggest Event Modal Logic
+// Suggest Event Modal
 // ===============================
 const suggestModal = document.getElementById("suggestModal");
-const openSuggest = document.getElementById("openSuggest");
-const closeSuggestModal = document.getElementById("closeSuggestModal");
+const closeSuggestModalBtn = document.getElementById("closeSuggestModal");
 
-if (openSuggest) {
-  openSuggest.addEventListener("click", async () => {
-    const session = (await supabaseClient.auth.getSession()).data.session;
+async function openSuggestModal() {
+  const session = (await supabaseClient.auth.getSession()).data.session;
 
-    if (!session) {
-      window.location.href = "login.html";
-      return;
-    }
+  if (!session) {
+    window.location.href = "login.html";
+    return;
+  }
 
-    document.getElementById("suggestEmail").value = session.user.email;
-    suggestModal.style.display = "flex";
-  });
+  const suggestEmailEl = document.getElementById("suggestEmail");
+  if (suggestEmailEl) suggestEmailEl.value = session.user.email;
+  if (suggestModal) suggestModal.style.display = "flex";
 }
 
-if (closeSuggestModal) {
-  closeSuggestModal.addEventListener("click", () => {
-    suggestModal.style.display = "none";
+// Wire up ALL #openSuggest elements (nav + dropdown)
+document.querySelectorAll("#openSuggest").forEach((el) => {
+  el.addEventListener("click", openSuggestModal);
+});
+
+// FAB button
+const fabSuggest = document.getElementById("fabSuggest");
+if (fabSuggest) {
+  fabSuggest.addEventListener("click", openSuggestModal);
+}
+
+// Close suggest modal
+if (closeSuggestModalBtn) {
+  closeSuggestModalBtn.addEventListener("click", () => {
+    if (suggestModal) suggestModal.style.display = "none";
   });
 }
 
 // ===============================
-// Submit Suggestion (Email API)
+// Submit Suggestion
 // ===============================
 const submitSuggestion = document.getElementById("submitSuggestion");
 
 if (submitSuggestion) {
   submitSuggestion.addEventListener("click", async () => {
-    const name = document.getElementById("suggestName").value.trim();
-    const email = document.getElementById("suggestEmail").value.trim();
-    const title = document.getElementById("suggestTitle").value.trim();
-    const description = document.getElementById("suggestDescription").value.trim();
+    const name = document.getElementById("suggestName")?.value.trim();
+    const email = document.getElementById("suggestEmail")?.value.trim();
+    const title = document.getElementById("suggestTitle")?.value.trim();
+    const description = document.getElementById("suggestDescription")?.value.trim();
 
     if (!name || !email || !title || !description) {
       showToast("Please fill out all fields.");
@@ -442,9 +467,19 @@ if (submitSuggestion) {
 
     if (res.ok) {
       showToast("Suggestion sent!");
-      suggestModal.style.display = "none";
+      if (suggestModal) suggestModal.style.display = "none";
     } else {
       showToast("Error sending suggestion.");
     }
   });
 }
+
+// ===============================
+// Close any modal by clicking the dark backdrop
+// ===============================
+[rsvpModal, suggestModal].forEach((modal) => {
+  if (!modal) return;
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.style.display = "none";
+  });
+});
