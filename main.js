@@ -226,7 +226,7 @@ const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
 const submitRsvpBtn = document.getElementById("submitRsvp");
 
 // ===============================
-// RSVP + Cancel Logic (FIXED)
+// RSVP + Cancel Logic (FULL FINAL FIX)
 // ===============================
 async function cancelRsvp(eventName) {
   const session = (await supabaseClient.auth.getSession()).data.session;
@@ -249,7 +249,22 @@ async function cancelRsvp(eventName) {
 
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
-  if (!session) return;
+
+  // 🔥 NOT LOGGED IN → redirect on click
+  if (!session || !session.user) {
+    document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
+      const newBtn = btn.cloneNode(true);
+      btn.replaceWith(newBtn);
+    });
+
+    document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        window.location.href = "login.html";
+      });
+    });
+
+    return;
+  }
 
   const { data: rsvps } = await supabaseClient
     .from("rsvps")
@@ -260,21 +275,25 @@ async function updateRsvpButtons() {
 
   const userEvents = rsvps.map((r) => r.event_name);
 
+  // 🔥 remove old listeners safely
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const newBtn = btn.cloneNode(true);
     btn.replaceWith(newBtn);
   });
 
+  // 🔥 re-attach correct behavior
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const eventName = btn.dataset.event;
 
     if (userEvents.includes(eventName)) {
       btn.textContent = "Cancel RSVP";
       btn.classList.add("cancel-btn");
+
       btn.addEventListener("click", () => cancelRsvp(eventName));
     } else {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
+
       btn.addEventListener("click", async () => {
         const session = (await supabaseClient.auth.getSession()).data.session;
 
@@ -324,10 +343,11 @@ if (submitRsvpBtn) {
 }
 
 // ===============================
-// Initialize RSVP
+// Initialize RSVP (FINAL FIX)
 // ===============================
-updateRsvpButtons();
 
+// 🔥 important: wait for session to be ready
+setTimeout(updateRsvpButtons, 300);
 // ===============================
 // Suggest Modal
 // ===============================
