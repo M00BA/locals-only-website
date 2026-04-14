@@ -226,7 +226,7 @@ const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
 const submitRsvpBtn = document.getElementById("submitRsvp");
 
 // ===============================
-// RSVP + Cancel Logic (FULL FINAL FIX)
+// RSVP + Cancel Logic (FINAL FIX)
 // ===============================
 async function cancelRsvp(eventName) {
   const session = (await supabaseClient.auth.getSession()).data.session;
@@ -250,7 +250,7 @@ async function cancelRsvp(eventName) {
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
 
-  // 🔥 NOT LOGGED IN → redirect on click
+  // Not logged in → redirect on click
   if (!session || !session.user) {
     document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
       const newBtn = btn.cloneNode(true);
@@ -271,24 +271,21 @@ async function updateRsvpButtons() {
     .select("event_name")
     .eq("email", session.user.email);
 
-  if (!rsvps) return;
+  const userEvents = rsvps?.map((r) => r.event_name) || [];
 
-  const userEvents = rsvps.map((r) => r.event_name);
-
-  // 🔥 remove old listeners safely
+  // Remove old listeners
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const newBtn = btn.cloneNode(true);
     btn.replaceWith(newBtn);
   });
 
-  // 🔥 re-attach correct behavior
+  // Reattach correct behavior
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const eventName = btn.dataset.event;
 
     if (userEvents.includes(eventName)) {
       btn.textContent = "Cancel RSVP";
       btn.classList.add("cancel-btn");
-
       btn.addEventListener("click", () => cancelRsvp(eventName));
     } else {
       btn.textContent = "RSVP";
@@ -304,10 +301,10 @@ async function updateRsvpButtons() {
 
         const username = session.user.user_metadata?.username;
 
-        if (rsvpEventName) rsvpEventName.textContent = eventName;
-        if (rsvpEmail) rsvpEmail.value = session.user.email;
-        if (rsvpUsername) rsvpUsername.value = username || "";
-        if (rsvpModal) rsvpModal.style.display = "flex";
+        rsvpEventName.textContent = eventName;
+        rsvpEmail.value = session.user.email;
+        rsvpUsername.value = username || "";
+        rsvpModal.style.display = "flex";
       });
     }
   });
@@ -316,7 +313,7 @@ async function updateRsvpButtons() {
 // Close RSVP modal
 if (closeRsvpModalBtn) {
   closeRsvpModalBtn.addEventListener("click", () => {
-    if (rsvpModal) rsvpModal.style.display = "none";
+    rsvpModal.style.display = "none";
   });
 }
 
@@ -335,7 +332,7 @@ if (submitRsvpBtn) {
       showToast("Error saving RSVP.");
     } else {
       showToast("You're signed up!");
-      if (rsvpModal) rsvpModal.style.display = "none";
+      rsvpModal.style.display = "none";
       loadAttendingCounts();
       updateRsvpButtons();
     }
@@ -343,13 +340,77 @@ if (submitRsvpBtn) {
 }
 
 // ===============================
-// Initialize RSVP (FINAL FIX)
+// Initialize RSVP
 // ===============================
-
-// 🔥 important: wait for session to be ready
 setTimeout(updateRsvpButtons, 300);
+
 // ===============================
-// Suggest Modal
+// My Meetups Page
+// ===============================
+if (isMyMeetupsPage) {
+  supabaseClient.auth.getSession().then(async ({ data }) => {
+    const session = data.session;
+
+    if (!session || !session.user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const container = document.getElementById("meetupsContainer");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    const { data: rsvps, error } = await supabaseClient
+      .from("rsvps")
+      .select("*")
+      .eq("email", session.user.email);
+
+    if (error) {
+      container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
+      return;
+    }
+
+    if (!rsvps || rsvps.length === 0) {
+      emptyMessage.style.display = "block";
+      return;
+    }
+
+    container.innerHTML = "";
+    rsvps.forEach((rsvp) => {
+      const card = document.createElement("div");
+      card.className = "event-card fade-in";
+      card.innerHTML = `
+        <span class="event-tag">Joined</span>
+        <h3 class="event-title">${rsvp.event_name}</h3>
+        <p class="event-description">You're signed up for this meetup.</p>
+      `;
+      container.appendChild(card);
+    });
+  });
+}
+
+// ===============================
+// Welcome Animation
+// ===============================
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session?.user) {
+    const username = session.user.user_metadata?.username;
+    const overlay = document.getElementById("welcomeOverlay");
+    const msg = document.getElementById("welcomeMessage");
+
+    if (overlay && msg) {
+      msg.textContent = `Welcome back, ${username || "friend"}!`;
+      overlay.style.display = "flex";
+
+      setTimeout(() => {
+        overlay.style.opacity = "0";
+        setTimeout(() => overlay.remove(), 600);
+      }, 1800);
+    }
+  }
+});
+
+// ===============================
+// Suggest Event Modal
 // ===============================
 const suggestModal = document.getElementById("suggestModal");
 const closeSuggestModalBtn = document.getElementById("closeSuggestModal");
@@ -366,8 +427,8 @@ async function openSuggestModal() {
   suggestModal.style.display = "flex";
 }
 
-// ✅ FIXED selector
-document.querySelectorAll(".openSuggest").forEach((el) => {
+// Open Suggest buttons
+document.querySelectorAll("#openSuggest").forEach((el) => {
   el.addEventListener("click", openSuggestModal);
 });
 
@@ -375,7 +436,7 @@ document.querySelectorAll(".openSuggest").forEach((el) => {
 const fabSuggest = document.getElementById("fabSuggest");
 if (fabSuggest) fabSuggest.addEventListener("click", openSuggestModal);
 
-// Close
+// Close Suggest modal
 if (closeSuggestModalBtn) {
   closeSuggestModalBtn.addEventListener("click", () => {
     suggestModal.style.display = "none";
@@ -383,7 +444,7 @@ if (closeSuggestModalBtn) {
 }
 
 // ===============================
-// Submit Suggestion (SAFE)
+// Submit Suggestion (Supabase Only)
 // ===============================
 const submitSuggestion = document.getElementById("submitSuggestion");
 
@@ -399,21 +460,16 @@ if (submitSuggestion) {
       return;
     }
 
-    try {
-      const res = await fetch("/api/sendSuggestion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, title, description })
-      });
+    const { error } = await supabaseClient
+      .from("suggestions")
+      .insert([{ name, email, title, description }]);
 
-      if (!res.ok) throw new Error();
-
-      showToast("Suggestion sent!");
-    } catch {
-      showToast("Suggestion sent (demo mode)");
+    if (error) {
+      showToast("Error saving suggestion.");
+    } else {
+      showToast("Suggestion saved!");
+      suggestModal.style.display = "none";
     }
-
-    suggestModal.style.display = "none";
   });
 }
 
