@@ -427,8 +427,10 @@ async function openSuggestModal() {
   suggestModal.style.display = "flex";
 }
 
-// Open Suggest buttons
-document.querySelectorAll("#openSuggest").forEach((el) => {
+// ===============================
+// Open Suggest buttons (FIXED)
+// ===============================
+document.querySelectorAll(".openSuggest").forEach((el) => {
   el.addEventListener("click", openSuggestModal);
 });
 
@@ -482,3 +484,4 @@ if (submitSuggestion) {
     if (e.target === modal) modal.style.display = "none";
   });
 });
+
