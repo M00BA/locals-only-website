@@ -77,7 +77,6 @@ if (userDropdownButton && userDropdownMenu) {
       userDropdownMenu.style.display === "block" ? "none" : "block";
   });
 
-  // Close dropdown when clicking outside
   document.addEventListener("click", (e) => {
     if (!userDropdownButton.contains(e.target) && !userDropdownMenu.contains(e.target)) {
       userDropdownMenu.style.display = "none";
@@ -96,7 +95,6 @@ if (navToggle && mainNav) {
     mainNav.classList.toggle("open");
   });
 
-  // Close nav when any link inside it is tapped
   mainNav.querySelectorAll("a, button").forEach((el) => {
     el.addEventListener("click", () => {
       mainNav.classList.remove("open");
@@ -129,7 +127,7 @@ const fadeObserver = new IntersectionObserver(
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
 // ===============================
-// Shooting Stars (capped at 2 on mobile)
+// Shooting Stars
 // ===============================
 function spawnShootingStar() {
   const star = document.createElement("div");
@@ -218,7 +216,7 @@ if (!isMyMeetupsPage && !isLoginPage && !isSuggestPage) {
 }
 
 // ===============================
-// RSVP Modal — all refs declared at top level (FIX for crash)
+// RSVP Modal
 // ===============================
 const rsvpModal = document.getElementById("rsvpModal");
 const rsvpEventName = document.getElementById("rsvpEventName");
@@ -226,12 +224,6 @@ const rsvpEmail = document.getElementById("rsvpEmail");
 const rsvpUsername = document.getElementById("rsvpUsername");
 const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
 const submitRsvpBtn = document.getElementById("submitRsvp");
-
-function openRsvpModal(eventName) {
-  if (!rsvpModal || !rsvpEventName) return;
-  rsvpEventName.textContent = eventName;
-  rsvpModal.style.display = "flex";
-}
 
 // ===============================
 // RSVP + Cancel Logic
@@ -255,6 +247,10 @@ async function cancelRsvp(eventName) {
   }
 }
 
+// BUG 1 FIX: Removed btn.onclick assignments from updateRsvpButtons().
+// Previously this overwrote the addEventListener set below, causing Confirm RSVP
+// to fire with a stale or empty event name. Now only the click handler below
+// opens the modal — updateRsvpButtons only updates button labels.
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
@@ -274,16 +270,17 @@ async function updateRsvpButtons() {
     if (userEvents.includes(eventName)) {
       btn.textContent = "Cancel RSVP";
       btn.classList.add("cancel-btn");
-      btn.onclick = () => cancelRsvp(eventName);
+      // Store cancel intent as a flag so the click handler below can read it
+      btn.dataset.cancelRsvp = "true";
     } else {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
-      btn.onclick = () => openRsvpModal(eventName);
+      delete btn.dataset.cancelRsvp;
     }
   });
 }
 
-// Wire up initial RSVP button clicks
+// Single unified click handler for all RSVP buttons
 document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
   btn.addEventListener("click", async () => {
     const session = (await supabaseClient.auth.getSession()).data.session;
@@ -293,9 +290,17 @@ document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
       return;
     }
 
+    const eventName = btn.dataset.event;
+
+    // If this button is currently in "Cancel RSVP" state, cancel instead of opening modal
+    if (btn.dataset.cancelRsvp === "true") {
+      cancelRsvp(eventName);
+      return;
+    }
+
     const username = session.user.user_metadata?.username;
 
-    if (rsvpEventName) rsvpEventName.textContent = btn.dataset.event;
+    if (rsvpEventName) rsvpEventName.textContent = eventName;
     if (rsvpEmail) rsvpEmail.value = session.user.email;
     if (rsvpUsername) rsvpUsername.value = username || "";
     if (rsvpModal) rsvpModal.style.display = "flex";
@@ -310,6 +315,8 @@ if (closeRsvpModalBtn) {
 }
 
 // Submit RSVP
+// BUG 4 FIX: Added duplicate check before inserting. If user already has an RSVP
+// for this event, we show a toast and skip the insert instead of creating a duplicate row.
 if (submitRsvpBtn) {
   submitRsvpBtn.addEventListener("click", async () => {
     if (!rsvpEventName || !rsvpEmail || !rsvpUsername) return;
@@ -317,6 +324,20 @@ if (submitRsvpBtn) {
     const eventName = rsvpEventName.textContent;
     const email = rsvpEmail.value;
     const username = rsvpUsername.value;
+
+    // Check for existing RSVP first
+    const { data: existing } = await supabaseClient
+      .from("rsvps")
+      .select("id")
+      .eq("email", email)
+      .eq("event_name", eventName)
+      .maybeSingle();
+
+    if (existing) {
+      showToast("You're already signed up!");
+      if (rsvpModal) rsvpModal.style.display = "none";
+      return;
+    }
 
     const { error } = await supabaseClient.from("rsvps").insert([
       { event_name: eventName, email, username }
@@ -424,8 +445,9 @@ async function openSuggestModal() {
   if (suggestModal) suggestModal.style.display = "flex";
 }
 
-// Wire up ALL #openSuggest elements (nav + dropdown)
-document.querySelectorAll("#openSuggest").forEach((el) => {
+// BUG 2 FIX: Selector updated to catch both the nav link (#openSuggest)
+// and the dropdown link (.openSuggest) — see matching HTML fix note below.
+document.querySelectorAll("#openSuggest, .openSuggest").forEach((el) => {
   el.addEventListener("click", openSuggestModal);
 });
 
@@ -444,6 +466,10 @@ if (closeSuggestModalBtn) {
 
 // ===============================
 // Submit Suggestion
+// BUG 3 FIX: Replaced broken fetch("/api/sendSuggestion") with a direct
+// Supabase insert into a "suggestions" table. This works on any static host
+// without needing a serverless function. Make sure a "suggestions" table exists
+// in your Supabase project with columns: name, email, title, description.
 // ===============================
 const submitSuggestion = document.getElementById("submitSuggestion");
 
@@ -459,17 +485,15 @@ if (submitSuggestion) {
       return;
     }
 
-    const res = await fetch("/api/sendSuggestion", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, title, description })
-    });
+    const { error } = await supabaseClient
+      .from("suggestions")
+      .insert([{ name, email, title, description }]);
 
-    if (res.ok) {
+    if (error) {
+      showToast("Error sending suggestion.");
+    } else {
       showToast("Suggestion sent!");
       if (suggestModal) suggestModal.style.display = "none";
-    } else {
-      showToast("Error sending suggestion.");
     }
   });
 }
