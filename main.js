@@ -77,6 +77,7 @@ if (userDropdownButton && userDropdownMenu) {
       userDropdownMenu.style.display === "block" ? "none" : "block";
   });
 
+  // Close dropdown when clicking outside
   document.addEventListener("click", (e) => {
     if (!userDropdownButton.contains(e.target) && !userDropdownMenu.contains(e.target)) {
       userDropdownMenu.style.display = "none";
@@ -95,6 +96,7 @@ if (navToggle && mainNav) {
     mainNav.classList.toggle("open");
   });
 
+  // Close nav when any link inside it is tapped
   mainNav.querySelectorAll("a, button").forEach((el) => {
     el.addEventListener("click", () => {
       mainNav.classList.remove("open");
@@ -127,7 +129,7 @@ const fadeObserver = new IntersectionObserver(
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
 // ===============================
-// Shooting Stars
+// Shooting Stars (capped at 2 on mobile)
 // ===============================
 function spawnShootingStar() {
   const star = document.createElement("div");
@@ -216,7 +218,7 @@ if (!isMyMeetupsPage && !isLoginPage && !isSuggestPage) {
 }
 
 // ===============================
-// RSVP Modal
+// RSVP Modal — all refs declared at top level
 // ===============================
 const rsvpModal = document.getElementById("rsvpModal");
 const rsvpEventName = document.getElementById("rsvpEventName");
@@ -225,8 +227,15 @@ const rsvpUsername = document.getElementById("rsvpUsername");
 const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
 const submitRsvpBtn = document.getElementById("submitRsvp");
 
+// Open modal
+function openRsvpModal(eventName) {
+  if (!rsvpModal || !rsvpEventName) return;
+  rsvpEventName.textContent = eventName;
+  rsvpModal.style.display = "flex";
+}
+
 // ===============================
-// RSVP + Cancel Logic
+// CANCEL RSVP
 // ===============================
 async function cancelRsvp(eventName) {
   const session = (await supabaseClient.auth.getSession()).data.session;
@@ -242,268 +251,83 @@ async function cancelRsvp(eventName) {
     showToast("Error canceling RSVP.");
   } else {
     showToast("RSVP canceled.");
-    loadAttendingCounts();
-    updateRsvpButtons();
+    await loadAttendingCounts();
+    await updateRsvpButtons();
   }
 }
 
-// BUG 1 FIX: Removed btn.onclick assignments from updateRsvpButtons().
-// Previously this overwrote the addEventListener set below, causing Confirm RSVP
-// to fire with a stale or empty event name. Now only the click handler below
-// opens the modal — updateRsvpButtons only updates button labels.
+// ===============================
+// UPDATE RSVP BUTTON STATES
+// ===============================
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
-  if (!session) return;
-
-  const { data: rsvps } = await supabaseClient
-    .from("rsvps")
-    .select("event_name")
-    .eq("email", session.user.email);
-
-  if (!rsvps) return;
-
-  const userEvents = rsvps.map((r) => r.event_name);
 
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const eventName = btn.dataset.event;
 
-    if (userEvents.includes(eventName)) {
-      btn.textContent = "Cancel RSVP";
-      btn.classList.add("cancel-btn");
-      // Store cancel intent as a flag so the click handler below can read it
-      btn.dataset.cancelRsvp = "true";
-    } else {
+    // Not logged in → clicking sends to login
+    if (!session) {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
-      delete btn.dataset.cancelRsvp;
-    }
-  });
-}
-
-// Single unified click handler for all RSVP buttons
-document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
-  btn.addEventListener("click", async () => {
-    const session = (await supabaseClient.auth.getSession()).data.session;
-
-    if (!session || !session.user) {
-      window.location.href = "login.html";
+      btn.onclick = () => (window.location.href = "login.html");
       return;
     }
 
-    const eventName = btn.dataset.event;
+    // Logged in → check if user RSVP’d
+    supabaseClient
+      .from("rsvps")
+      .select("event_name")
+      .eq("email", session.user.email)
+      .then(({ data }) => {
+        const userEvents = data?.map((r) => r.event_name) || [];
 
-    // If this button is currently in "Cancel RSVP" state, cancel instead of opening modal
-    if (btn.dataset.cancelRsvp === "true") {
-      cancelRsvp(eventName);
-      return;
-    }
-
-    const username = session.user.user_metadata?.username;
-
-    if (rsvpEventName) rsvpEventName.textContent = eventName;
-    if (rsvpEmail) rsvpEmail.value = session.user.email;
-    if (rsvpUsername) rsvpUsername.value = username || "";
-    if (rsvpModal) rsvpModal.style.display = "flex";
-  });
-});
-
-// Close RSVP modal
-if (closeRsvpModalBtn) {
-  closeRsvpModalBtn.addEventListener("click", () => {
-    if (rsvpModal) rsvpModal.style.display = "none";
+        if (userEvents.includes(eventName)) {
+          btn.textContent = "Cancel RSVP";
+          btn.classList.add("cancel-btn");
+          btn.onclick = () => cancelRsvp(eventName);
+        } else {
+          btn.textContent = "RSVP";
+          btn.classList.remove("cancel-btn");
+          btn.onclick = () => openRsvpModal(eventName);
+        }
+      });
   });
 }
 
-// Submit RSVP
-// BUG 4 FIX: Added duplicate check before inserting. If user already has an RSVP
-// for this event, we show a toast and skip the insert instead of creating a duplicate row.
+// ===============================
+// CONFIRM RSVP
+// ===============================
 if (submitRsvpBtn) {
-  submitRsvpBtn.addEventListener("click", async () => {
+  submitRsvpBtn.addEventListener("click", async (e) => {
+    e.preventDefault(); // prevents weird reloads
+
     if (!rsvpEventName || !rsvpEmail || !rsvpUsername) return;
 
     const eventName = rsvpEventName.textContent;
     const email = rsvpEmail.value;
     const username = rsvpUsername.value;
 
-    // Check for existing RSVP first
-    const { data: existing } = await supabaseClient
+    const { error } = await supabaseClient
       .from("rsvps")
-      .select("id")
-      .eq("email", email)
-      .eq("event_name", eventName)
-      .maybeSingle();
-
-    if (existing) {
-      showToast("You're already signed up!");
-      if (rsvpModal) rsvpModal.style.display = "none";
-      return;
-    }
-
-    const { error } = await supabaseClient.from("rsvps").insert([
-      { event_name: eventName, email, username }
-    ]);
+      .insert([{ event_name: eventName, email, username }]);
 
     if (error) {
+      console.error(error);
       showToast("Error saving RSVP.");
     } else {
       showToast("You're signed up!");
-      if (rsvpModal) rsvpModal.style.display = "none";
-      loadAttendingCounts();
-      updateRsvpButtons();
+      rsvpModal.style.display = "none";
+      await loadAttendingCounts();
+      await updateRsvpButtons();
     }
   });
 }
 
 // ===============================
-// My Meetups Page
+// CLOSE RSVP MODAL
 // ===============================
-if (isMyMeetupsPage) {
-  supabaseClient.auth.getSession().then(async ({ data }) => {
-    const session = data.session;
-
-    if (!session || !session.user) {
-      window.location.href = "login.html";
-      return;
-    }
-
-    const container = document.getElementById("meetupsContainer");
-    const emptyMessage = document.getElementById("emptyMessage");
-
-    const { data: rsvps, error } = await supabaseClient
-      .from("rsvps")
-      .select("*")
-      .eq("email", session.user.email);
-
-    if (error) {
-      if (container) container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
-      return;
-    }
-
-    if (!rsvps || rsvps.length === 0) {
-      if (emptyMessage) emptyMessage.style.display = "block";
-      return;
-    }
-
-    if (container) {
-      container.innerHTML = "";
-      rsvps.forEach((rsvp) => {
-        const card = document.createElement("div");
-        card.className = "event-card fade-in";
-        card.innerHTML = `
-          <span class="event-tag">Joined</span>
-          <h3 class="event-title">${rsvp.event_name}</h3>
-          <p class="event-description">You're signed up for this meetup.</p>
-        `;
-        container.appendChild(card);
-      });
-    }
+if (closeRsvpModalBtn) {
+  closeRsvpModalBtn.addEventListener("click", () => {
+    rsvpModal.style.display = "none";
   });
 }
-
-// ===============================
-// Welcome Animation
-// ===============================
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  if (event === "SIGNED_IN" && session?.user) {
-    const username = session.user.user_metadata?.username;
-    const overlay = document.getElementById("welcomeOverlay");
-    const msg = document.getElementById("welcomeMessage");
-
-    if (overlay && msg) {
-      msg.textContent = `Welcome back, ${username || "friend"}!`;
-      overlay.style.display = "flex";
-
-      setTimeout(() => {
-        overlay.style.opacity = "0";
-        setTimeout(() => overlay.remove(), 600);
-      }, 1800);
-    }
-  }
-});
-
-// ===============================
-// Initialize RSVP Button States
-// ===============================
-updateRsvpButtons();
-
-// ===============================
-// Suggest Event Modal
-// ===============================
-const suggestModal = document.getElementById("suggestModal");
-const closeSuggestModalBtn = document.getElementById("closeSuggestModal");
-
-async function openSuggestModal() {
-  const session = (await supabaseClient.auth.getSession()).data.session;
-
-  if (!session) {
-    window.location.href = "login.html";
-    return;
-  }
-
-  const suggestEmailEl = document.getElementById("suggestEmail");
-  if (suggestEmailEl) suggestEmailEl.value = session.user.email;
-  if (suggestModal) suggestModal.style.display = "flex";
-}
-
-// BUG 2 FIX: Selector updated to catch both the nav link (#openSuggest)
-// and the dropdown link (.openSuggest) — see matching HTML fix note below.
-document.querySelectorAll("#openSuggest, .openSuggest").forEach((el) => {
-  el.addEventListener("click", openSuggestModal);
-});
-
-// FAB button
-const fabSuggest = document.getElementById("fabSuggest");
-if (fabSuggest) {
-  fabSuggest.addEventListener("click", openSuggestModal);
-}
-
-// Close suggest modal
-if (closeSuggestModalBtn) {
-  closeSuggestModalBtn.addEventListener("click", () => {
-    if (suggestModal) suggestModal.style.display = "none";
-  });
-}
-
-// ===============================
-// Submit Suggestion
-// BUG 3 FIX: Replaced broken fetch("/api/sendSuggestion") with a direct
-// Supabase insert into a "suggestions" table. This works on any static host
-// without needing a serverless function. Make sure a "suggestions" table exists
-// in your Supabase project with columns: name, email, title, description.
-// ===============================
-const submitSuggestion = document.getElementById("submitSuggestion");
-
-if (submitSuggestion) {
-  submitSuggestion.addEventListener("click", async () => {
-    const name = document.getElementById("suggestName")?.value.trim();
-    const email = document.getElementById("suggestEmail")?.value.trim();
-    const title = document.getElementById("suggestTitle")?.value.trim();
-    const description = document.getElementById("suggestDescription")?.value.trim();
-
-    if (!name || !email || !title || !description) {
-      showToast("Please fill out all fields.");
-      return;
-    }
-
-    const { error } = await supabaseClient
-      .from("suggestions")
-      .insert([{ name, email, title, description }]);
-
-    if (error) {
-      showToast("Error sending suggestion.");
-    } else {
-      showToast("Suggestion sent!");
-      if (suggestModal) suggestModal.style.display = "none";
-    }
-  });
-}
-
-// ===============================
-// Close any modal by clicking the dark backdrop
-// ===============================
-[rsvpModal, suggestModal].forEach((modal) => {
-  if (!modal) return;
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.style.display = "none";
-  });
-});
