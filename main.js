@@ -9,7 +9,6 @@ const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_
 // Page Detection
 // ===============================
 const isLoginPage = window.location.pathname.includes("login.html");
-const isSuggestPage = window.location.pathname.includes("suggest-event.html");
 const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 
 // ===============================
@@ -211,7 +210,7 @@ async function loadAttendingCounts() {
   }
 }
 
-if (!isMyMeetupsPage && !isLoginPage && !isSuggestPage) {
+if (!isMyMeetupsPage && !isLoginPage) {
   loadAttendingCounts();
 }
 
@@ -226,7 +225,7 @@ const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
 const submitRsvpBtn = document.getElementById("submitRsvp");
 
 // ===============================
-// RSVP + Cancel Logic (FINAL FIX)
+// RSVP + Cancel Logic
 // ===============================
 async function cancelRsvp(eventName) {
   const session = (await supabaseClient.auth.getSession()).data.session;
@@ -250,7 +249,6 @@ async function cancelRsvp(eventName) {
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
 
-  // Not logged in → redirect on click
   if (!session || !session.user) {
     document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
       const newBtn = btn.cloneNode(true);
@@ -273,13 +271,11 @@ async function updateRsvpButtons() {
 
   const userEvents = rsvps?.map((r) => r.event_name) || [];
 
-  // Remove old listeners
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const newBtn = btn.cloneNode(true);
     btn.replaceWith(newBtn);
   });
 
-  // Reattach correct behavior
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const eventName = btn.dataset.event;
 
@@ -310,14 +306,12 @@ async function updateRsvpButtons() {
   });
 }
 
-// Close RSVP modal
 if (closeRsvpModalBtn) {
   closeRsvpModalBtn.addEventListener("click", () => {
     rsvpModal.style.display = "none";
   });
 }
 
-// Submit RSVP
 if (submitRsvpBtn) {
   submitRsvpBtn.addEventListener("click", async () => {
     const eventName = rsvpEventName.textContent;
@@ -339,9 +333,6 @@ if (submitRsvpBtn) {
   });
 }
 
-// ===============================
-// Initialize RSVP
-// ===============================
 setTimeout(updateRsvpButtons, 300);
 
 // ===============================
@@ -427,18 +418,13 @@ async function openSuggestModal() {
   suggestModal.style.display = "flex";
 }
 
-// ===============================
-// Open Suggest buttons (FIXED)
-// ===============================
 document.querySelectorAll(".openSuggest").forEach((el) => {
   el.addEventListener("click", openSuggestModal);
 });
 
-// FAB
 const fabSuggest = document.getElementById("fabSuggest");
 if (fabSuggest) fabSuggest.addEventListener("click", openSuggestModal);
 
-// Close Suggest modal
 if (closeSuggestModalBtn) {
   closeSuggestModalBtn.addEventListener("click", () => {
     suggestModal.style.display = "none";
@@ -446,7 +432,7 @@ if (closeSuggestModalBtn) {
 }
 
 // ===============================
-// Submit Suggestion (Supabase Only)
+// Submit Suggestion (EMAIL VERSION)
 // ===============================
 const submitSuggestion = document.getElementById("submitSuggestion");
 
@@ -462,15 +448,26 @@ if (submitSuggestion) {
       return;
     }
 
-    const { error } = await supabaseClient
-      .from("suggestions")
-      .insert([{ name, email, title, description }]);
+    try {
+      const res = await fetch("/api/sendSuggestion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          title,
+          description,
+          sendTo: "cantfindoutwhat@gmail.com"
+        })
+      });
 
-    if (error) {
-      showToast("Error saving suggestion.");
-    } else {
-      showToast("Suggestion saved!");
+      if (!res.ok) throw new Error();
+
+      showToast("Suggestion sent!");
       suggestModal.style.display = "none";
+
+    } catch (err) {
+      showToast("Error sending suggestion.");
     }
   });
 }
@@ -484,4 +481,3 @@ if (submitSuggestion) {
     if (e.target === modal) modal.style.display = "none";
   });
 });
-
