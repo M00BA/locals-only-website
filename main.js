@@ -225,7 +225,7 @@ const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
 const submitRsvpBtn = document.getElementById("submitRsvp");
 
 // ===============================
-// RSVP + Cancel Logic
+// RSVP + Cancel Logic (FIXED)
 // ===============================
 async function cancelRsvp(eventName) {
   const session = (await supabaseClient.auth.getSession()).data.session;
@@ -249,21 +249,25 @@ async function cancelRsvp(eventName) {
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
 
-  if (!session || !session.user) {
-    document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
-      const newBtn = btn.cloneNode(true);
-      btn.replaceWith(newBtn);
-    });
+  // Remove ALL old listeners safely
+  document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
+    const clone = btn.cloneNode(true);
+    btn.replaceWith(clone);
+  });
 
-    document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
+  const buttons = document.querySelectorAll(".event-rsvp-btn");
+
+  // Not logged in → redirect on click
+  if (!session || !session.user) {
+    buttons.forEach((btn) => {
       btn.addEventListener("click", () => {
         window.location.href = "login.html";
       });
     });
-
     return;
   }
 
+  // Logged in → load user's RSVPs
   const { data: rsvps } = await supabaseClient
     .from("rsvps")
     .select("event_name")
@@ -271,17 +275,13 @@ async function updateRsvpButtons() {
 
   const userEvents = rsvps?.map((r) => r.event_name) || [];
 
-  document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
-    const newBtn = btn.cloneNode(true);
-    btn.replaceWith(newBtn);
-  });
-
-  document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
+  buttons.forEach((btn) => {
     const eventName = btn.dataset.event;
 
     if (userEvents.includes(eventName)) {
       btn.textContent = "Cancel RSVP";
       btn.classList.add("cancel-btn");
+
       btn.addEventListener("click", () => cancelRsvp(eventName));
     } else {
       btn.textContent = "RSVP";
