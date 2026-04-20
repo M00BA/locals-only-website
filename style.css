@@ -154,6 +154,7 @@ body::after {
   gap: 12px;
 }
 
+/* ⭐ Home button stays bubble */
 .nav-link {
   padding: 7px 16px;
   border-radius: var(--radius-pill);
@@ -170,28 +171,24 @@ body::after {
   color: #1b1220;
 }
 
-/* ---------------------------------------------------
-   FIXED — Navbar Suggest Event button
---------------------------------------------------- */
-.main-nav .openSuggest {
-  padding: 7px 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--accent);
-  background: rgba(255,255,255,0.08);
+/* ⭐ FIXED — Suggest Event + My Meetups inside navbar = normal links */
+.main-nav .openSuggest,
+.main-nav #myMeetupsLink {
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
   color: var(--text-main);
   cursor: pointer;
-  transition: var(--transition-med);
   text-decoration: none;
+  border-radius: 6px;
 }
 
-.main-nav .openSuggest:hover {
-  background: var(--accent);
-  color: #1b1220;
+.main-nav .openSuggest:hover,
+.main-nav #myMeetupsLink:hover {
+  background: var(--surface-hover);
 }
 
-/* ---------------------------------------------------
-   FIXED — Dropdown Suggest Event link
---------------------------------------------------- */
+/* Dropdown version stays normal */
 .user-dropdown-menu .openSuggest {
   padding: 6px 10px;
   border: none;
@@ -204,7 +201,6 @@ body::after {
 
 .user-dropdown-menu .openSuggest:hover {
   background: var(--surface-hover);
-  color: var(--text-main);
 }
 
 .nav-toggle {
