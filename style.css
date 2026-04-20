@@ -171,9 +171,9 @@ body::after {
 }
 
 /* ---------------------------------------------------
-   FIX 1 — Style .openSuggest
+   FIXED — Navbar Suggest Event button
 --------------------------------------------------- */
-.openSuggest {
+.main-nav .openSuggest {
   padding: 7px 16px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--accent);
@@ -182,13 +182,29 @@ body::after {
   cursor: pointer;
   transition: var(--transition-med);
   text-decoration: none;
-  display: block;
-  margin-bottom: 6px;
 }
 
-.openSuggest:hover {
+.main-nav .openSuggest:hover {
   background: var(--accent);
   color: #1b1220;
+}
+
+/* ---------------------------------------------------
+   FIXED — Dropdown Suggest Event link
+--------------------------------------------------- */
+.user-dropdown-menu .openSuggest {
+  padding: 6px 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-main);
+  border-radius: 6px;
+  display: block;
+  margin: 0;
+}
+
+.user-dropdown-menu .openSuggest:hover {
+  background: var(--surface-hover);
+  color: var(--text-main);
 }
 
 .nav-toggle {
@@ -544,4 +560,5 @@ body::after {
   box-shadow: var(--shadow-soft);
   font-size: 0.85rem;
   opacity: 0;
-  pointer-events
+  pointer-events: none;
+}
