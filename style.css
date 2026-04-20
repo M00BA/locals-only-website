@@ -170,6 +170,27 @@ body::after {
   color: #1b1220;
 }
 
+/* ---------------------------------------------------
+   FIX 1 — Style .openSuggest
+--------------------------------------------------- */
+.openSuggest {
+  padding: 7px 16px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--accent);
+  background: rgba(255,255,255,0.08);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: var(--transition-med);
+  text-decoration: none;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.openSuggest:hover {
+  background: var(--accent);
+  color: #1b1220;
+}
+
 .nav-toggle {
   display: none;
   flex-direction: column;
@@ -232,7 +253,6 @@ body::after {
   text-shadow: 0 0 40px rgba(242, 201, 140, 0.18);
 }
 
-/* Underline animation */
 .hero-highlight {
   position: relative;
   display: inline-block;
@@ -396,6 +416,7 @@ body::after {
   cursor: pointer;
   display: none;
   transition: transform 200ms ease;
+  pointer-events: none;
 }
 
 .fab-suggest:hover {
@@ -405,6 +426,7 @@ body::after {
 @media (max-width: 720px) {
   .fab-suggest {
     display: block;
+    pointer-events: auto;
   }
 }
 
@@ -422,6 +444,20 @@ body::after {
 }
 
 .login-input {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: rgba(255,255,255,0.06);
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+/* ---------------------------------------------------
+   FIX 2 — Modal input styling
+--------------------------------------------------- */
+.modal-content input,
+.modal-content textarea {
   width: 100%;
   padding: 10px 14px;
   border-radius: var(--radius-md);
@@ -508,35 +544,4 @@ body::after {
   box-shadow: var(--shadow-soft);
   font-size: 0.85rem;
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-  z-index: 99999;
-}
-
-.safari-storage-popup.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* ---------------------------------------------------
-   USER DROPDOWN
---------------------------------------------------- */
-.user-dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.user-dropdown-menu {
-  display: none;
-  position: absolute;
-  right: 0;
-  background: var(--surface);
-  padding: 12px;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-soft);
-  z-index: 999;
-}
-
-.user-dropdown-menu a:hover {
-  background: var(--surface-hover);
-}
+  pointer-events
