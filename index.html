@@ -40,12 +40,14 @@
       <!-- NAV -->
       <nav class="main-nav">
 
+        <!-- ⭐ Home stays bubble -->
         <a href="/" class="nav-link">Home</a>
 
-        <!-- FIXED: class instead of id -->
-        <a href="#" class="nav-link openSuggest">Suggest Event</a>
+        <!-- ⭐ Suggest Event becomes normal link -->
+        <a href="#" class="openSuggest">Suggest Event</a>
 
-        <a id="myMeetupsLink" href="my-meetups.html" class="nav-link" style="display:none;">My Meetups</a>
+        <!-- ⭐ My Meetups becomes normal link -->
+        <a id="myMeetupsLink" href="my-meetups.html" style="display:none;">My Meetups</a>
 
         <!-- USER DROPDOWN -->
         <div id="userDropdown" class="user-dropdown" style="display:none;">
@@ -55,10 +57,7 @@
 
           <div id="userDropdownMenu" class="user-dropdown-menu">
             <a href="my-meetups.html">My Meetups</a>
-
-            <!-- FIXED: class instead of id -->
             <a href="#" class="openSuggest">Suggest Event</a>
-
             <a id="logoutButton">Logout</a>
           </div>
         </div>
