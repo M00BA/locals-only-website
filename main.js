@@ -12,7 +12,7 @@ const isLoginPage = window.location.pathname.includes("login.html");
 const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 
 // ===============================
-// Navbar Update (FIXED CLEAN)
+// Navbar Update (FINAL FIX)
 // ===============================
 function updateNavbar(session) {
   const myMeetupsLink = document.getElementById("myMeetupsLink");
@@ -20,31 +20,31 @@ function updateNavbar(session) {
   const userDropdown = document.getElementById("userDropdown");
   const navbarUsername = document.getElementById("navbarUsername");
 
-  // Reset to logged-out default
+  // RESET STATE (logged out)
   if (loginLink) loginLink.style.display = "inline-block";
   if (userDropdown) userDropdown.style.display = "none";
   if (myMeetupsLink) myMeetupsLink.style.display = "none";
 
-  // Show top-level Suggest Event in main nav when logged out
-  document.querySelectorAll(".main-nav .openSuggest").forEach((el) => {
+  // Show Suggest Event in top nav when logged out
+  document.querySelectorAll(".main-nav .openSuggest").forEach(el => {
     el.style.display = "inline-block";
   });
 
-  // If NOT logged in → stop here
+  // STOP HERE if not logged in
   if (!session || !session.user) return;
 
   const username = session.user.user_metadata?.username;
 
-  // Logged in state
+  // LOGGED IN STATE
   if (loginLink) loginLink.style.display = "none";
   if (userDropdown) userDropdown.style.display = "inline-block";
   if (navbarUsername) navbarUsername.textContent = username || "User";
 
-  // We only want My Meetups inside the dropdown, not as a separate bubble/link
+  // HIDE top-nav My Meetups (dropdown version only)
   if (myMeetupsLink) myMeetupsLink.style.display = "none";
 
-  // When logged in, Suggest Event should live in the dropdown, not duplicated in the main nav
-  document.querySelectorAll(".main-nav .openSuggest").forEach((el) => {
+  // HIDE top-nav Suggest Event (dropdown version only)
+  document.querySelectorAll(".main-nav .openSuggest").forEach(el => {
     el.style.display = "none";
   });
 }
@@ -193,14 +193,12 @@ async function loadAttendingCounts() {
   for (const el of countElements) {
     const eventName = el.dataset.event;
 
-    const { count, error } = await supabaseClient
+    const { count } = await supabaseClient
       .from("rsvps")
       .select("*", { count: "exact", head: true })
       .eq("event_name", eventName);
 
-    if (!error) {
-      el.textContent = `${count || 0} attending`;
-    }
+    el.textContent = `${count || 0} attending`;
   }
 }
 
@@ -209,41 +207,27 @@ if (!isMyMeetupsPage && !isLoginPage) {
 }
 
 // ===============================
-// RSVP Modal Elements
-// ===============================
-const rsvpModal = document.getElementById("rsvpModal");
-const rsvpEventName = document.getElementById("rsvpEventName");
-const rsvpEmail = document.getElementById("rsvpEmail");
-const rsvpUsername = document.getElementById("rsvpUsername");
-const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
-const submitRsvpBtn = document.getElementById("submitRsvp");
-
-// ===============================
-// RSVP + Cancel Logic (FIXED)
+// RSVP SYSTEM
 // ===============================
 async function cancelRsvp(eventName) {
   const session = (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
 
-  const { error } = await supabaseClient
+  await supabaseClient
     .from("rsvps")
     .delete()
     .eq("email", session.user.email)
     .eq("event_name", eventName);
 
-  if (error) {
-    showToast("Error canceling RSVP.");
-  } else {
-    showToast("RSVP canceled.");
-    loadAttendingCounts();
-    updateRsvpButtons();
-  }
+  showToast("RSVP canceled.");
+  loadAttendingCounts();
+  updateRsvpButtons();
 }
 
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
 
-  // Remove ALL old listeners safely
+  // Remove old listeners
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const clone = btn.cloneNode(true);
     btn.replaceWith(clone);
@@ -251,8 +235,7 @@ async function updateRsvpButtons() {
 
   const buttons = document.querySelectorAll(".event-rsvp-btn");
 
-  // Not logged in → redirect on click
-  if (!session || !session.user) {
+  if (!session) {
     buttons.forEach((btn) => {
       btn.addEventListener("click", () => {
         window.location.href = "login.html";
@@ -261,7 +244,6 @@ async function updateRsvpButtons() {
     return;
   }
 
-  // Logged in → load user's RSVPs
   const { data: rsvps } = await supabaseClient
     .from("rsvps")
     .select("event_name")
@@ -275,54 +257,16 @@ async function updateRsvpButtons() {
     if (userEvents.includes(eventName)) {
       btn.textContent = "Cancel RSVP";
       btn.classList.add("cancel-btn");
-
-      btn.addEventListener("click", () => cancelRsvp(eventName));
+      btn.onclick = () => cancelRsvp(eventName);
     } else {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
-
-      btn.addEventListener("click", async () => {
-        const freshSession = (await supabaseClient.auth.getSession()).data.session;
-
-        if (!freshSession || !freshSession.user) {
-          window.location.href = "login.html";
-          return;
-        }
-
-        const username = freshSession.user.user_metadata?.username;
-
+      btn.onclick = () => {
         rsvpEventName.textContent = eventName;
-        rsvpEmail.value = freshSession.user.email;
-        rsvpUsername.value = username || "";
+        rsvpEmail.value = session.user.email;
+        rsvpUsername.value = session.user.user_metadata?.username || "";
         rsvpModal.style.display = "flex";
-      });
-    }
-  });
-}
-
-if (closeRsvpModalBtn) {
-  closeRsvpModalBtn.addEventListener("click", () => {
-    rsvpModal.style.display = "none";
-  });
-}
-
-if (submitRsvpBtn) {
-  submitRsvpBtn.addEventListener("click", async () => {
-    const eventName = rsvpEventName.textContent;
-    const email = rsvpEmail.value;
-    const username = rsvpUsername.value;
-
-    const { error } = await supabaseClient.from("rsvps").insert([
-      { event_name: eventName, email, username }
-    ]);
-
-    if (error) {
-      showToast("Error saving RSVP.");
-    } else {
-      showToast("You're signed up!");
-      rsvpModal.style.display = "none";
-      loadAttendingCounts();
-      updateRsvpButtons();
+      };
     }
   });
 }
@@ -344,15 +288,10 @@ if (isMyMeetupsPage) {
     const container = document.getElementById("meetupsContainer");
     const emptyMessage = document.getElementById("emptyMessage");
 
-    const { data: rsvps, error } = await supabaseClient
+    const { data: rsvps } = await supabaseClient
       .from("rsvps")
       .select("*")
       .eq("email", session.user.email);
-
-    if (error) {
-      container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
-      return;
-    }
 
     if (!rsvps || rsvps.length === 0) {
       emptyMessage.style.display = "block";
@@ -408,10 +347,8 @@ async function openSuggestModal() {
     return;
   }
 
-  const emailInput = document.getElementById("suggestEmail");
-  if (emailInput) emailInput.value = session.user.email;
-
-  if (suggestModal) suggestModal.style.display = "flex";
+  document.getElementById("suggestEmail").value = session.user.email;
+  suggestModal.style.display = "flex";
 }
 
 document.querySelectorAll(".openSuggest").forEach((el) => {
@@ -428,7 +365,7 @@ if (closeSuggestModalBtn) {
 }
 
 // ===============================
-// Submit Suggestion (EMAIL VERSION)
+// Submit Suggestion
 // ===============================
 const submitSuggestion = document.getElementById("submitSuggestion");
 
@@ -461,6 +398,7 @@ if (submitSuggestion) {
 
       showToast("Suggestion sent!");
       suggestModal.style.display = "none";
+
     } catch (err) {
       showToast("Error sending suggestion.");
     }
