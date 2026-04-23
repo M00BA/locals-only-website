@@ -24,12 +24,9 @@
 
   --transition-fast: 150ms ease;
   --transition-med: 220ms ease;
-  --transition-slow: 320ms ease;
 }
 
-/* ---------------------------------------------------
-   2. GLOBAL RESET + BASE
---------------------------------------------------- */
+/* --------------------------------------------------- */
 *,
 *::before,
 *::after {
@@ -55,70 +52,7 @@ main {
 }
 
 /* ---------------------------------------------------
-   3. STARFIELD BACKGROUND
---------------------------------------------------- */
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -2;
-}
-
-body::before {
-  background-image:
-    radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.9), transparent),
-    radial-gradient(1.5px 1.5px at 30% 80%, rgba(255,255,255,0.8), transparent),
-    radial-gradient(2px 2px at 70% 40%, rgba(255,255,255,0.9), transparent),
-    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.7), transparent);
-  animation: starFloat 40s ease-in-out infinite, starPulse 6s ease-in-out infinite alternate;
-}
-
-body::after {
-  background-image:
-    radial-gradient(1.5px 1.5px at 15% 30%, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.5), transparent);
-  animation: starPulse 6s ease-in-out infinite alternate;
-}
-
-@keyframes starFloat {
-  0% { transform: translate(0,0); }
-  50% { transform: translate(12px,-16px); }
-  100% { transform: translate(0,0); }
-}
-
-@keyframes starPulse {
-  0% { opacity: 0.7; }
-  100% { opacity: 1; }
-}
-
-/* Shooting star */
-.shooting-star {
-  position: fixed;
-  top: -40px;
-  left: -40px;
-  width: 3px;
-  height: 3px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 0 8px #fff;
-  opacity: 0;
-  pointer-events: none;
-  z-index: 9999;
-}
-
-.shooting-star.active {
-  animation: shoot 1.2s ease-out forwards;
-}
-
-@keyframes shoot {
-  0% { opacity: 1; transform: translate(0,0) scale(1); }
-  100% { opacity: 0; transform: translate(300px,180px) scale(0.4); }
-}
-
-/* ---------------------------------------------------
-   4. HEADER + NAVBAR
+   HEADER FIX (UNIFIED BUTTONS)
 --------------------------------------------------- */
 .site-header {
   position: sticky;
@@ -137,188 +71,46 @@ body::after {
   align-items: center;
 }
 
+/* Smaller logo = better balance */
 .logo-image {
-  height: 110px;
-  width: auto;
-  display: block;
+  height: 70px;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-  height: 100px;
-}
-
+/* 🔥 ALL NAV LINKS NOW IDENTICAL */
 .main-nav {
   display: flex;
   gap: 12px;
 }
 
-/* ⭐ Home button stays bubble */
-.nav-link {
+.main-nav a {
   padding: 7px 16px;
   border-radius: var(--radius-pill);
   border: 1px solid var(--accent);
   background: rgba(255,255,255,0.08);
   color: var(--text-main);
   cursor: pointer;
-  transition: var(--transition-med);
   text-decoration: none;
+  transition: var(--transition-med);
 }
 
-.nav-link:hover {
+.main-nav a:hover {
   background: var(--accent);
   color: #1b1220;
 }
 
-/* ⭐ FIXED — Suggest Event + My Meetups inside navbar = normal links */
-.main-nav .openSuggest,
-.main-nav #myMeetupsLink {
-  padding: 6px 8px;
-  border: none;
-  background: transparent;
-  color: var(--text-main);
-  cursor: pointer;
-  text-decoration: none;
-  border-radius: 6px;
-}
-
-.main-nav .openSuggest:hover,
-.main-nav #myMeetupsLink:hover {
-  background: var(--surface-hover);
-}
-
-/* Dropdown version stays normal */
-.user-dropdown-menu .openSuggest {
-  padding: 6px 10px;
-  border: none;
-  background: transparent;
-  color: var(--text-main);
-  border-radius: 6px;
-  display: block;
-  margin: 0;
-}
-
-.user-dropdown-menu .openSuggest:hover {
-  background: var(--surface-hover);
-}
-
-.nav-toggle {
-  display: none;
-  flex-direction: column;
-  gap: 4px;
-  background: none;
-  border: none;
-}
-
-.nav-toggle-line {
-  width: 22px;
-  height: 2px;
-  background: var(--text-main);
-  border-radius: 999px;
-}
-
-/* ---------------------------------------------------
-   MOBILE NAV (SLIDE-DOWN)
---------------------------------------------------- */
-@media (max-width: 720px) {
-  .nav-toggle { display: flex; }
-
-  .main-nav {
-    position: absolute;
-    top: 52px;
-    right: 16px;
-    flex-direction: column;
-    background: var(--surface);
-    padding: 12px;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
-
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-
-    transition: max-height 0.3s ease, opacity 0.25s ease;
-  }
-
-  .main-nav.open {
-    max-height: 400px;
-    opacity: 1;
-    pointer-events: auto;
-  }
-}
-
-/* ---------------------------------------------------
-   5. HERO
---------------------------------------------------- */
-.hero {
-  text-align: center;
-  margin: 80px auto 60px;
-  max-width: 700px;
-  padding: 0 16px;
-}
-
-.hero-title {
-  margin: 0 0 10px;
-  font-size: 1.9rem;
-  text-shadow: 0 0 40px rgba(242, 201, 140, 0.18);
-}
-
-.hero-highlight {
-  position: relative;
-  display: inline-block;
-}
-.hero-highlight::after {
-  content: "";
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  height: 2px;
-  width: 0%;
-  background: #f2c98c;
-  border-radius: 999px;
-  animation: underlineGrow 1.2s ease forwards 0.6s;
-}
-@keyframes underlineGrow {
-  to { width: 100%; }
-}
-
-.hero-subtitle {
-  margin: 0;
-  color: var(--text-muted);
-}
-
-/* ---------------------------------------------------
-   6. EVENTS GRID
---------------------------------------------------- */
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 18px;
-}
-
-.city-filters {
-  display: flex;
-  gap: 8px;
-}
-
-.city-filter-btn {
-  padding: 4px 12px;
+/* 🔥 Dropdown button FIX */
+.user-dropdown-btn {
+  padding: 7px 16px;
   border-radius: var(--radius-pill);
-  border: 1px solid transparent;
-  background: rgba(0,0,0,0.04);
-  color: var(--text-muted);
+  border: 1px solid var(--accent);
+  background: rgba(255,255,255,0.08);
+  color: var(--text-main);
   cursor: pointer;
-  transition: var(--transition-med);
 }
 
-.city-filter-btn.active {
-  background: var(--accent);
-  color: #1b1220;
-}
-
+/* ---------------------------------------------------
+   EVENTS
+--------------------------------------------------- */
 .events-grid {
   display: grid;
   gap: 16px;
@@ -355,21 +147,9 @@ body::after {
   margin-bottom: 6px;
 }
 
-.event-title {
-  margin: 0 0 4px;
-  font-size: 1.1rem;
-}
-
-.event-meta {
-  margin: 0 0 8px;
-  color: var(--text-muted);
-}
-
-.event-description {
-  margin: 0 0 12px;
-  line-height: 1.5;
-}
-
+/* ---------------------------------------------------
+   RSVP BUTTON FIX
+--------------------------------------------------- */
 .event-rsvp-btn {
   border-radius: var(--radius-pill);
   border: 1px solid var(--accent);
@@ -385,176 +165,18 @@ body::after {
   color: #1b1220;
 }
 
-/* ---------------------------------------------------
-   ATTENDING COUNT PILL
---------------------------------------------------- */
-.attending-count {
-  display: inline-block;
-  background: rgba(242, 201, 140, 0.12);
-  color: #f2c98c;
-  border: 1px solid rgba(242, 201, 140, 0.3);
-  border-radius: 999px;
-  padding: 2px 10px;
-  font-size: 0.78rem;
-  margin-bottom: 10px;
+/* Cancel state */
+.event-rsvp-btn.cancel-btn {
+  border: 1px solid #ff8a8a;
+  color: #ff8a8a;
 }
 
-/* ---------------------------------------------------
-   7. ABOUT
---------------------------------------------------- */
-.about-text {
-  max-width: 700px;
-  margin: 12px 0;
-  line-height: 1.6;
-  color: var(--text-muted);
-}
-
-/* ---------------------------------------------------
-   8. FLOATING SUGGEST BUTTON (FAB)
---------------------------------------------------- */
-.fab-suggest {
-  position: fixed;
-  bottom: 24px;
-  right: 20px;
-  background: #f2c98c;
+.event-rsvp-btn.cancel-btn:hover {
+  background: #ff8a8a;
   color: #1b1220;
-  border-radius: 999px;
-  padding: 12px 20px;
-  font-size: 15px;
-  font-weight: 500;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-  z-index: 999;
-  border: none;
-  cursor: pointer;
-  display: none;
-  transition: transform 200ms ease;
-  pointer-events: none;
 }
 
-.fab-suggest:hover {
-  transform: scale(1.04);
-}
-
-@media (max-width: 720px) {
-  .fab-suggest {
-    display: block;
-    pointer-events: auto;
-  }
-}
-
-/* ---------------------------------------------------
-   9. LOGIN + FORMS
---------------------------------------------------- */
-.login-wrapper {
-  max-width: 420px;
-  margin: 120px auto;
-  background: var(--surface);
-  padding: 32px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  text-align: center;
-}
-
-.login-input {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-soft);
-  background: rgba(255,255,255,0.06);
-  color: var(--text-main);
-  margin-bottom: 12px;
-}
-
-/* ---------------------------------------------------
-   FIX 2 — Modal input styling
---------------------------------------------------- */
-.modal-content input,
-.modal-content textarea {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-soft);
-  background: rgba(255,255,255,0.06);
-  color: var(--text-main);
-  margin-bottom: 12px;
-}
-
-/* ---------------------------------------------------
-   iOS INPUT FIX
---------------------------------------------------- */
-@media (max-width: 480px) {
-  .login-input,
-  textarea {
-    font-size: 16px !important;
-  }
-
-  .modal-content input,
-  .modal-content textarea {
-    font-size: 16px;
-  }
-}
-
-/* ---------------------------------------------------
-   10. MODAL
---------------------------------------------------- */
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(10, 10, 15, 0.75);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  background: #1a1a22;
-  padding: 28px;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 420px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.4);
-  animation: modalPop 0.25s ease;
-}
-
-@keyframes modalPop {
-  from { transform: scale(0.92); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-
-/* ---------------------------------------------------
-   FADE-IN
---------------------------------------------------- */
-.fade-in {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
-}
-
-.fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ---------------------------------------------------
-   SAFARI STORAGE POPUP
---------------------------------------------------- */
-.safari-storage-popup {
-  position: fixed;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--surface);
-  color: var(--text-main);
-  padding: 10px 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-soft);
-  box-shadow: var(--shadow-soft);
-  font-size: 0.85rem;
-  opacity: 0;
-  pointer-events: none;
+/* Click feedback */
+.event-rsvp-btn:active {
+  transform: scale(0.96);
 }
