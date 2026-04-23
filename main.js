@@ -20,12 +20,13 @@ function updateNavbar(session) {
   const userDropdown = document.getElementById("userDropdown");
   const navbarUsername = document.getElementById("navbarUsername");
 
-  // Default state (logged out)
+  // Reset to logged-out default
   if (loginLink) loginLink.style.display = "inline-block";
   if (userDropdown) userDropdown.style.display = "none";
   if (myMeetupsLink) myMeetupsLink.style.display = "none";
 
-  document.querySelectorAll(".main-nav .openSuggest").forEach(el => {
+  // Show top-level Suggest Event in main nav when logged out
+  document.querySelectorAll(".main-nav .openSuggest").forEach((el) => {
     el.style.display = "inline-block";
   });
 
@@ -39,10 +40,11 @@ function updateNavbar(session) {
   if (userDropdown) userDropdown.style.display = "inline-block";
   if (navbarUsername) navbarUsername.textContent = username || "User";
 
-  // 🔥 FIX: remove duplicate links
+  // We only want My Meetups inside the dropdown, not as a separate bubble/link
   if (myMeetupsLink) myMeetupsLink.style.display = "none";
 
-  document.querySelectorAll(".main-nav .openSuggest").forEach(el => {
+  // When logged in, Suggest Event should live in the dropdown, not duplicated in the main nav
+  document.querySelectorAll(".main-nav .openSuggest").forEach((el) => {
     el.style.display = "none";
   });
 }
@@ -191,12 +193,14 @@ async function loadAttendingCounts() {
   for (const el of countElements) {
     const eventName = el.dataset.event;
 
-    const { count } = await supabaseClient
+    const { count, error } = await supabaseClient
       .from("rsvps")
       .select("*", { count: "exact", head: true })
       .eq("event_name", eventName);
 
-    el.textContent = `${count || 0} attending`;
+    if (!error) {
+      el.textContent = `${count || 0} attending`;
+    }
   }
 }
 
@@ -205,26 +209,41 @@ if (!isMyMeetupsPage && !isLoginPage) {
 }
 
 // ===============================
-// RSVP SYSTEM (UNCHANGED CORE)
+// RSVP Modal Elements
+// ===============================
+const rsvpModal = document.getElementById("rsvpModal");
+const rsvpEventName = document.getElementById("rsvpEventName");
+const rsvpEmail = document.getElementById("rsvpEmail");
+const rsvpUsername = document.getElementById("rsvpUsername");
+const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
+const submitRsvpBtn = document.getElementById("submitRsvp");
+
+// ===============================
+// RSVP + Cancel Logic (FIXED)
 // ===============================
 async function cancelRsvp(eventName) {
   const session = (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
 
-  await supabaseClient
+  const { error } = await supabaseClient
     .from("rsvps")
     .delete()
     .eq("email", session.user.email)
     .eq("event_name", eventName);
 
-  showToast("RSVP canceled.");
-  loadAttendingCounts();
-  updateRsvpButtons();
+  if (error) {
+    showToast("Error canceling RSVP.");
+  } else {
+    showToast("RSVP canceled.");
+    loadAttendingCounts();
+    updateRsvpButtons();
+  }
 }
 
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
 
+  // Remove ALL old listeners safely
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const clone = btn.cloneNode(true);
     btn.replaceWith(clone);
@@ -232,7 +251,8 @@ async function updateRsvpButtons() {
 
   const buttons = document.querySelectorAll(".event-rsvp-btn");
 
-  if (!session) {
+  // Not logged in → redirect on click
+  if (!session || !session.user) {
     buttons.forEach((btn) => {
       btn.addEventListener("click", () => {
         window.location.href = "login.html";
@@ -241,6 +261,7 @@ async function updateRsvpButtons() {
     return;
   }
 
+  // Logged in → load user's RSVPs
   const { data: rsvps } = await supabaseClient
     .from("rsvps")
     .select("event_name")
@@ -253,15 +274,205 @@ async function updateRsvpButtons() {
 
     if (userEvents.includes(eventName)) {
       btn.textContent = "Cancel RSVP";
-      btn.onclick = () => cancelRsvp(eventName);
+      btn.classList.add("cancel-btn");
+
+      btn.addEventListener("click", () => cancelRsvp(eventName));
     } else {
       btn.textContent = "RSVP";
-      btn.onclick = () => {
-        document.getElementById("rsvpEventName").textContent = eventName;
-        document.getElementById("rsvpModal").style.display = "flex";
-      };
+      btn.classList.remove("cancel-btn");
+
+      btn.addEventListener("click", async () => {
+        const freshSession = (await supabaseClient.auth.getSession()).data.session;
+
+        if (!freshSession || !freshSession.user) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const username = freshSession.user.user_metadata?.username;
+
+        rsvpEventName.textContent = eventName;
+        rsvpEmail.value = freshSession.user.email;
+        rsvpUsername.value = username || "";
+        rsvpModal.style.display = "flex";
+      });
+    }
+  });
+}
+
+if (closeRsvpModalBtn) {
+  closeRsvpModalBtn.addEventListener("click", () => {
+    rsvpModal.style.display = "none";
+  });
+}
+
+if (submitRsvpBtn) {
+  submitRsvpBtn.addEventListener("click", async () => {
+    const eventName = rsvpEventName.textContent;
+    const email = rsvpEmail.value;
+    const username = rsvpUsername.value;
+
+    const { error } = await supabaseClient.from("rsvps").insert([
+      { event_name: eventName, email, username }
+    ]);
+
+    if (error) {
+      showToast("Error saving RSVP.");
+    } else {
+      showToast("You're signed up!");
+      rsvpModal.style.display = "none";
+      loadAttendingCounts();
+      updateRsvpButtons();
     }
   });
 }
 
 setTimeout(updateRsvpButtons, 300);
+
+// ===============================
+// My Meetups Page
+// ===============================
+if (isMyMeetupsPage) {
+  supabaseClient.auth.getSession().then(async ({ data }) => {
+    const session = data.session;
+
+    if (!session || !session.user) {
+      window.location.href = "login.html";
+      return;
+    }
+
+    const container = document.getElementById("meetupsContainer");
+    const emptyMessage = document.getElementById("emptyMessage");
+
+    const { data: rsvps, error } = await supabaseClient
+      .from("rsvps")
+      .select("*")
+      .eq("email", session.user.email);
+
+    if (error) {
+      container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
+      return;
+    }
+
+    if (!rsvps || rsvps.length === 0) {
+      emptyMessage.style.display = "block";
+      return;
+    }
+
+    container.innerHTML = "";
+    rsvps.forEach((rsvp) => {
+      const card = document.createElement("div");
+      card.className = "event-card fade-in";
+      card.innerHTML = `
+        <span class="event-tag">Joined</span>
+        <h3 class="event-title">${rsvp.event_name}</h3>
+        <p class="event-description">You're signed up for this meetup.</p>
+      `;
+      container.appendChild(card);
+    });
+  });
+}
+
+// ===============================
+// Welcome Animation
+// ===============================
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === "SIGNED_IN" && session?.user) {
+    const username = session.user.user_metadata?.username;
+    const overlay = document.getElementById("welcomeOverlay");
+    const msg = document.getElementById("welcomeMessage");
+
+    if (overlay && msg) {
+      msg.textContent = `Welcome back, ${username || "friend"}!`;
+      overlay.style.display = "flex";
+
+      setTimeout(() => {
+        overlay.style.opacity = "0";
+        setTimeout(() => overlay.remove(), 600);
+      }, 1800);
+    }
+  }
+});
+
+// ===============================
+// Suggest Event Modal
+// ===============================
+const suggestModal = document.getElementById("suggestModal");
+const closeSuggestModalBtn = document.getElementById("closeSuggestModal");
+
+async function openSuggestModal() {
+  const session = (await supabaseClient.auth.getSession()).data.session;
+
+  if (!session) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  const emailInput = document.getElementById("suggestEmail");
+  if (emailInput) emailInput.value = session.user.email;
+
+  if (suggestModal) suggestModal.style.display = "flex";
+}
+
+document.querySelectorAll(".openSuggest").forEach((el) => {
+  el.addEventListener("click", openSuggestModal);
+});
+
+const fabSuggest = document.getElementById("fabSuggest");
+if (fabSuggest) fabSuggest.addEventListener("click", openSuggestModal);
+
+if (closeSuggestModalBtn) {
+  closeSuggestModalBtn.addEventListener("click", () => {
+    suggestModal.style.display = "none";
+  });
+}
+
+// ===============================
+// Submit Suggestion (EMAIL VERSION)
+// ===============================
+const submitSuggestion = document.getElementById("submitSuggestion");
+
+if (submitSuggestion) {
+  submitSuggestion.addEventListener("click", async () => {
+    const name = document.getElementById("suggestName")?.value.trim();
+    const email = document.getElementById("suggestEmail")?.value.trim();
+    const title = document.getElementById("suggestTitle")?.value.trim();
+    const description = document.getElementById("suggestDescription")?.value.trim();
+
+    if (!name || !email || !title || !description) {
+      showToast("Please fill out all fields.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/sendSuggestion", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          title,
+          description,
+          sendTo: "cantfindoutwhat@gmail.com"
+        })
+      });
+
+      if (!res.ok) throw new Error();
+
+      showToast("Suggestion sent!");
+      suggestModal.style.display = "none";
+    } catch (err) {
+      showToast("Error sending suggestion.");
+    }
+  });
+}
+
+// ===============================
+// Close modal on backdrop
+// ===============================
+[rsvpModal, suggestModal].forEach((modal) => {
+  if (!modal) return;
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) modal.style.display = "none";
+  });
+});
