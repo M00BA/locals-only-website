@@ -12,34 +12,6 @@ const isLoginPage = window.location.pathname.includes("login.html");
 const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 
 // ===============================
-// Safari Storage Test
-// ===============================
-function isSafari() {
-  return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-}
-
-function storageBlocked() {
-  try {
-    localStorage.setItem("ls_test", "1");
-    localStorage.removeItem("ls_test");
-    return false;
-  } catch (e) {
-    return true;
-  }
-}
-
-function showSafariPopup() {
-  const popup = document.getElementById("safariStoragePopup");
-  if (!popup) return;
-  popup.classList.add("visible");
-  popup.addEventListener("click", () => popup.classList.remove("visible"));
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  if (isSafari() && storageBlocked()) showSafariPopup();
-});
-
-// ===============================
 // Navbar Update
 // ===============================
 function updateNavbar(session) {
@@ -126,37 +98,6 @@ const fadeObserver = new IntersectionObserver(
 fadeElements.forEach((el) => fadeObserver.observe(el));
 
 // ===============================
-// Shooting Stars
-// ===============================
-function spawnShootingStar() {
-  const star = document.createElement("div");
-  star.classList.add("shooting-star");
-
-  const startX = Math.random() * window.innerWidth * 0.4;
-  const startY = Math.random() * window.innerHeight * 0.2;
-  const duration = 0.9 + Math.random() * 0.6;
-
-  star.style.left = `${startX}px`;
-  star.style.top = `${startY}px`;
-  star.style.animation = `shoot ${duration}s ease-out forwards`;
-
-  document.body.appendChild(star);
-  setTimeout(() => star.remove(), duration * 1000 + 200);
-}
-
-function ambientStarsLoop() {
-  const isMobile = window.innerWidth < 720;
-  const count = isMobile ? 1 + Math.floor(Math.random() * 2) : 3 + Math.floor(Math.random() * 4);
-
-  for (let i = 0; i < count; i++) {
-    setTimeout(spawnShootingStar, i * 250);
-  }
-
-  setTimeout(ambientStarsLoop, 6000 + Math.random() * 8000);
-}
-ambientStarsLoop();
-
-// ===============================
 // City Filters
 // ===============================
 const filterButtons = document.querySelectorAll(".city-filter-btn");
@@ -215,7 +156,7 @@ if (!isMyMeetupsPage && !isLoginPage) {
 }
 
 // ===============================
-// RSVP Modal
+// RSVP Modal Elements
 // ===============================
 const rsvpModal = document.getElementById("rsvpModal");
 const rsvpEventName = document.getElementById("rsvpEventName");
@@ -225,9 +166,11 @@ const closeRsvpModalBtn = document.getElementById("closeRsvpModal");
 const submitRsvpBtn = document.getElementById("submitRsvp");
 
 // ===============================
-// RSVP + Cancel Logic (FIXED)
+// Cancel RSVP
 // ===============================
-async function cancelRsvp(eventName) {
+async function cancelRsvp(eventName, btn) {
+  btn.disabled = true;
+
   const session = (await supabaseClient.auth.getSession()).data.session;
   if (!session) return;
 
@@ -244,12 +187,16 @@ async function cancelRsvp(eventName) {
     loadAttendingCounts();
     updateRsvpButtons();
   }
+
+  btn.disabled = false;
 }
 
+// ===============================
+// Update RSVP Buttons (FIXED)
+// ===============================
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
 
-  // Remove ALL old listeners safely
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const clone = btn.cloneNode(true);
     btn.replaceWith(clone);
@@ -257,7 +204,6 @@ async function updateRsvpButtons() {
 
   const buttons = document.querySelectorAll(".event-rsvp-btn");
 
-  // Not logged in → redirect on click
   if (!session || !session.user) {
     buttons.forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -267,7 +213,6 @@ async function updateRsvpButtons() {
     return;
   }
 
-  // Logged in → load user's RSVPs
   const { data: rsvps } = await supabaseClient
     .from("rsvps")
     .select("event_name")
@@ -282,12 +227,14 @@ async function updateRsvpButtons() {
       btn.textContent = "Cancel RSVP";
       btn.classList.add("cancel-btn");
 
-      btn.addEventListener("click", () => cancelRsvp(eventName));
+      btn.addEventListener("click", () => cancelRsvp(eventName, btn));
     } else {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
 
       btn.addEventListener("click", async () => {
+        btn.disabled = true;
+
         const session = (await supabaseClient.auth.getSession()).data.session;
 
         if (!session || !session.user) {
@@ -301,11 +248,14 @@ async function updateRsvpButtons() {
         rsvpEmail.value = session.user.email;
         rsvpUsername.value = username || "";
         rsvpModal.style.display = "flex";
+
+        btn.disabled = false;
       });
     }
   });
 }
 
+// ===============================
 if (closeRsvpModalBtn) {
   closeRsvpModalBtn.addEventListener("click", () => {
     rsvpModal.style.display = "none";
@@ -336,71 +286,6 @@ if (submitRsvpBtn) {
 setTimeout(updateRsvpButtons, 300);
 
 // ===============================
-// My Meetups Page
-// ===============================
-if (isMyMeetupsPage) {
-  supabaseClient.auth.getSession().then(async ({ data }) => {
-    const session = data.session;
-
-    if (!session || !session.user) {
-      window.location.href = "login.html";
-      return;
-    }
-
-    const container = document.getElementById("meetupsContainer");
-    const emptyMessage = document.getElementById("emptyMessage");
-
-    const { data: rsvps, error } = await supabaseClient
-      .from("rsvps")
-      .select("*")
-      .eq("email", session.user.email);
-
-    if (error) {
-      container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
-      return;
-    }
-
-    if (!rsvps || rsvps.length === 0) {
-      emptyMessage.style.display = "block";
-      return;
-    }
-
-    container.innerHTML = "";
-    rsvps.forEach((rsvp) => {
-      const card = document.createElement("div");
-      card.className = "event-card fade-in";
-      card.innerHTML = `
-        <span class="event-tag">Joined</span>
-        <h3 class="event-title">${rsvp.event_name}</h3>
-        <p class="event-description">You're signed up for this meetup.</p>
-      `;
-      container.appendChild(card);
-    });
-  });
-}
-
-// ===============================
-// Welcome Animation
-// ===============================
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  if (event === "SIGNED_IN" && session?.user) {
-    const username = session.user.user_metadata?.username;
-    const overlay = document.getElementById("welcomeOverlay");
-    const msg = document.getElementById("welcomeMessage");
-
-    if (overlay && msg) {
-      msg.textContent = `Welcome back, ${username || "friend"}!`;
-      overlay.style.display = "flex";
-
-      setTimeout(() => {
-        overlay.style.opacity = "0";
-        setTimeout(() => overlay.remove(), 600);
-      }, 1800);
-    }
-  }
-});
-
-// ===============================
 // Suggest Event Modal
 // ===============================
 const suggestModal = document.getElementById("suggestModal");
@@ -422,62 +307,8 @@ document.querySelectorAll(".openSuggest").forEach((el) => {
   el.addEventListener("click", openSuggestModal);
 });
 
-const fabSuggest = document.getElementById("fabSuggest");
-if (fabSuggest) fabSuggest.addEventListener("click", openSuggestModal);
-
 if (closeSuggestModalBtn) {
   closeSuggestModalBtn.addEventListener("click", () => {
     suggestModal.style.display = "none";
   });
 }
-
-// ===============================
-// Submit Suggestion (EMAIL VERSION)
-// ===============================
-const submitSuggestion = document.getElementById("submitSuggestion");
-
-if (submitSuggestion) {
-  submitSuggestion.addEventListener("click", async () => {
-    const name = document.getElementById("suggestName")?.value.trim();
-    const email = document.getElementById("suggestEmail")?.value.trim();
-    const title = document.getElementById("suggestTitle")?.value.trim();
-    const description = document.getElementById("suggestDescription")?.value.trim();
-
-    if (!name || !email || !title || !description) {
-      showToast("Please fill out all fields.");
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/sendSuggestion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          title,
-          description,
-          sendTo: "cantfindoutwhat@gmail.com"
-        })
-      });
-
-      if (!res.ok) throw new Error();
-
-      showToast("Suggestion sent!");
-      suggestModal.style.display = "none";
-
-    } catch (err) {
-      showToast("Error sending suggestion.");
-    }
-  });
-}
-
-// ===============================
-// Close modal on backdrop
-// ===============================
-[rsvpModal, suggestModal].forEach((modal) => {
-  if (!modal) return;
-  modal.addEventListener("click", (e) => {
-    if (e.target === modal) modal.style.display = "none";
-  });
-});
