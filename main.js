@@ -12,7 +12,7 @@ const isLoginPage = window.location.pathname.includes("login.html");
 const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 
 // ===============================
-// DOM Refs (modals, fields, etc.)
+// DOM Refs
 // ===============================
 const rsvpModal = document.getElementById("rsvpModal");
 const rsvpEventName = document.getElementById("rsvpEventName");
@@ -26,7 +26,28 @@ const closeSuggestModalBtn = document.getElementById("closeSuggestModal");
 const fabSuggest = document.getElementById("fabSuggest");
 
 // ===============================
-// Navbar Update (FINAL)
+// MAGIC LINK USERNAME FIX
+// ===============================
+async function handleMagicLinkUsername() {
+  const params = new URLSearchParams(window.location.search);
+  const username = params.get("username");
+
+  if (!username) return;
+
+  const { data } = await supabaseClient.auth.getSession();
+  const session = data.session;
+  if (!session) return;
+
+  await supabaseClient.auth.updateUser({
+    data: { username }
+  });
+
+  // Clean URL
+  window.history.replaceState({}, document.title, "/");
+}
+
+// ===============================
+// Navbar Update
 // ===============================
 function updateNavbar(session) {
   const myMeetupsLink = document.getElementById("myMeetupsLink");
@@ -39,34 +60,34 @@ function updateNavbar(session) {
   if (userDropdown) userDropdown.style.display = "none";
   if (myMeetupsLink) myMeetupsLink.style.display = "none";
 
-  // Show top-nav Suggest Event when logged out
   document.querySelectorAll(".main-nav .openSuggest").forEach(el => {
     el.style.display = "inline-block";
   });
 
-  // Not logged in → stop
   if (!session || !session.user) return;
 
   const username = session.user.user_metadata?.username;
 
-  // Logged in
   if (loginLink) loginLink.style.display = "none";
   if (userDropdown) userDropdown.style.display = "inline-block";
   if (navbarUsername) navbarUsername.textContent = username || "User";
 
-  // Hide top-nav My Meetups (use dropdown version)
   if (myMeetupsLink) myMeetupsLink.style.display = "none";
 
-  // Hide top-nav Suggest Event (use dropdown + FAB)
   document.querySelectorAll(".main-nav .openSuggest").forEach(el => {
     el.style.display = "none";
   });
 }
 
-// Init navbar
-setTimeout(() => {
-  supabaseClient.auth.getSession().then(({ data }) => updateNavbar(data.session));
-}, 200);
+// ===============================
+// Init Navbar + Username Fix
+// ===============================
+(async () => {
+  await handleMagicLinkUsername();
+
+  const { data } = await supabaseClient.auth.getSession();
+  updateNavbar(data.session);
+})();
 
 supabaseClient.auth.onAuthStateChange((event, session) => updateNavbar(session));
 
@@ -241,7 +262,7 @@ async function cancelRsvp(eventName) {
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
 
-  // Remove old listeners by cloning
+  // Remove old listeners
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const clone = btn.cloneNode(true);
     btn.replaceWith(clone);
@@ -249,7 +270,6 @@ async function updateRsvpButtons() {
 
   const buttons = document.querySelectorAll(".event-rsvp-btn");
 
-  // Not logged in → clicking RSVP sends to login
   if (!session) {
     buttons.forEach((btn) => {
       btn.textContent = "RSVP";
@@ -279,8 +299,6 @@ async function updateRsvpButtons() {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
       btn.onclick = () => {
-        if (!rsvpModal || !rsvpEventName || !rsvpEmail || !rsvpUsername) return;
-
         rsvpEventName.textContent = eventName;
         rsvpEmail.value = session.user.email;
         rsvpUsername.value = session.user.user_metadata?.username || "";
@@ -292,7 +310,9 @@ async function updateRsvpButtons() {
 
 setTimeout(updateRsvpButtons, 300);
 
-// Confirm RSVP button
+// ===============================
+// Confirm RSVP
+// ===============================
 if (submitRsvp && rsvpModal) {
   submitRsvp.addEventListener("click", async () => {
     const session = (await supabaseClient.auth.getSession()).data.session;
@@ -326,7 +346,7 @@ if (submitRsvp && rsvpModal) {
   });
 }
 
-// Close RSVP modal (X)
+// Close RSVP modal
 if (closeRsvpModal && rsvpModal) {
   closeRsvpModal.addEventListener("click", () => {
     rsvpModal.style.display = "none";
@@ -375,7 +395,7 @@ if (isMyMeetupsPage) {
 }
 
 // ===============================
-// Welcome Animation (home)
+// Welcome Animation
 // ===============================
 supabaseClient.auth.onAuthStateChange((event, session) => {
   if (event === "SIGNED_IN" && session?.user && !isLoginPage) {
