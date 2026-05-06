@@ -61,7 +61,8 @@
       const { error } = await supabaseClient.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: "https://locals-only.space/index.html",
+          // ⭐ FIXED: username now passed to homepage
+          emailRedirectTo: "https://locals-only.space/index.html?username=" + encodeURIComponent(username),
           data: { username }
         }
       });
@@ -97,12 +98,10 @@
       popup.classList.add("visible");
 
       popup.addEventListener("click", () => {
-        // User interaction unlocks storage in Safari
         popup.classList.remove("visible");
       });
     }
 
-    // Run test on page load
     window.addEventListener("DOMContentLoaded", () => {
       if (isSafari() && storageBlocked()) {
         showSafariPopup();
@@ -118,7 +117,6 @@
         if (box) {
           box.style.display = "flex";
 
-          // ⭐ SAFARI-SAFE DELAY
           setTimeout(() => {
             window.location.href = "/";
           }, 1200);
