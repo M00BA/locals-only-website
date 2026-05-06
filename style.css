@@ -127,15 +127,9 @@ body::after {
   align-items: center;
 }
 
-.logo {
-  display: flex;
-  align-items: center;
-}
-
 .logo-image {
   height: 70px;
   width: auto;
-  display: block;
 }
 
 /* NAV */
@@ -145,7 +139,6 @@ body::after {
   gap: 10px;
 }
 
-/* Every nav link/button gets the same pill style */
 .main-nav a,
 .nav-link {
   padding: 7px 16px;
@@ -166,12 +159,6 @@ body::after {
   color: #1b1220;
 }
 
-.nav-link.active {
-  background: var(--accent);
-  color: #1b1220;
-}
-
-/* Mobile toggle */
 .nav-toggle {
   display: none;
   flex-direction: column;
@@ -189,7 +176,7 @@ body::after {
   border-radius: 999px;
 }
 
-/* Mobile nav slide */
+/* Mobile nav */
 @media (max-width: 720px) {
   .nav-toggle { display: flex; }
 
@@ -217,11 +204,6 @@ body::after {
     opacity: 1;
     pointer-events: auto;
   }
-
-  .main-nav a,
-  .nav-link {
-    text-align: center;
-  }
 }
 
 /* ---------------------------------------------------
@@ -229,7 +211,6 @@ body::after {
 --------------------------------------------------- */
 .user-dropdown {
   position: relative;
-  display: inline-block;
 }
 
 .user-dropdown-btn {
@@ -241,7 +222,6 @@ body::after {
   cursor: pointer;
   font-size: 14px;
   transition: var(--transition-med);
-  white-space: nowrap;
 }
 
 .user-dropdown-btn:hover {
@@ -263,10 +243,6 @@ body::after {
   min-width: 160px;
 }
 
-.user-dropdown-menu.open {
-  display: block;
-}
-
 .user-dropdown-menu a {
   display: block;
   padding: 9px 14px;
@@ -283,7 +259,7 @@ body::after {
 }
 
 /* ---------------------------------------------------
-   6. HERO — FIX: was missing text-align center
+   6. HERO
 --------------------------------------------------- */
 .hero {
   text-align: center;
@@ -304,7 +280,6 @@ body::after {
   font-size: 1.05rem;
 }
 
-/* Animated gold underline */
 .hero-highlight {
   position: relative;
   display: inline-block;
@@ -419,19 +394,17 @@ body::after {
   font-size: 0.95rem;
 }
 
-/* Attending count pill */
 .attending-count {
   display: inline-block;
   background: rgba(242, 201, 140, 0.12);
   color: var(--accent);
   border: 1px solid rgba(242, 201, 140, 0.3);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   padding: 2px 10px;
   font-size: 0.78rem;
   margin-bottom: 12px;
 }
 
-/* RSVP button */
 .event-rsvp-btn {
   border-radius: var(--radius-pill);
   border: 1px solid var(--accent);
@@ -448,11 +421,6 @@ body::after {
   color: #1b1220;
 }
 
-.event-rsvp-btn:active {
-  transform: scale(0.96);
-}
-
-/* Cancel state */
 .event-rsvp-btn.cancel-btn {
   border-color: #ff8a8a;
   color: #ff8a8a;
@@ -474,7 +442,7 @@ body::after {
 }
 
 /* ---------------------------------------------------
-   10. LOGIN PAGE — FIX: restore card wrapper + center layout
+   10. LOGIN PAGE
 --------------------------------------------------- */
 .login-wrapper {
   max-width: 420px;
@@ -537,10 +505,6 @@ body::after {
   color: #1b1220;
 }
 
-.login-btn:active {
-  transform: scale(0.98);
-}
-
 /* ---------------------------------------------------
    11. MODALS
 --------------------------------------------------- */
@@ -585,7 +549,6 @@ body::after {
   font-size: 24px;
   cursor: pointer;
   color: var(--text-muted);
-  line-height: 1;
   transition: color var(--transition-fast);
 }
 
@@ -600,7 +563,7 @@ body::after {
 }
 
 /* ---------------------------------------------------
-   12. FADE-IN ANIMATION
+   12. FADE-IN
 --------------------------------------------------- */
 .fade-in {
   opacity: 0;
@@ -655,127 +618,4 @@ body::after {
   transition: opacity 0.3s ease, transform 0.3s ease;
   z-index: 99999;
   font-size: 0.95rem;
-  white-space: nowrap;
-}
-
-.toast.visible {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-4px);
-}
-
-/* ---------------------------------------------------
-   15. FLOATING FAB (mobile only)
---------------------------------------------------- */
-.fab-suggest {
-  display: none;
-}
-
-@media (max-width: 720px) {
-  .fab-suggest {
-    display: block;
-    position: fixed;
-    bottom: 24px;
-    right: 20px;
-    background: var(--accent);
-    color: #1b1220;
-    border: none;
-    border-radius: 999px;
-    padding: 12px 20px;
-    font-size: 15px;
-    font-weight: 600;
-    font-family: var(--font-main);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.35);
-    z-index: 998;
-    cursor: pointer;
-    transition: transform 200ms ease;
-  }
-
-  .fab-suggest:hover,
-  .fab-suggest:active {
-    transform: scale(1.05);
-  }
-
-  /* Extra bottom padding so FAB doesn't cover last card */
-  .events-grid {
-    padding-bottom: 80px;
-  }
-}
-
-/* ---------------------------------------------------
-   16. SAFARI STORAGE POPUP
---------------------------------------------------- */
-.safari-storage-popup {
-  position: fixed;
-  bottom: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--surface);
-  color: var(--text-main);
-  padding: 10px 18px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--border-soft);
-  box-shadow: var(--shadow-soft);
-  font-size: 0.85rem;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-  z-index: 99999;
-}
-
-.safari-storage-popup.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* ---------------------------------------------------
-   17. MOBILE POLISH (480px)
---------------------------------------------------- */
-@media (max-width: 480px) {
-  .hero {
-    margin: 50px auto 36px;
-    padding: 0 12px;
-  }
-
-  .hero-title {
-    font-size: 1.65rem;
-    line-height: 1.25;
-  }
-
-  .hero-subtitle {
-    font-size: 0.95rem;
-  }
-
-  .logo-image {
-    height: 52px;
-  }
-
-  .login-wrapper {
-    margin: 60px 16px;
-    padding: 28px 20px;
-  }
-
-  .login-input,
-  textarea {
-    font-size: 16px !important;
-  }
-
-  .modal-content {
-    max-height: 88vh;
-    overflow-y: auto;
-    padding: 20px;
-  }
-
-  .event-rsvp-btn {
-    width: 100%;
-    margin-top: 8px;
-  }
-
-  .city-filters {
-    overflow-x: auto;
-    padding-bottom: 4px;
-  }
-
-  .city-filter-btn {
-    flex-shrink: 0;
-  }
-}
+  white-space:
