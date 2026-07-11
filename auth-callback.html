@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Logging you in… – Locals Only</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .auth-screen {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      text-align: center;
+      padding: 24px;
+    }
+    .auth-spinner {
+      width: 38px; height: 38px;
+      border: 3px solid rgba(242,201,140,0.18);
+      border-top-color: #f2c98c;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .auth-msg   { color: var(--text-muted); font-size: 1rem; margin: 0; }
+    .auth-error { color: #ff8a8a; display: none; font-size: 0.95rem; }
+    .auth-error a { color: var(--accent); }
+  </style>
+</head>
+<body class="theme-night">
+
+  <div class="auth-screen">
+    <div class="auth-spinner" id="spinner"></div>
+    <p class="auth-msg"   id="statusMsg">Verifying your magic link…</p>
+    <p class="auth-error" id="errorMsg">
+      Link expired or already used. <a href="/login.html">Try again →</a>
+    </p>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const statusMsg = document.getElementById("statusMsg");
+    const spinner   = document.getElementById("spinner");
+    const errorMsg  = document.getElementById("errorMsg");
+
+    function showError() {
+      spinner.style.display  = "none";
+      statusMsg.textContent  = "Could not verify link.";
+      errorMsg.style.display = "block";
+    }
+
+    async function handleCallback() {
+      try {
+        // 1. Try getSession first — Supabase v2 auto-reads the #hash
+        const { data, error } = await sb.auth.getSession();
+        if (error) throw error;
+
+        if (data.session) {
+          statusMsg.textContent = "Logged in! Taking you home…";
+          window.location.replace("/");
+          return;
+        }
+
+        // 2. Small delay to let the SDK process the hash, then retry
+        if (window.location.hash.includes("access_token")) {
+          await new Promise(r => setTimeout(r, 300));
+          const { data: d2, error: e2 } = await sb.auth.getSession();
+          if (e2) throw e2;
+          if (d2.session) {
+            statusMsg.textContent = "Logged in! Taking you home…";
+            window.location.replace("/");
+            return;
+          }
+        }
+
+        // 3. PKCE flow — ?code= in the URL
+        const params = new URLSearchParams(window.location.search);
+        const code   = params.get("code");
+        if (code) {
+          const { error: e3 } = await sb.auth.exchangeCodeForSession(window.location.href);
+          if (e3) throw e3;
+          statusMsg.textContent = "Logged in! Taking you home…";
+          window.location.replace("/");
+          return;
+        }
+
+        // Nothing matched
+        showError();
+
+      } catch (err) {
+        console.error("Auth callback error:", err);
+        showError();
+      }
+    }
+
+    handleCallback();
+  </script>
+</body>
+</html>
