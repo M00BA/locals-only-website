@@ -26,27 +26,6 @@ const closeSuggestModalBtn = document.getElementById("closeSuggestModal");
 const fabSuggest = document.getElementById("fabSuggest");
 
 // ===============================
-// MAGIC LINK USERNAME FIX
-// ===============================
-async function handleMagicLinkUsername() {
-  const params = new URLSearchParams(window.location.search);
-  const username = params.get("username");
-
-  if (!username) return;
-
-  const { data } = await supabaseClient.auth.getSession();
-  const session = data.session;
-  if (!session) return;
-
-  await supabaseClient.auth.updateUser({
-    data: { username }
-  });
-
-  // Clean URL
-  window.history.replaceState({}, document.title, "/");
-}
-
-// ===============================
 // Navbar Update
 // ===============================
 function updateNavbar(session) {
@@ -55,7 +34,7 @@ function updateNavbar(session) {
   const userDropdown = document.getElementById("userDropdown");
   const navbarUsername = document.getElementById("navbarUsername");
 
-  // Default (logged out)
+  // Default: logged out state
   if (loginLink) loginLink.style.display = "inline-block";
   if (userDropdown) userDropdown.style.display = "none";
   if (myMeetupsLink) myMeetupsLink.style.display = "none";
@@ -71,7 +50,6 @@ function updateNavbar(session) {
   if (loginLink) loginLink.style.display = "none";
   if (userDropdown) userDropdown.style.display = "inline-block";
   if (navbarUsername) navbarUsername.textContent = username || "User";
-
   if (myMeetupsLink) myMeetupsLink.style.display = "none";
 
   document.querySelectorAll(".main-nav .openSuggest").forEach(el => {
@@ -79,26 +57,21 @@ function updateNavbar(session) {
   });
 }
 
-// ─────────────────────────────────────────────────
-// SESSION INIT — paste this at the very top of main.js
-// replacing your old (async () => { ... })() init block
-// ─────────────────────────────────────────────────
-
+// ===============================
+// SESSION INIT — single unified block
+// Handles: hash tokens, ?code= PKCE, normal session restore
+// ===============================
 (async () => {
-  // 1. Let Supabase v2 auto-detect the hash/token in the URL
-  //    getSession() handles #access_token= fragments automatically
+  // Step 1: getSession() auto-processes #access_token hash in Supabase v2
   const { data, error } = await supabaseClient.auth.getSession();
+  if (error) console.warn("Session error:", error.message);
 
-  if (error) {
-    console.warn("Session error:", error.message);
-  }
-
-  // 2. Update navbar immediately with whatever session we have
+  // Step 2: Update navbar with whatever we have now
   updateNavbar(data?.session ?? null);
 
-  // 3. If there's a ?code= param (PKCE flow), exchange it
+  // Step 3: If ?code= is present (PKCE flow), exchange it for a session
   const params = new URLSearchParams(window.location.search);
-  const code   = params.get("code");
+  const code = params.get("code");
 
   if (code) {
     const { error: exchErr } = await supabaseClient.auth.exchangeCodeForSession(
@@ -107,38 +80,45 @@ function updateNavbar(session) {
     if (exchErr) {
       console.warn("Code exchange error:", exchErr.message);
     } else {
-      // Clean the URL so the code isn't reused
       window.history.replaceState({}, document.title, "/");
-      // Re-fetch session after exchange
       const { data: fresh } = await supabaseClient.auth.getSession();
       updateNavbar(fresh?.session ?? null);
     }
   }
 
-  // 4. Clean up the hash fragment if it contains tokens
+  // Step 4: Clean up hash if it contained tokens
   if (window.location.hash.includes("access_token")) {
     window.history.replaceState({}, document.title, "/");
   }
 })();
 
-// 5. Keep UI in sync whenever auth state changes (login, logout, refresh)
+// Step 5: React to auth changes (login, logout, token refresh)
 supabaseClient.auth.onAuthStateChange((event, session) => {
   updateNavbar(session);
 
-  if (event === "SIGNED_IN" && session?.user) {
-    // Refresh RSVP buttons so they reflect the newly logged-in user
-    if (typeof updateRsvpButtons === "function") updateRsvpButtons();
+  if (event === "SIGNED_IN" && session?.user && !isLoginPage) {
+    // Update RSVP buttons to reflect logged-in state
+    if (typeof updateRsvpButtons === "function") {
+      setTimeout(updateRsvpButtons, 100);
+    }
+
+    // Show welcome overlay
+    const username = session.user.user_metadata?.username;
+    const overlay = document.getElementById("welcomeOverlay");
+    const msg = document.getElementById("welcomeMessage");
+    if (overlay && msg) {
+      msg.textContent = `Welcome back, ${username || "friend"}!`;
+      overlay.style.display = "flex";
+      setTimeout(() => {
+        overlay.style.opacity = "0";
+        setTimeout(() => {
+          overlay.style.display = "none";
+          overlay.style.opacity = "";
+        }, 600);
+      }, 1800);
+    }
   }
-  
 });
-(async () => {
-  await handleMagicLinkUsername();
-
-  const { data } = await supabaseClient.auth.getSession();
-  updateNavbar(data.session);
-})();
-
-supabaseClient.auth.onAuthStateChange((event, session) => updateNavbar(session));
 
 // ===============================
 // Dropdown Toggle
@@ -147,13 +127,17 @@ const userDropdownButton = document.getElementById("userDropdownButton");
 const userDropdownMenu = document.getElementById("userDropdownMenu");
 
 if (userDropdownButton && userDropdownMenu) {
-  userDropdownButton.addEventListener("click", () => {
+  userDropdownButton.addEventListener("click", (e) => {
+    e.stopPropagation();
     userDropdownMenu.style.display =
       userDropdownMenu.style.display === "block" ? "none" : "block";
   });
 
   document.addEventListener("click", (e) => {
-    if (!userDropdownButton.contains(e.target) && !userDropdownMenu.contains(e.target)) {
+    if (
+      !userDropdownButton.contains(e.target) &&
+      !userDropdownMenu.contains(e.target)
+    ) {
       userDropdownMenu.style.display = "none";
     }
   });
@@ -265,7 +249,7 @@ function showToast(message) {
   setTimeout(() => {
     toast.classList.remove("visible");
     setTimeout(() => toast.remove(), 300);
-  }, 2000);
+  }, 2500);
 }
 
 // ===============================
@@ -311,7 +295,7 @@ async function cancelRsvp(eventName) {
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
 
-  // Remove old listeners
+  // Clone buttons to remove stale listeners
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const clone = btn.cloneNode(true);
     btn.replaceWith(clone);
@@ -319,6 +303,7 @@ async function updateRsvpButtons() {
 
   const buttons = document.querySelectorAll(".event-rsvp-btn");
 
+  // Not logged in — redirect to login on click
   if (!session) {
     buttons.forEach((btn) => {
       btn.textContent = "RSVP";
@@ -348,6 +333,7 @@ async function updateRsvpButtons() {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
       btn.onclick = () => {
+        if (!rsvpModal || !rsvpEventName || !rsvpEmail || !rsvpUsername) return;
         rsvpEventName.textContent = eventName;
         rsvpEmail.value = session.user.email;
         rsvpUsername.value = session.user.user_metadata?.username || "";
@@ -379,19 +365,25 @@ if (submitRsvp && rsvpModal) {
       return;
     }
 
-    await supabaseClient.from("rsvps").upsert(
-      {
-        email,
-        event_name: eventName,
-        username
-      },
+    submitRsvp.textContent = "Saving…";
+    submitRsvp.disabled = true;
+
+    const { error } = await supabaseClient.from("rsvps").upsert(
+      { email, event_name: eventName, username },
       { onConflict: "email,event_name" }
     );
 
-    showToast("RSVP confirmed.");
-    rsvpModal.style.display = "none";
-    await loadAttendingCounts();
-    updateRsvpButtons();
+    submitRsvp.textContent = "Confirm RSVP";
+    submitRsvp.disabled = false;
+
+    if (error) {
+      showToast("Something went wrong. Please try again.");
+    } else {
+      showToast("You're in! 🎉");
+      rsvpModal.style.display = "none";
+      await loadAttendingCounts();
+      updateRsvpButtons();
+    }
   });
 }
 
@@ -439,30 +431,10 @@ if (isMyMeetupsPage) {
         <p class="event-description">You're signed up for this meetup.</p>
       `;
       container.appendChild(card);
+      fadeObserver.observe(card);
     });
   });
 }
-
-// ===============================
-// Welcome Animation
-// ===============================
-supabaseClient.auth.onAuthStateChange((event, session) => {
-  if (event === "SIGNED_IN" && session?.user && !isLoginPage) {
-    const username = session.user.user_metadata?.username;
-    const overlay = document.getElementById("welcomeOverlay");
-    const msg = document.getElementById("welcomeMessage");
-
-    if (overlay && msg) {
-      msg.textContent = `Welcome back, ${username || "friend"}!`;
-      overlay.style.display = "flex";
-
-      setTimeout(() => {
-        overlay.style.opacity = "0";
-        setTimeout(() => overlay.remove(), 600);
-      }, 1800);
-    }
-  }
-});
 
 // ===============================
 // Suggest Event Modal
@@ -482,10 +454,15 @@ async function openSuggestModal() {
 }
 
 document.querySelectorAll(".openSuggest").forEach((el) => {
-  el.addEventListener("click", openSuggestModal);
+  el.addEventListener("click", (e) => {
+    e.preventDefault();
+    openSuggestModal();
+  });
 });
 
-if (fabSuggest) fabSuggest.addEventListener("click", openSuggestModal);
+if (fabSuggest) {
+  fabSuggest.addEventListener("click", openSuggestModal);
+}
 
 if (closeSuggestModalBtn && suggestModal) {
   closeSuggestModalBtn.addEventListener("click", () => {
@@ -500,9 +477,9 @@ const submitSuggestion = document.getElementById("submitSuggestion");
 
 if (submitSuggestion && suggestModal) {
   submitSuggestion.addEventListener("click", async () => {
-    const name = document.getElementById("suggestName")?.value.trim();
-    const email = document.getElementById("suggestEmail")?.value.trim();
-    const title = document.getElementById("suggestTitle")?.value.trim();
+    const name        = document.getElementById("suggestName")?.value.trim();
+    const email       = document.getElementById("suggestEmail")?.value.trim();
+    const title       = document.getElementById("suggestTitle")?.value.trim();
     const description = document.getElementById("suggestDescription")?.value.trim();
 
     if (!name || !email || !title || !description) {
@@ -510,26 +487,32 @@ if (submitSuggestion && suggestModal) {
       return;
     }
 
+    submitSuggestion.textContent = "Sending…";
+    submitSuggestion.disabled = true;
+
     try {
       const res = await fetch("/api/sendSuggestion", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name,
-          email,
-          title,
-          description,
-          sendTo: "cantfindoutwhat@gmail.com"
-        })
+        body: JSON.stringify({ name, email, title, description })
       });
 
       if (!res.ok) throw new Error();
 
-      showToast("Suggestion sent!");
+      showToast("Suggestion sent! Thank you ✨");
       suggestModal.style.display = "none";
 
-    } catch (err) {
-      showToast("Error sending suggestion.");
+      // Clear fields
+      ["suggestName", "suggestTitle", "suggestDescription"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+      });
+
+    } catch {
+      showToast("Error sending. Please try again.");
+    } finally {
+      submitSuggestion.textContent = "Send Suggestion";
+      submitSuggestion.disabled = false;
     }
   });
 }
