@@ -79,9 +79,58 @@ function updateNavbar(session) {
   });
 }
 
-// ===============================
-// Init Navbar + Username Fix
-// ===============================
+// ─────────────────────────────────────────────────
+// SESSION INIT — paste this at the very top of main.js
+// replacing your old (async () => { ... })() init block
+// ─────────────────────────────────────────────────
+
+(async () => {
+  // 1. Let Supabase v2 auto-detect the hash/token in the URL
+  //    getSession() handles #access_token= fragments automatically
+  const { data, error } = await supabaseClient.auth.getSession();
+
+  if (error) {
+    console.warn("Session error:", error.message);
+  }
+
+  // 2. Update navbar immediately with whatever session we have
+  updateNavbar(data?.session ?? null);
+
+  // 3. If there's a ?code= param (PKCE flow), exchange it
+  const params = new URLSearchParams(window.location.search);
+  const code   = params.get("code");
+
+  if (code) {
+    const { error: exchErr } = await supabaseClient.auth.exchangeCodeForSession(
+      window.location.href
+    );
+    if (exchErr) {
+      console.warn("Code exchange error:", exchErr.message);
+    } else {
+      // Clean the URL so the code isn't reused
+      window.history.replaceState({}, document.title, "/");
+      // Re-fetch session after exchange
+      const { data: fresh } = await supabaseClient.auth.getSession();
+      updateNavbar(fresh?.session ?? null);
+    }
+  }
+
+  // 4. Clean up the hash fragment if it contains tokens
+  if (window.location.hash.includes("access_token")) {
+    window.history.replaceState({}, document.title, "/");
+  }
+})();
+
+// 5. Keep UI in sync whenever auth state changes (login, logout, refresh)
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  updateNavbar(session);
+
+  if (event === "SIGNED_IN" && session?.user) {
+    // Refresh RSVP buttons so they reflect the newly logged-in user
+    if (typeof updateRsvpButtons === "function") updateRsvpButtons();
+  }
+  
+});
 (async () => {
   await handleMagicLinkUsername();
 
