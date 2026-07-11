@@ -4,139 +4,143 @@
   <meta charset="UTF-8" />
   <title>Login – Locals Only</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body class="theme-night">
 
-  <!-- Shooting star element -->
   <div class="shooting-star"></div>
 
   <div class="login-wrapper">
 
-    <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" style="height:110px; margin-bottom:12px;">
+    <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" style="height:110px; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto;" alt="Locals Only logo">
 
     <h1 class="login-title">Become a Local</h1>
-    <p class="login-sub">Enter your email and choose a username.</p>
+    <p class="login-sub" style="text-align:center; margin-bottom:20px;">
+      Enter your email and choose a username.<br>We'll send you a magic link.
+    </p>
 
-    <label class="login-sub">Email</label>
-    <input type="email" id="loginEmail" class="login-input" placeholder="you@example.com" required>
+    <label class="login-sub" for="loginEmail">Email</label>
+    <input type="email" id="loginEmail" class="login-input" placeholder="you@example.com" autocomplete="email" />
 
-    <label class="login-sub">Username</label>
-    <input type="text" id="loginUsername" class="login-input" placeholder="your username" required>
+    <label class="login-sub" for="loginUsername">Username</label>
+    <input type="text" id="loginUsername" class="login-input" placeholder="your username" autocomplete="username" />
 
-    <button id="loginButton" class="login-btn">Send Locals Only Link</button>
+    <button id="loginButton" class="login-btn">Send Magic Link</button>
+
+    <p id="loginHint" style="font-size:0.82rem; color:var(--text-muted); margin-top:14px; text-align:center;">
+      Check your inbox after clicking.
+    </p>
   </div>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script>
-    // Initialize Supabase
-    const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-
-    // Redirect if already logged in
-    supabaseClient.auth.getSession().then(({ data }) => {
-      const session = data.session;
-      if (session && session.user) {
-        window.location.href = "/";
-      }
-    });
-
-    // Send magic link with username metadata
-    const loginButton = document.getElementById("loginButton");
-    const loginEmail = document.getElementById("loginEmail");
-    const loginUsername = document.getElementById("loginUsername");
-
-    loginButton.addEventListener("click", async () => {
-      const email = loginEmail.value.trim();
-      const username = loginUsername.value.trim();
-
-      if (!email) return alert("Please enter your email.");
-      if (!username) return alert("Please choose a username.");
-
-      const { error } = await supabaseClient.auth.signInWithOtp({
-        email,
-        options: {
-          // ⭐ FIXED: username now passed to homepage
-          emailRedirectTo: "https://locals-only.space/index.html?username=" + encodeURIComponent(username),
-          data: { username }
-        }
-      });
-
-      if (error) {
-        alert("Error sending magic link.");
-      } else {
-        alert("Magic link sent! Check your inbox.");
-      }
-    });
-
-    /* ---------------------------------------------------
-       SAFARI STORAGE TEST + POPUP
-    --------------------------------------------------- */
-    function isSafari() {
-      return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-    }
-
-    function storageBlocked() {
-      try {
-        localStorage.setItem("ls_test", "1");
-        localStorage.removeItem("ls_test");
-        return false;
-      } catch (e) {
-        return true;
-      }
-    }
-
-    function showSafariPopup() {
-      const popup = document.getElementById("safariStoragePopup");
-      if (!popup) return;
-
-      popup.classList.add("visible");
-
-      popup.addEventListener("click", () => {
-        popup.classList.remove("visible");
-      });
-    }
-
-    window.addEventListener("DOMContentLoaded", () => {
-      if (isSafari() && storageBlocked()) {
-        showSafariPopup();
-      }
-    });
-
-    /* ---------------------------------------------------
-       LOGIN SUCCESS OVERLAY + SAFE REDIRECT DELAY
-    --------------------------------------------------- */
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session?.user) {
-        const box = document.getElementById("loginSuccess");
-        if (box) {
-          box.style.display = "flex";
-
-          setTimeout(() => {
-            window.location.href = "/";
-          }, 1200);
-        }
-      }
-    });
-  </script>
-
-  <!-- LOGIN SUCCESS OVERLAY -->
+  <!-- Login success overlay -->
   <div id="loginSuccess" class="welcome-overlay" style="display:none;">
     <div class="welcome-box fade-in">
-      <h2>You're logged in!</h2>
-      <p>Redirecting...</p>
+      <h2>✓ Magic link sent!</h2>
+      <p style="color:var(--text-muted); margin-top:8px;">Click the link in your inbox to log in.</p>
     </div>
   </div>
 
-  <!-- SAFARI STORAGE POPUP -->
+  <!-- Safari storage popup -->
   <div id="safariStoragePopup" class="safari-storage-popup">
     Tap to enable login persistence
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+    // ── Shooting stars ────────────────────────────
+    function spawnStar() {
+      const s = document.createElement("div");
+      s.classList.add("shooting-star");
+      s.style.left = Math.random() * innerWidth * 0.4 + "px";
+      s.style.top  = Math.random() * innerHeight * 0.2 + "px";
+      const d = 0.9 + Math.random() * 0.6;
+      s.style.animation = `shoot ${d}s ease-out forwards`;
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), d * 1000 + 200);
+    }
+    (function loop() {
+      const n = innerWidth < 720 ? 1 : 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < n; i++) setTimeout(spawnStar, i * 250);
+      setTimeout(loop, 7000 + Math.random() * 7000);
+    })();
+
+    // ── Already logged in → go home ───────────────
+    supabaseClient.auth.getSession().then(({ data }) => {
+      if (data.session?.user) window.location.replace("/");
+    });
+
+    // ── Safari storage check ──────────────────────
+    window.addEventListener("DOMContentLoaded", () => {
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      let blocked = false;
+      try { localStorage.setItem("t","1"); localStorage.removeItem("t"); }
+      catch(e) { blocked = true; }
+      if (isSafari && blocked) {
+        const p = document.getElementById("safariStoragePopup");
+        if (p) {
+          p.classList.add("visible");
+          p.addEventListener("click", () => p.classList.remove("visible"));
+        }
+      }
+    });
+
+    // ── Helpers ───────────────────────────────────
+    const btn     = document.getElementById("loginButton");
+    const emailEl = document.getElementById("loginEmail");
+    const userEl  = document.getElementById("loginUsername");
+    const hint    = document.getElementById("loginHint");
+
+    function setHint(msg, isError = false) {
+      hint.textContent = msg;
+      hint.style.color = isError ? "#ff8a8a" : "var(--text-muted)";
+    }
+
+    // Enter key submits
+    [emailEl, userEl].forEach(el => {
+      el.addEventListener("keydown", e => { if (e.key === "Enter") btn.click(); });
+    });
+
+    // ── Send magic link ───────────────────────────
+    btn.addEventListener("click", async () => {
+      const email    = emailEl.value.trim();
+      const username = userEl.value.trim();
+
+      if (!email)               { setHint("Please enter your email.", true);         return; }
+      if (!email.includes("@")) { setHint("That doesn't look like an email.", true); return; }
+      if (!username)            { setHint("Please choose a username.", true);        return; }
+
+      btn.textContent = "Sending…";
+      btn.disabled    = true;
+
+      const { error } = await supabaseClient.auth.signInWithOtp({
+        email,
+        options: {
+          // ★ CRITICAL: must point to auth-callback.html, not index.html
+          emailRedirectTo: "https://locals-only.space/auth-callback.html",
+          data: { username }
+        }
+      });
+
+      btn.textContent = "Send Magic Link";
+      btn.disabled    = false;
+
+      if (error) {
+        setHint("Something went wrong. Please try again.", true);
+        console.error(error);
+      } else {
+        document.getElementById("loginSuccess").style.display = "flex";
+      }
+    });
+
+    // Close success overlay on tap
+    document.getElementById("loginSuccess").addEventListener("click", () => {
+      document.getElementById("loginSuccess").style.display = "none";
+    });
+  </script>
 </body>
 </html>
