@@ -33,7 +33,7 @@
 
   <div class="auth-screen">
     <div class="auth-spinner" id="spinner"></div>
-    <p class="auth-msg"   id="statusMsg">Verifying your magic link…</p>
+    <p class="auth-msg"   id="statusMsg">Logging you in…</p>
     <p class="auth-error" id="errorMsg">
       Link expired or already used. <a href="/login.html">Try again →</a>
     </p>
@@ -49,53 +49,67 @@
     const spinner   = document.getElementById("spinner");
     const errorMsg  = document.getElementById("errorMsg");
 
-    function showError() {
+    function showError(reason) {
+      console.error("Auth error:", reason);
       spinner.style.display  = "none";
       statusMsg.textContent  = "Could not verify link.";
       errorMsg.style.display = "block";
     }
 
+    function redirect() {
+      statusMsg.textContent = "Logged in! Redirecting…";
+      setTimeout(() => window.location.replace("/"), 800);
+    }
+
     async function handleCallback() {
       try {
-        // 1. Try getSession first — Supabase v2 auto-reads the #hash
-        const { data, error } = await sb.auth.getSession();
-        if (error) throw error;
+        const params     = new URLSearchParams(window.location.search);
+        const tokenHash  = params.get("token_hash");
+        const type       = params.get("type") || "magiclink";
 
-        if (data.session) {
-          statusMsg.textContent = "Logged in! Taking you home…";
-          window.location.replace("/");
-          return;
+        // ── METHOD 1: token_hash in URL (our custom email template) ──
+        if (tokenHash) {
+          const { data, error } = await sb.auth.verifyOtp({
+            token_hash: tokenHash,
+            type: type
+          });
+          if (error) { showError(error.message); return; }
+          if (data?.session) { redirect(); return; }
         }
 
-        // 2. Small delay to let the SDK process the hash, then retry
-        if (window.location.hash.includes("access_token")) {
-          await new Promise(r => setTimeout(r, 300));
-          const { data: d2, error: e2 } = await sb.auth.getSession();
-          if (e2) throw e2;
-          if (d2.session) {
-            statusMsg.textContent = "Logged in! Taking you home…";
-            window.location.replace("/");
-            return;
+        // ── METHOD 2: ?code= PKCE flow ────────────────────────────
+        const code = params.get("code");
+        if (code) {
+          const { data, error } = await sb.auth.exchangeCodeForSession(code);
+          if (error) { showError(error.message); return; }
+          if (data?.session) { redirect(); return; }
+        }
+
+        // ── METHOD 3: #access_token hash (implicit flow fallback) ──
+        const hash = window.location.hash;
+        if (hash && hash.includes("access_token")) {
+          const hashParams   = new URLSearchParams(hash.substring(1));
+          const accessToken  = hashParams.get("access_token");
+          const refreshToken = hashParams.get("refresh_token");
+
+          if (accessToken && refreshToken) {
+            const { data, error } = await sb.auth.setSession({
+              access_token:  accessToken,
+              refresh_token: refreshToken
+            });
+            if (error) { showError(error.message); return; }
+            if (data?.session) { redirect(); return; }
           }
         }
 
-        // 3. PKCE flow — ?code= in the URL
-        const params = new URLSearchParams(window.location.search);
-        const code   = params.get("code");
-        if (code) {
-          const { error: e3 } = await sb.auth.exchangeCodeForSession(window.location.href);
-          if (e3) throw e3;
-          statusMsg.textContent = "Logged in! Taking you home…";
-          window.location.replace("/");
-          return;
-        }
+        // ── METHOD 4: Session already exists ──────────────────────
+        const { data: existing } = await sb.auth.getSession();
+        if (existing?.session?.user) { redirect(); return; }
 
-        // Nothing matched
-        showError();
+        showError("No token found in URL");
 
       } catch (err) {
-        console.error("Auth callback error:", err);
-        showError();
+        showError(err.message || err);
       }
     }
 
