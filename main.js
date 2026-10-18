@@ -62,14 +62,11 @@ function updateNavbar(session) {
 // Handles: hash tokens, ?code= PKCE, normal session restore
 // ===============================
 (async () => {
-  // Step 1: getSession() auto-processes #access_token hash in Supabase v2
   const { data, error } = await supabaseClient.auth.getSession();
   if (error) console.warn("Session error:", error.message);
 
-  // Step 2: Update navbar with whatever we have now
   updateNavbar(data?.session ?? null);
 
-  // Step 3: If ?code= is present (PKCE flow), exchange it for a session
   const params = new URLSearchParams(window.location.search);
   const code = params.get("code");
 
@@ -86,23 +83,20 @@ function updateNavbar(session) {
     }
   }
 
-  // Step 4: Clean up hash if it contained tokens
   if (window.location.hash.includes("access_token")) {
     window.history.replaceState({}, document.title, "/");
   }
 })();
 
-// Step 5: React to auth changes (login, logout, token refresh)
+// React to auth changes (login, logout, token refresh)
 supabaseClient.auth.onAuthStateChange((event, session) => {
   updateNavbar(session);
 
   if (event === "SIGNED_IN" && session?.user && !isLoginPage) {
-    // Update RSVP buttons to reflect logged-in state
     if (typeof updateRsvpButtons === "function") {
       setTimeout(updateRsvpButtons, 100);
     }
 
-    // Show welcome overlay
     const username = session.user.user_metadata?.username;
     const overlay = document.getElementById("welcomeOverlay");
     const msg = document.getElementById("welcomeMessage");
@@ -295,7 +289,7 @@ async function cancelRsvp(eventName) {
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
 
-  // Clone buttons to remove stale listeners
+  // Clone buttons to clean up previous listeners
   document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
     const clone = btn.cloneNode(true);
     btn.replaceWith(clone);
@@ -303,7 +297,6 @@ async function updateRsvpButtons() {
 
   const buttons = document.querySelectorAll(".event-rsvp-btn");
 
-  // Not logged in — redirect to login on click
   if (!session) {
     buttons.forEach((btn) => {
       btn.textContent = "RSVP";
@@ -335,8 +328,8 @@ async function updateRsvpButtons() {
       btn.onclick = () => {
         if (!rsvpModal || !rsvpEventName || !rsvpEmail || !rsvpUsername) return;
         rsvpEventName.textContent = eventName;
-        rsvpEmail.value = session.user.email;
-        rsvpUsername.value = session.user.user_metadata?.username || "";
+        rsvpEmail.value = session.user.email || "";
+        rsvpUsername.value = session.user.user_metadata?.username || "Local";
         rsvpModal.style.display = "flex";
       };
     }
@@ -358,7 +351,7 @@ if (submitRsvp && rsvpModal) {
 
     const eventName = rsvpEventName.textContent;
     const email = session.user.email;
-    const username = session.user.user_metadata?.username || "";
+    const username = session.user.user_metadata?.username || "Local";
 
     if (!eventName || !email) {
       showToast("Something went wrong.");
@@ -502,7 +495,6 @@ if (submitSuggestion && suggestModal) {
       showToast("Suggestion sent! Thank you ✨");
       suggestModal.style.display = "none";
 
-      // Clear fields
       ["suggestName", "suggestTitle", "suggestDescription"].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = "";
