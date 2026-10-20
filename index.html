@@ -2,237 +2,149 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Locals Only – Hamburg</title>
+  <title>Login – Locals Only</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <!-- TAB ICON (FAVICON) -->
   <link rel="icon" type="image/jpeg" href="images/logo-dark.jpg" />
   <link rel="apple-touch-icon" href="images/logo-dark.jpg" />
 
-  <!-- META DESCRIPTION -->
-  <meta name="description" content="Locals Only — cozy, introvert‑friendly meetups in Hamburg. Join small, warm gatherings without pressure." />
-
-  <!-- OPEN GRAPH -->
-  <meta property="og:title" content="Locals Only — Hamburg Meetups" />
-  <meta property="og:description" content="Cozy, introvert‑friendly meetups for people who want gentle social energy." />
-  <meta property="og:image" content="https://locals-only.space/og-image.jpg" />
-  <meta property="og:url" content="https://locals-only.space" />
-  <meta property="og:type" content="website" />
-
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body class="theme-night">
 
-  <!-- Shooting star element -->
   <div class="shooting-star"></div>
 
-  <!-- HEADER -->
-  <header class="site-header">
-    <div class="header-inner">
+  <div class="login-wrapper">
 
-      <div class="logo">
-        <img src="images/logo-dark.jpg" class="logo-image" alt="Locals Only logo" />
-      </div>
+    <img src="images/logo-dark.jpg" class="logo-image" style="height:110px; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto;" alt="Locals Only logo">
 
-      <button class="nav-toggle" aria-label="Open navigation menu">
-        <div class="nav-toggle-line"></div>
-        <div class="nav-toggle-line"></div>
-        <div class="nav-toggle-line"></div>
-      </button>
-
-      <!-- NAV -->
-      <nav class="main-nav">
-
-        <a href="/" class="nav-link">Home</a>
-
-        <a href="#" class="openSuggest">Suggest Event</a>
-
-        <a href="https://www.youtube.com/@Mooooba/playlists" target="_blank" rel="noopener noreferrer" class="nav-link">YouTube</a>
-
-        <a id="myMeetupsLink" href="my-meetups.html" style="display:none;">My Meetups</a>
-
-        <!-- USER DROPDOWN -->
-        <div id="userDropdown" class="user-dropdown" style="display:none;">
-          <button id="userDropdownButton" class="user-dropdown-btn">
-            <span id="navbarUsername">User</span> ▼
-          </button>
-
-          <div id="userDropdownMenu" class="user-dropdown-menu">
-            <a href="my-meetups.html">My Meetups</a>
-            <a href="#" class="openSuggest">Suggest Event</a>
-            <a href="https://www.youtube.com/@Mooooba/playlists" target="_blank" rel="noopener noreferrer">YouTube Channel</a>
-            <a id="logoutButton">Logout</a>
-          </div>
-        </div>
-
-        <a id="loginLink" href="login.html" class="nav-link">Become a Local</a>
-
-      </nav>
-
-    </div>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero fade-in">
-    <h1 class="hero-title">
-      Meet Locals in <span class="hero-highlight">Hamburg</span>
-    </h1>
-    <p class="hero-subtitle">Socializing for people who hate socializing but still want friends.</p>
-  </section>
-
-  <!-- EVENTS -->
-  <main>
-    <section class="section fade-in">
-      <div class="section-header">
-        <h2>Upcoming Meetups</h2>
-
-        <div class="city-filters">
-          <button class="city-filter-btn active" data-filter="hamburg">Hamburg</button>
-        </div>
-      </div>
-
-      <div class="events-grid">
-
-        <!-- EVENT 1 -->
-        <div class="event-card fade-in" data-city="hamburg">
-          <span class="event-tag">Hamburg</span>
-          <h3 class="event-title">Badminton Meetup</h3>
-          <p class="event-meta">Casual play for all levels</p>
-          <p class="event-description">A friendly no pressure badminton hangout. Beginners and shy players are totally welcome.</p>
-
-          <p class="attending-count" data-event="Badminton Meetup">0 attending</p>
-
-          <button class="event-rsvp-btn" data-event="Badminton Meetup">RSVP</button>
-        </div>
-
-        <!-- EVENT 2 -->
-        <div class="event-card fade-in" data-city="hamburg">
-          <span class="event-tag">Hamburg</span>
-          <h3 class="event-title">Coffee & Co‑Working</h3>
-          <p class="event-meta">Bring your laptop and chill</p>
-          <p class="event-description">A cozy co working session with cold drinks and good vibes all around.</p>
-
-          <p class="attending-count" data-event="Coffee & Co‑Working">0 attending</p>
-
-          <button class="event-rsvp-btn" data-event="Coffee & Co‑Working">RSVP</button>
-        </div>
-
-        <!-- EVENT 3 -->
-        <div class="event-card fade-in" data-city="hamburg">
-          <span class="event-tag">Hamburg</span>
-          <h3 class="event-title">Frisbee</h3>
-          <p class="event-description">Frisbee meetup for anyone who wants to throw.</p>
-
-          <p class="attending-count" data-event="Frisbee">0 attending</p>
-
-          <button class="event-rsvp-btn" data-event="Frisbee">RSVP</button>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section class="section fade-in">
-      <h2>About Locals Only</h2>
-      <p class="about-text">
-        Locals Only is a small warm space for people in Hamburg who want to meet new friends without pressure.
-        No big crowds and no awkward networking just calm introvert friendly meetups where everyone can relax.
-      </p>
-      <p class="about-text">
-        We keep it simple show up be kind and enjoy the moment. Whether you are new in town or just want gentle social energy 
-        you are in the right place.
-      </p>
-    </section>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer style="text-align: center; padding: 40px 16px calc(60px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--border-soft); margin-top: 40px;">
-    <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 12px;">
-      Join our community & listen along
+    <h1 class="login-title">Become a Local</h1>
+    <p class="login-sub" style="text-align:center; margin-bottom:20px;">
+      Enter your email and choose a username.<br>We'll send you a magic link.
     </p>
-    <a href="https://www.youtube.com/@Mooooba/playlists" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 8px; padding: 8px 18px; border-radius: var(--radius-pill); border: 1px solid var(--accent); color: var(--accent); text-decoration: none; font-size: 0.9rem; transition: var(--transition-med); background: rgba(255,255,255,0.04);">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-      </svg>
-      Watch on YouTube
-    </a>
-  </footer>
 
-  <!-- FLOATING SUGGEST BUTTON (MOBILE FAB) -->
-  <button id="fabSuggest" class="fab-suggest">＋ Suggest</button>
+    <label class="login-sub" for="loginEmail">Email</label>
+    <input type="email" id="loginEmail" class="login-input" placeholder="you@example.com" autocomplete="email" />
 
-  <!-- RSVP MODAL -->
-  <div id="rsvpModal" class="modal" style="display:none;">
-    <div class="modal-content">
+    <label class="login-sub" for="loginUsername">Username</label>
+    <input type="text" id="loginUsername" class="login-input" placeholder="your username" autocomplete="username" />
 
-      <span id="closeRsvpModal" class="close">&times;</span>
+    <button id="loginButton" class="login-btn">Send Magic Link</button>
 
-      <h2 id="rsvpEventName" class="modal-title"></h2>
-
-      <p class="about-text" style="margin-bottom: 20px;">
-        You're about to join this meetup. Your details look correct?
-      </p>
-
-      <label class="login-sub">Email</label>
-      <input id="rsvpEmail" class="login-input" type="email" readonly />
-
-      <label class="login-sub">Username</label>
-      <input id="rsvpUsername" class="login-input" type="text" readonly />
-
-      <button id="submitRsvp" class="login-btn" style="margin-top: 20px;">
-        Confirm RSVP
-      </button>
-
-    </div>
+    <p id="loginHint" style="font-size:0.82rem; color:var(--text-muted); margin-top:14px; text-align:center;">
+      Check your inbox after clicking.
+    </p>
   </div>
 
-  <!-- WELCOME OVERLAY -->
-  <div id="welcomeOverlay" class="welcome-overlay" style="display:none;">
-    <div class="welcome-box fade-in">
-      <h2 id="welcomeMessage"></h2>
-    </div>
-  </div>
-
-  <!-- LOGIN SUCCESS OVERLAY -->
+  <!-- Login success overlay -->
   <div id="loginSuccess" class="welcome-overlay" style="display:none;">
     <div class="welcome-box fade-in">
-      <h2>You're logged in!</h2>
-      <p>Redirecting...</p>
+      <h2>✓ Magic link sent!</h2>
+      <p style="color:var(--text-muted); margin-top:8px;">Click the link in your inbox to log in.</p>
     </div>
   </div>
 
-  <!-- SUGGEST EVENT MODAL -->
-  <div id="suggestModal" class="modal" style="display:none;">
-    <div class="modal-content">
-
-      <span id="closeSuggestModal" class="close">&times;</span>
-
-      <h2 class="modal-title">Suggest a Meetup</h2>
-
-      <label class="login-sub">Your Name</label>
-      <input id="suggestName" class="login-input" type="text" placeholder="e.g. Mooba" />
-
-      <label class="login-sub">Your Email</label>
-      <input id="suggestEmail" class="login-input" type="email" readonly />
-
-      <label class="login-sub">Event Idea</label>
-      <input id="suggestTitle" class="login-input" type="text" placeholder="e.g. Sunset Walk" />
-
-      <label class="login-sub">Description</label>
-      <textarea id="suggestDescription" class="login-input" placeholder="Tell us about your idea..." style="height:120px;"></textarea>
-
-      <button id="submitSuggestion" class="login-btn" style="margin-top: 20px;">
-        Send Suggestion
-      </button>
-
-    </div>
+  <!-- Safari storage popup -->
+  <div id="safariStoragePopup" class="safari-storage-popup">
+    Tap to enable login persistence
   </div>
 
-  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="main.js"></script>
+  <script>
+    const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlenpva3hid3pvY2dlYXd6cnNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMTA1NTIsImV4cCI6MjA5MDg4NjU1Mn0.wzKk6-EAgCjJIkiGTpM0G44veLaNTxmtNd-GnHEO61s";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
+    // ── Shooting stars ────────────────────────────
+    function spawnStar() {
+      const s = document.createElement("div");
+      s.classList.add("shooting-star");
+      s.style.left = Math.random() * innerWidth * 0.4 + "px";
+      s.style.top  = Math.random() * innerHeight * 0.2 + "px";
+      const d = 0.9 + Math.random() * 0.6;
+      s.style.animation = `shoot ${d}s ease-out forwards`;
+      document.body.appendChild(s);
+      setTimeout(() => s.remove(), d * 1000 + 200);
+    }
+    (function loop() {
+      const n = innerWidth < 720 ? 1 : 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < n; i++) setTimeout(spawnStar, i * 250);
+      setTimeout(loop, 7000 + Math.random() * 7000);
+    })();
+
+    // ── Already logged in → go home ───────────────
+    supabaseClient.auth.getSession().then(({ data }) => {
+      if (data.session?.user) window.location.replace("/");
+    });
+
+    // ── Safari storage check ──────────────────────
+    window.addEventListener("DOMContentLoaded", () => {
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      let blocked = false;
+      try { localStorage.setItem("t","1"); localStorage.removeItem("t"); }
+      catch(e) { blocked = true; }
+      if (isSafari && blocked) {
+        const p = document.getElementById("safariStoragePopup");
+        if (p) {
+          p.classList.add("visible");
+          p.addEventListener("click", () => p.classList.remove("visible"));
+        }
+      }
+    });
+
+    // ── Helpers ───────────────────────────────────
+    const btn   = document.getElementById("loginButton");
+    const emailEl = document.getElementById("loginEmail");
+    const userEl  = document.getElementById("loginUsername");
+    const hint    = document.getElementById("loginHint");
+
+    function setHint(msg, isError = false) {
+      hint.textContent = msg;
+      hint.style.color = isError ? "#ff8a8a" : "var(--text-muted)";
+    }
+
+    // Enter key submits
+    [emailEl, userEl].forEach(el => {
+      el.addEventListener("keydown", e => { if (e.key === "Enter") btn.click(); });
+    });
+
+    // ── Send magic link ───────────────────────────
+    btn.addEventListener("click", async () => {
+      const email    = emailEl.value.trim();
+      const username = userEl.value.trim();
+
+      if (!email)                   { setHint("Please enter your email.", true);         return; }
+      if (!email.includes("@")) { setHint("That doesn't look like an email.", true); return; }
+      if (!username)                { setHint("Please choose a username.", true);        return; }
+
+      btn.textContent = "Sending…";
+      btn.disabled    = true;
+
+      const { error } = await supabaseClient.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: "https://locals-only.space/auth-callback.html",
+          data: { username }
+        }
+      });
+
+      btn.textContent = "Send Magic Link";
+      btn.disabled    = false;
+
+      if (error) {
+        setHint("Something went wrong. Please try again.", true);
+        console.error(error);
+      } else {
+        document.getElementById("loginSuccess").style.display = "flex";
+      }
+    });
+
+    // Close success overlay on tap
+    document.getElementById("loginSuccess").addEventListener("click", () => {
+      document.getElementById("loginSuccess").style.display = "none";
+    });
+  </script>
 </body>
 </html>
