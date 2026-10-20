@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <title>Login – Locals Only</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- TAB ICON (FAVICON) -->
+  <link rel="icon" type="image/jpeg" href="images/logo-dark.jpg" />
+  <link rel="apple-touch-icon" href="images/logo-dark.jpg" />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -13,7 +18,7 @@
 
   <div class="login-wrapper">
 
-    <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" style="height:110px; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto;" alt="Locals Only logo">
+    <img src="images/logo-dark.jpg" class="logo-image" style="height:110px; margin-bottom:12px; display:block; margin-left:auto; margin-right:auto;" alt="Locals Only logo">
 
     <h1 class="login-title">Become a Local</h1>
     <p class="login-sub" style="text-align:center; margin-bottom:20px;">
@@ -90,7 +95,7 @@
     });
 
     // ── Helpers ───────────────────────────────────
-    const btn     = document.getElementById("loginButton");
+    const btn   = document.getElementById("loginButton");
     const emailEl = document.getElementById("loginEmail");
     const userEl  = document.getElementById("loginUsername");
     const hint    = document.getElementById("loginHint");
@@ -110,9 +115,9 @@
       const email    = emailEl.value.trim();
       const username = userEl.value.trim();
 
-      if (!email)               { setHint("Please enter your email.", true);         return; }
+      if (!email)                   { setHint("Please enter your email.", true);         return; }
       if (!email.includes("@")) { setHint("That doesn't look like an email.", true); return; }
-      if (!username)            { setHint("Please choose a username.", true);        return; }
+      if (!username)                { setHint("Please choose a username.", true);        return; }
 
       btn.textContent = "Sending…";
       btn.disabled    = true;
@@ -120,7 +125,6 @@
       const { error } = await supabaseClient.auth.signInWithOtp({
         email,
         options: {
-          // ★ CRITICAL: must point to auth-callback.html, not index.html
           emailRedirectTo: "https://locals-only.space/auth-callback.html",
           data: { username }
         }
