@@ -14,13 +14,6 @@ const isMyMeetupsPage = window.location.pathname.includes("my-meetups.html");
 // ===============================
 // DOM Refs
 // ===============================
-const rsvpModal = document.getElementById("rsvpModal");
-const rsvpEventName = document.getElementById("rsvpEventName");
-const rsvpEmail = document.getElementById("rsvpEmail");
-const rsvpUsername = document.getElementById("rsvpUsername");
-const submitRsvp = document.getElementById("submitRsvp");
-const closeRsvpModal = document.getElementById("closeRsvpModal");
-
 const suggestModal = document.getElementById("suggestModal");
 const closeSuggestModalBtn = document.getElementById("closeSuggestModal");
 const fabSuggest = document.getElementById("fabSuggest");
@@ -34,7 +27,6 @@ function updateNavbar(session) {
   const userDropdown = document.getElementById("userDropdown");
   const navbarUsername = document.getElementById("navbarUsername");
 
-  // Default: logged out state
   if (loginLink) loginLink.style.display = "inline-block";
   if (userDropdown) userDropdown.style.display = "none";
   if (myMeetupsLink) myMeetupsLink.style.display = "none";
@@ -50,7 +42,7 @@ function updateNavbar(session) {
   if (loginLink) loginLink.style.display = "none";
   if (userDropdown) userDropdown.style.display = "inline-block";
   if (navbarUsername) navbarUsername.textContent = username || "User";
-  if (myMeetupsLink) myMeetupsLink.style.display = "none";
+  if (myMeetupsLink) myMeetupsLink.style.display = "inline-block";
 
   document.querySelectorAll(".main-nav .openSuggest").forEach(el => {
     el.style.display = "none";
@@ -58,8 +50,7 @@ function updateNavbar(session) {
 }
 
 // ===============================
-// SESSION INIT — single unified block
-// Handles: hash tokens, ?code= PKCE, normal session restore
+// SESSION INIT (No forced redirects)
 // ===============================
 (async () => {
   const { data, error } = await supabaseClient.auth.getSession();
@@ -88,30 +79,8 @@ function updateNavbar(session) {
   }
 })();
 
-// React to auth changes (login, logout, token refresh)
 supabaseClient.auth.onAuthStateChange((event, session) => {
   updateNavbar(session);
-
-  if (event === "SIGNED_IN" && session?.user && !isLoginPage) {
-    if (typeof updateRsvpButtons === "function") {
-      setTimeout(updateRsvpButtons, 100);
-    }
-
-    const username = session.user.user_metadata?.username;
-    const overlay = document.getElementById("welcomeOverlay");
-    const msg = document.getElementById("welcomeMessage");
-    if (overlay && msg) {
-      msg.textContent = `Welcome back, ${username || "friend"}!`;
-      overlay.style.display = "flex";
-      setTimeout(() => {
-        overlay.style.opacity = "0";
-        setTimeout(() => {
-          overlay.style.display = "none";
-          overlay.style.opacity = "";
-        }, 600);
-      }, 1800);
-    }
-  }
 });
 
 // ===============================
@@ -211,26 +180,6 @@ function ambientStarsLoop() {
 ambientStarsLoop();
 
 // ===============================
-// City Filters
-// ===============================
-const filterButtons = document.querySelectorAll(".city-filter-btn");
-const eventCards = document.querySelectorAll(".event-card");
-
-filterButtons.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    const filter = btn.dataset.filter;
-
-    filterButtons.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-
-    eventCards.forEach((card) => {
-      const city = card.dataset.city;
-      card.style.display = filter === "all" || filter === city ? "block" : "none";
-    });
-  });
-});
-
-// ===============================
 // Toast
 // ===============================
 function showToast(message) {
@@ -269,41 +218,62 @@ if (!isMyMeetupsPage && !isLoginPage) {
 }
 
 // ===============================
-// RSVP SYSTEM
+// 1-CLICK INSTANT RSVP SYSTEM
 // ===============================
-async function cancelRsvp(eventName) {
+async function handleRsvpClick(eventName, btn) {
   const session = (await supabaseClient.auth.getSession()).data.session;
-  if (!session) return;
+  
+  if (!session) {
+    window.location.href = "login.html";
+    return;
+  }
 
-  await supabaseClient
-    .from("rsvps")
-    .delete()
-    .eq("email", session.user.email)
-    .eq("event_name", eventName);
+  const email = session.user.email;
+  const username = session.user.user_metadata?.username || "Local";
 
-  showToast("RSVP canceled.");
+  btn.disabled = true;
+
+  if (btn.classList.contains("cancel-btn")) {
+    btn.textContent = "Canceling…";
+    const { error } = await supabaseClient
+      .from("rsvps")
+      .delete()
+      .eq("email", email)
+      .eq("event_name", eventName);
+
+    if (error) {
+      showToast("Could not cancel. Try again.");
+    } else {
+      showToast("RSVP canceled.");
+    }
+  } else {
+    btn.textContent = "Joining…";
+    const { error } = await supabaseClient.from("rsvps").upsert(
+      { email, event_name: eventName, username },
+      { onConflict: "email,event_name" }
+    );
+
+    if (error) {
+      showToast("Something went wrong. Please try again.");
+    } else {
+      showToast("You're in! 🎉");
+    }
+  }
+
+  btn.disabled = false;
   await loadAttendingCounts();
-  updateRsvpButtons();
+  await updateRsvpButtons();
 }
 
 async function updateRsvpButtons() {
   const session = (await supabaseClient.auth.getSession()).data.session;
-
-  // Clone buttons to clean up previous listeners
-  document.querySelectorAll(".event-rsvp-btn").forEach((btn) => {
-    const clone = btn.cloneNode(true);
-    btn.replaceWith(clone);
-  });
-
   const buttons = document.querySelectorAll(".event-rsvp-btn");
 
   if (!session) {
     buttons.forEach((btn) => {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
-      btn.addEventListener("click", () => {
-        window.location.href = "login.html";
-      });
+      btn.onclick = () => { window.location.href = "login.html"; };
     });
     return;
   }
@@ -321,71 +291,16 @@ async function updateRsvpButtons() {
     if (userEvents.includes(eventName)) {
       btn.textContent = "Cancel RSVP";
       btn.classList.add("cancel-btn");
-      btn.onclick = () => cancelRsvp(eventName);
     } else {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
-      btn.onclick = () => {
-        if (!rsvpModal || !rsvpEventName || !rsvpEmail || !rsvpUsername) return;
-        rsvpEventName.textContent = eventName;
-        rsvpEmail.value = session.user.email || "";
-        rsvpUsername.value = session.user.user_metadata?.username || "Local";
-        rsvpModal.style.display = "flex";
-      };
     }
+
+    btn.onclick = () => handleRsvpClick(eventName, btn);
   });
 }
 
 setTimeout(updateRsvpButtons, 300);
-
-// ===============================
-// Confirm RSVP
-// ===============================
-if (submitRsvp && rsvpModal) {
-  submitRsvp.addEventListener("click", async () => {
-    const session = (await supabaseClient.auth.getSession()).data.session;
-    if (!session) {
-      window.location.href = "login.html";
-      return;
-    }
-
-    const eventName = rsvpEventName.textContent;
-    const email = session.user.email;
-    const username = session.user.user_metadata?.username || "Local";
-
-    if (!eventName || !email) {
-      showToast("Something went wrong.");
-      return;
-    }
-
-    submitRsvp.textContent = "Saving…";
-    submitRsvp.disabled = true;
-
-    const { error } = await supabaseClient.from("rsvps").upsert(
-      { email, event_name: eventName, username },
-      { onConflict: "email,event_name" }
-    );
-
-    submitRsvp.textContent = "Confirm RSVP";
-    submitRsvp.disabled = false;
-
-    if (error) {
-      showToast("Something went wrong. Please try again.");
-    } else {
-      showToast("You're in! 🎉");
-      rsvpModal.style.display = "none";
-      await loadAttendingCounts();
-      updateRsvpButtons();
-    }
-  });
-}
-
-// Close RSVP modal
-if (closeRsvpModal && rsvpModal) {
-  closeRsvpModal.addEventListener("click", () => {
-    rsvpModal.style.display = "none";
-  });
-}
 
 // ===============================
 // My Meetups Page
@@ -443,6 +358,11 @@ async function openSuggestModal() {
   const emailInput = document.getElementById("suggestEmail");
   if (emailInput) emailInput.value = session.user.email;
 
+  const nameInput = document.getElementById("suggestName");
+  if (nameInput && !nameInput.value) {
+    nameInput.value = session.user.user_metadata?.username || "";
+  }
+
   if (suggestModal) suggestModal.style.display = "flex";
 }
 
@@ -470,12 +390,12 @@ const submitSuggestion = document.getElementById("submitSuggestion");
 
 if (submitSuggestion && suggestModal) {
   submitSuggestion.addEventListener("click", async () => {
-    const name        = document.getElementById("suggestName")?.value.trim();
+    const username    = document.getElementById("suggestName")?.value.trim();
     const email       = document.getElementById("suggestEmail")?.value.trim();
     const title       = document.getElementById("suggestTitle")?.value.trim();
     const description = document.getElementById("suggestDescription")?.value.trim();
 
-    if (!name || !email || !title || !description) {
+    if (!username || !email || !title || !description) {
       showToast("Please fill out all fields.");
       return;
     }
@@ -483,15 +403,20 @@ if (submitSuggestion && suggestModal) {
     submitSuggestion.textContent = "Sending…";
     submitSuggestion.disabled = true;
 
-    try {
-      const res = await fetch("/api/sendSuggestion", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, title, description })
-      });
+    const { error } = await supabaseClient.from("suggestions").insert({
+      email,
+      username,
+      title,
+      description,
+      city: "Hamburg"
+    });
 
-      if (!res.ok) throw new Error();
+    submitSuggestion.textContent = "Send Suggestion";
+    submitSuggestion.disabled = false;
 
+    if (error) {
+      showToast("Error sending suggestion. Please try again.");
+    } else {
       showToast("Suggestion sent! Thank you ✨");
       suggestModal.style.display = "none";
 
@@ -499,20 +424,11 @@ if (submitSuggestion && suggestModal) {
         const el = document.getElementById(id);
         if (el) el.value = "";
       });
-
-    } catch {
-      showToast("Error sending. Please try again.");
-    } finally {
-      submitSuggestion.textContent = "Send Suggestion";
-      submitSuggestion.disabled = false;
     }
   });
 }
 
-// ===============================
-// Close modals on backdrop click
-// ===============================
-[rsvpModal, suggestModal].forEach((modal) => {
+[suggestModal].forEach((modal) => {
   if (!modal) return;
   modal.addEventListener("click", (e) => {
     if (e.target === modal) modal.style.display = "none";
