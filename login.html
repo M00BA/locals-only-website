@@ -46,18 +46,13 @@
     </div>
   </div>
 
-  <!-- Safari storage popup -->
-  <div id="safariStoragePopup" class="safari-storage-popup">
-    Tap to enable login persistence
-  </div>
-
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indlenpva3hid3pvY2dlYXd6cnNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUzMTA1NTIsImV4cCI6MjA5MDg4NjU1Mn0.wzKk6-EAgCjJIkiGTpM0G44veLaNTxmtNd-GnHEO61s";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-    // ── Shooting stars ────────────────────────────
+    // Shooting stars background
     function spawnStar() {
       const s = document.createElement("div");
       s.classList.add("shooting-star");
@@ -74,22 +69,6 @@
       setTimeout(loop, 7000 + Math.random() * 7000);
     })();
 
-    // ── Safari storage check ──────────────────────
-    window.addEventListener("DOMContentLoaded", () => {
-      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-      let blocked = false;
-      try { localStorage.setItem("t","1"); localStorage.removeItem("t"); }
-      catch(e) { blocked = true; }
-      if (isSafari && blocked) {
-        const p = document.getElementById("safariStoragePopup");
-        if (p) {
-          p.classList.add("visible");
-          p.addEventListener("click", () => p.classList.remove("visible"));
-        }
-      }
-    });
-
-    // ── Helpers ───────────────────────────────────
     const btn   = document.getElementById("loginButton");
     const emailEl = document.getElementById("loginEmail");
     const userEl  = document.getElementById("loginUsername");
@@ -100,12 +79,10 @@
       hint.style.color = isError ? "#ff8a8a" : "var(--text-muted)";
     }
 
-    // Enter key submits
     [emailEl, userEl].forEach(el => {
       el.addEventListener("keydown", e => { if (e.key === "Enter") btn.click(); });
     });
 
-    // ── Send magic link ───────────────────────────
     btn.addEventListener("click", async () => {
       const email    = emailEl.value.trim();
       const username = userEl.value.trim();
@@ -136,7 +113,6 @@
       }
     });
 
-    // Close success overlay on tap
     document.getElementById("loginSuccess").addEventListener("click", () => {
       document.getElementById("loginSuccess").style.display = "none";
     });
