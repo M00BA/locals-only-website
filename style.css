@@ -23,11 +23,16 @@
 }
 
 body.theme-night {
-  background-color: var(--bg-dark);
+  background-color: #050814;
+  background-image: 
+    radial-gradient(circle at 15% 85%, rgba(14, 58, 140, 0.45) 0%, transparent 50%),
+    radial-gradient(circle at 85% 15%, rgba(20, 75, 180, 0.35) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(8, 20, 45, 0.8) 0%, transparent 100%);
   color: var(--text-main);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
+  background-attachment: fixed;
 }
 
 /* ===============================
