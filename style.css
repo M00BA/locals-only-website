@@ -1,351 +1,168 @@
-/* ---------------------------------------------------
-   1. ROOT VARIABLES
---------------------------------------------------- */
+/* ===============================
+   CSS VARIABLES & RESET
+   =============================== */
 :root {
-  --font-main: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --bg-top: #090E15;
-  --bg-mid: #1b1b33;
-  --bg-bottom: #0b0b18;
-  --surface: rgba(18,18,34,0.92);
-  --text-main: #f5f0ff;
-  --text-muted: #b6b0d0;
-  --accent: #f2c98c;
-  --border-soft: rgba(255,255,255,0.12);
-  --surface-hover: rgba(255,255,255,0.12);
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-pill: 999px;
-  --shadow-soft: 0 18px 40px rgba(0,0,0,0.18);
-  --shadow-hover: 0 22px 50px rgba(0,0,0,0.28);
-  --transition-fast: 150ms ease;
-  --transition-med: 220ms ease;
-  --transition-slow: 320ms ease;
+  --bg-dark: #090a0f;
+  --bg-card: #13151f;
+  --bg-card-hover: #191c2b;
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --accent: #fcd34d;
+  --accent-glow: rgba(252, 211, 77, 0.25);
+  --border-soft: rgba(255, 255, 255, 0.08);
+  --radius-card: 16px;
+  --radius-pill: 9999px;
+  --transition-med: 0.25s ease;
 }
 
-/* ---------------------------------------------------
-   2. RESET + BASE
---------------------------------------------------- */
-*,
-*::before,
-*::after {
+* {
   box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-html {
-  overflow-x: hidden;
-  width: 100%;
-}
-
-body {
   margin: 0;
-  font-family: var(--font-main);
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body.theme-night {
+  background-color: var(--bg-dark);
   color: var(--text-main);
-  background: linear-gradient(to bottom, var(--bg-top), var(--bg-mid), var(--bg-bottom));
   min-height: 100vh;
-  min-height: 100dvh;
-  overflow-x: hidden;
-  width: 100%;
   position: relative;
-  -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
-main {
-  padding: 80px 16px 80px;
-}
-
-@media (max-width: 720px) {
-  main {
-    padding: 60px 16px 90px;
-  }
-}
-
-.section {
-  max-width: 1100px;
-  margin: 0 auto 64px;
-}
-
-/* ---------------------------------------------------
-   3. STARFIELD
---------------------------------------------------- */
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: -2;
-}
-
-body::before {
-  background-image:
-    radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.9), transparent),
-    radial-gradient(1.5px 1.5px at 30% 80%, rgba(255,255,255,0.8), transparent),
-    radial-gradient(2px 2px at 70% 40%, rgba(255,255,255,0.9), transparent),
-    radial-gradient(1px 1px at 90% 10%, rgba(255,255,255,0.7), transparent);
-  animation: starFloat 40s ease-in-out infinite, starPulse 6s ease-in-out infinite alternate;
-}
-
-body::after {
-  background-image:
-    radial-gradient(1.5px 1.5px at 15% 30%, rgba(255,255,255,0.7), transparent),
-    radial-gradient(1px 1px at 40% 70%, rgba(255,255,255,0.5), transparent);
-  animation: starPulse 6s ease-in-out infinite alternate;
-}
-
-@keyframes starFloat {
-  0%   { transform: translate(0,0); }
-  50%  { transform: translate(12px,-16px); }
-  100% { transform: translate(0,0); }
-}
-
-@keyframes starPulse {
-  0%   { opacity: 0.7; }
-  100% { opacity: 1; }
-}
-
+/* ===============================
+   SHOOTING STARS BACKGROUND
+   =============================== */
 .shooting-star {
   position: fixed;
-  top: -40px;
-  left: -40px;
-  width: 3px;
-  height: 3px;
-  background: #fff;
+  width: 2px;
+  height: 2px;
+  background: white;
   border-radius: 50%;
-  box-shadow: 0 0 8px #fff;
-  opacity: 0;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.8);
   pointer-events: none;
-  z-index: 9999;
+  opacity: 0;
+  z-index: 0;
 }
 
 @keyframes shoot {
-  0%   { opacity: 1; transform: translate(0,0) scale(1); }
-  100% { opacity: 0; transform: translate(300px,180px) scale(0.4); }
+  0% {
+    transform: translate(0, 0) rotate(-45deg) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-300px, 300px) rotate(-45deg) scale(0.2);
+    opacity: 0;
+  }
 }
 
-/* ---------------------------------------------------
-   4. HEADER + NAVBAR
---------------------------------------------------- */
+/* ===============================
+   HEADER & NAVIGATION
+   =============================== */
 .site-header {
+  border-bottom: 1px solid var(--border-soft);
   position: sticky;
   top: 0;
+  background: rgba(9, 10, 15, 0.85);
+  backdrop-filter: blur(12px);
   z-index: 100;
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  background: rgba(0,0,0,0.25);
-  padding-top: env(safe-area-inset-top, 0px);
 }
 
 .header-inner {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 12px 16px;
+  padding: 16px 20px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
 }
 
 .logo-image {
-  height: 60px;
+  height: 42px;
   width: auto;
   display: block;
 }
 
-/* NAV */
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 24px;
 }
 
-.main-nav a,
 .nav-link {
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--accent);
-  background: rgba(255,255,255,0.08);
-  color: var(--text-main);
-  cursor: pointer;
+  color: var(--text-muted);
   text-decoration: none;
-  font-size: 14px;
+  font-size: 0.95rem;
+  font-weight: 500;
   transition: var(--transition-med);
-  white-space: nowrap;
 }
 
-.main-nav a:hover,
 .nav-link:hover {
-  background: var(--accent);
-  color: #1b1220;
+  color: var(--text-main);
 }
 
 .nav-toggle {
   display: none;
-  flex-direction: column;
-  gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  flex-direction: column;
+  gap: 5px;
 }
 
 .nav-toggle-line {
   width: 24px;
   height: 2px;
   background: var(--text-main);
-  border-radius: 999px;
+  border-radius: 2px;
 }
 
-/* Mobile nav */
-@media (max-width: 720px) {
-  .nav-toggle { display: flex; }
-
-  .main-nav {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 16px;
-    left: 16px;
-    flex-direction: column;
-    align-items: stretch;
-    background: var(--surface);
-    padding: 16px;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-soft);
-    border: 1px solid var(--border-soft);
-    max-height: 0;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-    transition: max-height 0.3s ease, opacity 0.25s ease;
-    z-index: 200;
-  }
-
-  .main-nav.open {
-    max-height: 500px;
-    opacity: 1;
-    pointer-events: auto;
-  }
-
-  .main-nav a,
-  .nav-link {
-    text-align: center;
-    margin-bottom: 6px;
-    font-size: 16px;
-    padding: 10px 16px;
-  }
-}
-
-/* ---------------------------------------------------
-   5. USER DROPDOWN
---------------------------------------------------- */
-.user-dropdown {
-  position: relative;
-}
-
-.user-dropdown-btn {
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--accent);
-  background: rgba(255,255,255,0.08);
-  color: var(--text-main);
-  cursor: pointer;
-  font-size: 14px;
-  transition: var(--transition-med);
-}
-
-.user-dropdown-btn:hover {
-  background: var(--accent);
-  color: #1b1220;
-}
-
-.user-dropdown-menu {
-  display: none;
-  position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  padding: 8px;
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-hover);
-  z-index: 999;
-  min-width: 160px;
-}
-
-.user-dropdown-menu a {
-  display: block;
-  padding: 10px 14px;
-  color: var(--text-main);
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: 15px;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.user-dropdown-menu a:hover {
-  background: var(--surface-hover);
-}
-
-/* ---------------------------------------------------
-   6. HERO
---------------------------------------------------- */
+/* ===============================
+   HERO SECTION
+   =============================== */
 .hero {
+  max-width: 800px;
+  margin: 60px auto 40px;
+  padding: 0 20px;
   text-align: center;
-  margin: 50px auto 40px;
-  max-width: 700px;
-  padding: 0 16px;
 }
 
 .hero-title {
-  margin: 0 0 10px;
-  font-size: clamp(1.8rem, 6vw, 2.4rem);
-  line-height: 1.2;
-  text-shadow: 0 0 40px rgba(242, 201, 140, 0.18);
-}
-
-.hero-subtitle {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: clamp(0.95rem, 3.5vw, 1.1rem);
-  line-height: 1.5;
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 16px;
 }
 
 .hero-highlight {
-  position: relative;
-  display: inline-block;
+  color: var(--accent);
 }
 
-.hero-highlight::after {
-  content: "";
-  position: absolute;
-  bottom: -3px;
-  left: 0;
-  height: 2px;
-  width: 0%;
-  background: var(--accent);
-  border-radius: 999px;
-  animation: underlineGrow 1.2s ease forwards 0.6s;
+.hero-subtitle {
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  line-height: 1.5;
 }
 
-@keyframes underlineGrow {
-  to { width: 100%; }
+/* ===============================
+   SECTIONS & EVENTS GRID
+   =============================== */
+.section {
+  max-width: 1000px;
+  margin: 0 auto 60px;
+  padding: 0 20px;
 }
 
-/* ---------------------------------------------------
-   7. SECTION HEADER + FILTERS
---------------------------------------------------- */
 .section-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  gap: 12px;
+  justify-content: space-between;
+  margin-bottom: 24px;
 }
 
-.section-header h2 {
-  margin: 0;
-  font-size: clamp(1.4rem, 4.5vw, 1.8rem);
+.section h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 
 .city-filters {
@@ -354,371 +171,414 @@ body::after {
 }
 
 .city-filter-btn {
-  padding: 6px 16px;
-  border-radius: var(--radius-pill);
+  background: var(--bg-card);
   border: 1px solid var(--border-soft);
-  background: rgba(255,255,255,0.06);
   color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
   cursor: pointer;
-  font-size: 0.9rem;
   transition: var(--transition-med);
 }
 
 .city-filter-btn.active,
 .city-filter-btn:hover {
   background: var(--accent);
-  color: #1b1220;
+  color: #121212;
   border-color: var(--accent);
-}
-
-/* ---------------------------------------------------
-   8. EVENTS GRID + CARDS
---------------------------------------------------- */
-.events-grid {
-  display: grid;
-  gap: 18px;
-}
-
-@media (min-width: 720px) {
-  .events-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.event-card {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-soft);
-  border-left: 3px solid rgba(242, 201, 140, 0.5);
-  padding: 22px;
-  box-shadow: var(--shadow-soft);
-  transition: var(--transition-med);
-}
-
-@media (hover: hover) {
-  .event-card:hover {
-    transform: translateY(-3px);
-    box-shadow: var(--shadow-hover);
-  }
-}
-
-.event-tag {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: var(--radius-pill);
-  background: var(--accent);
-  color: #1b1220;
-  font-size: 0.75rem;
-  margin-bottom: 10px;
   font-weight: 600;
 }
 
-.event-title {
-  margin: 0 0 6px;
-  font-size: 1.2rem;
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
-.event-meta {
-  margin: 0 0 8px;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-}
-
-.event-description {
-  margin: 0 0 14px;
-  line-height: 1.5;
-  color: var(--text-muted);
-  font-size: 0.95rem;
-}
-
-.attending-count {
-  display: inline-block;
-  background: rgba(242, 201, 140, 0.12);
-  color: var(--accent);
-  border: 1px solid rgba(242, 201, 140, 0.3);
-  border-radius: var(--radius-pill);
-  padding: 3px 12px;
-  font-size: 0.8rem;
-  margin-bottom: 14px;
-}
-
-.event-rsvp-btn {
-  display: block;
-  width: 100%;
-  text-align: center;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--accent);
-  background: transparent;
-  color: var(--accent);
-  padding: 10px 18px;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 500;
+.event-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
   transition: var(--transition-med);
 }
 
-@media (min-width: 500px) {
-  .event-rsvp-btn {
-    display: inline-block;
-    width: auto;
-  }
+.event-card:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(252, 211, 77, 0.2);
+  transform: translateY(-2px);
+}
+
+.event-tag {
+  align-self: flex-start;
+  background: rgba(252, 211, 77, 0.1);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.event-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.event-meta {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 12px;
+}
+
+.event-description {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 24px;
+  flex-grow: 1;
+}
+
+.attending-count {
+  font-size: 0.85rem;
+  color: var(--accent);
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+/* ===============================
+   BUTTONS & RSVP
+   =============================== */
+.event-rsvp-btn {
+  background: var(--accent);
+  color: #121212;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-med);
+  width: 100%;
+  text-align: center;
 }
 
 .event-rsvp-btn:hover {
-  background: var(--accent);
-  color: #1b1220;
+  opacity: 0.9;
+  transform: scale(1.01);
 }
 
 .event-rsvp-btn.cancel-btn {
-  border-color: #ff8a8a;
+  background: transparent;
+  border: 1px solid rgba(255, 100, 100, 0.4);
   color: #ff8a8a;
 }
 
 .event-rsvp-btn.cancel-btn:hover {
-  background: #ff8a8a;
-  color: #1b1220;
+  background: rgba(255, 100, 100, 0.1);
 }
 
-/* ---------------------------------------------------
-   9. ABOUT
---------------------------------------------------- */
+/* ===============================
+   ABOUT SECTION
+   =============================== */
 .about-text {
-  max-width: 700px;
-  margin: 12px 0;
+  color: var(--text-muted);
   line-height: 1.6;
-  color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 1.05rem;
+  margin-bottom: 16px;
 }
 
-/* ---------------------------------------------------
-   10. LOGIN PAGE
---------------------------------------------------- */
-.login-wrapper {
-  max-width: 420px;
-  margin: 40px auto 40px;
-  background: var(--surface);
-  padding: 32px 24px;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-soft);
-  box-shadow: var(--shadow-soft);
-  text-align: center;
-}
-
-.login-title {
-  margin: 0 0 8px;
-  font-size: 1.6rem;
-}
-
-.login-sub {
-  color: var(--text-muted);
-  margin: 14px 0 6px;
-  display: block;
-  text-align: left;
-  font-size: 0.9rem;
-}
-
-.login-input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-soft);
-  background: rgba(255,255,255,0.06);
-  color: var(--text-main);
-  margin-bottom: 6px;
-  font-size: 16px; /* Prevents auto-zoom in iOS Safari */
-  font-family: var(--font-main);
-  outline: none;
-  -webkit-appearance: none;
-  appearance: none;
-  transition: border-color var(--transition-fast);
-}
-
-.login-input:focus {
-  border-color: rgba(242, 201, 140, 0.7);
-}
-
-.login-btn {
-  width: 100%;
-  padding: 12px 16px;
+/* ===============================
+   FLOATING SUGGEST BUTTON (FAB)
+   =============================== */
+.fab-suggest {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  background: var(--accent);
+  color: #121212;
+  padding: 12px 22px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--accent);
-  background: transparent;
-  color: var(--accent);
+  font-weight: 700;
+  border: none;
   cursor: pointer;
-  font-size: 16px;
-  font-family: var(--font-main);
-  font-weight: 500;
-  margin-top: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  gap: 6px;
   transition: var(--transition-med);
 }
 
-.login-btn:hover {
-  background: var(--accent);
-  color: #1b1220;
+.fab-suggest:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 24px var(--accent-glow);
 }
 
-/* ---------------------------------------------------
-   11. MODALS (Optimized for Mobile/iOS)
---------------------------------------------------- */
+/* ===============================
+   MODALS & OVERLAYS
+   =============================== */
 .modal {
   position: fixed;
-  inset: 0;
-  background: rgba(10,10,15,0.8);
-  display: none;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(5px);
+  z-index: 1000;
+  display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9000;
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  padding: 16px;
-  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  padding: 20px;
 }
 
 .modal-content {
-  background: #1a1a2e;
-  padding: 24px 20px;
-  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-card);
   width: 100%;
   max-width: 440px;
-  max-height: 90vh;
-  max-height: 90dvh;
-  overflow-y: auto;
-  box-shadow: 0 0 40px rgba(0,0,0,0.6);
-  border: 1px solid var(--border-soft);
-  animation: modalPop 0.22s ease;
+  padding: 30px;
   position: relative;
-  -webkit-overflow-scrolling: touch;
-}
-
-@keyframes modalPop {
-  from { transform: scale(0.95); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-
-.modal-title {
-  margin: 0 0 16px;
-  font-size: 1.3rem;
-  padding-right: 28px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 .close {
   position: absolute;
-  top: 14px;
-  right: 16px;
-  font-size: 28px;
-  line-height: 1;
-  cursor: pointer;
+  top: 20px;
+  right: 20px;
+  font-size: 1.5rem;
   color: var(--text-muted);
-  transition: color var(--transition-fast);
-  padding: 4px;
+  cursor: pointer;
+  transition: var(--transition-med);
 }
 
 .close:hover {
   color: var(--text-main);
 }
 
-/* Explicit 16px to prevent iOS auto-zoom on click */
-.modal-content input,
-.modal-content textarea {
-  font-size: 16px !important;
+.modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 20px;
 }
 
-/* ---------------------------------------------------
-   12. FLOATING SUGGEST BUTTON (MOBILE FAB)
---------------------------------------------------- */
-.fab-suggest {
-  position: fixed;
-  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
-  right: 20px;
+/* ===============================
+   LOGIN WRAPPER & FORM INPUTS
+   =============================== */
+.login-wrapper {
+  max-width: 400px;
+  margin: 80px auto;
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  padding: 40px 30px;
+  border-radius: var(--radius-card);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.login-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.login-sub {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.login-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-soft);
+  padding: 12px 16px;
+  border-radius: 8px;
+  color: var(--text-main);
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+  transition: var(--transition-med);
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.login-btn {
+  width: 100%;
   background: var(--accent);
-  color: #1b1220;
+  color: #121212;
   border: none;
-  border-radius: var(--radius-pill);
-  padding: 12px 20px;
-  font-size: 15px;
-  font-weight: 600;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
-  z-index: 8000;
+  transition: var(--transition-med);
+}
+
+.login-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* ===============================
+   USER DROPDOWN & WELCOME OVERLAYS
+   =============================== */
+.user-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-dropdown-btn {
+  background: rgba(252, 211, 77, 0.1);
+  border: 1px solid var(--border-soft);
+  color: var(--accent);
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: transform var(--transition-fast);
+  gap: 6px;
 }
 
-.fab-suggest:active {
-  transform: scale(0.95);
+.user-dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: var(--bg-card);
+  border: 1px solid var(--border-soft);
+  border-radius: 12px;
+  min-width: 180px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  z-index: 200;
+  overflow: hidden;
 }
 
-/* On desktop, hide floating button if regular nav has it */
-@media (min-width: 721px) {
-  .fab-suggest {
-    display: none;
-  }
+.user-dropdown-menu a {
+  display: block;
+  padding: 12px 16px;
+  color: var(--text-main);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: var(--transition-med);
+  cursor: pointer;
 }
 
-/* ---------------------------------------------------
-   13. FADE-IN
---------------------------------------------------- */
-.fade-in {
-  opacity: 0;
-  transform: translateY(10px);
-  transition: opacity 0.8s ease, transform 0.8s ease;
+.user-dropdown-menu a:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--accent);
 }
 
-.fade-in.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* ---------------------------------------------------
-   14. WELCOME OVERLAY
---------------------------------------------------- */
 .welcome-overlay {
   position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.7);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(6px);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  padding: 16px;
-  transition: opacity 0.6s ease;
+  z-index: 2000;
 }
 
 .welcome-box {
-  background: var(--surface);
-  padding: 32px 28px;
-  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  border: 1px solid var(--accent);
+  padding: 40px;
+  border-radius: var(--radius-card);
   text-align: center;
-  box-shadow: var(--shadow-soft);
-  border: 1px solid var(--border-soft);
-  max-width: 90%;
+  box-shadow: 0 0 30px var(--accent-glow);
 }
 
-/* ---------------------------------------------------
-   15. TOAST (With iPhone Safe Area Support)
---------------------------------------------------- */
+/* ===============================
+   TOAST NOTIFICATIONS & SAFARI POPUP
+   =============================== */
 .toast {
   position: fixed;
-  bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  bottom: 30px;
   left: 50%;
-  transform: translateX(-50%);
-  background: var(--surface);
+  transform: translateX(-50%) translateY(20px);
+  background: #1f2430;
   color: var(--text-main);
-  padding: 12px 22px;
+  border: 1px solid var(--border-soft);
+  padding: 12px 24px;
   border-radius: var(--radius-pill);
-  border: 1px solid var(--accent);
-  box-shadow: var(--shadow-soft);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  z-index: 99999;
   font-size: 0.95rem;
-  white-space: nowrap;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 3000;
+  pointer-events: none;
 }
 
 .toast.visible {
   opacity: 1;
-  transform: translateX(-50%) translateY(-6px);
+  transform: translateX(-50%) translateY(0);
+}
+
+.safari-storage-popup {
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: #2a2212;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.85rem;
+  z-index: 4000;
+}
+.safari-storage-popup.visible {
+  display: block;
+}
+
+/* ===============================
+   RESPONSIVE DESIGN (MOBILE MENU)
+   =============================== */
+@media (max-width: 768px) {
+  .nav-toggle {
+    display: flex;
+  }
+
+  .main-nav {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--bg-dark);
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-soft);
+    display: none;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+  }
+
+  .main-nav.open {
+    display: flex;
+  }
+
+  .hero-title {
+    font-size: 2.2rem;
+  }
 }
