@@ -218,7 +218,7 @@ if (!isMyMeetupsPage && !isLoginPage) {
 }
 
 // ===============================
-// 1-CLICK INSTANT RSVP SYSTEM
+// BULLETPROOF 1-CLICK RSVP SYSTEM
 // ===============================
 async function handleRsvpClick(eventName, btn) {
   const session = (await supabaseClient.auth.getSession()).data.session;
@@ -233,36 +233,36 @@ async function handleRsvpClick(eventName, btn) {
 
   btn.disabled = true;
 
-  if (btn.classList.contains("cancel-btn")) {
-    btn.textContent = "Canceling…";
-    const { error } = await supabaseClient
-      .from("rsvps")
-      .delete()
-      .eq("email", email)
-      .eq("event_name", eventName);
+  try {
+    if (btn.classList.contains("cancel-btn")) {
+      btn.textContent = "Canceling…";
+      const { error } = await supabaseClient
+        .from("rsvps")
+        .delete()
+        .eq("email", email)
+        .eq("event_name", eventName);
 
-    if (error) {
-      showToast("Could not cancel. Try again.");
-    } else {
+      if (error) throw error;
       showToast("RSVP canceled.");
-    }
-  } else {
-    btn.textContent = "Joining…";
-    const { error } = await supabaseClient.from("rsvps").upsert(
-      { email, event_name: eventName, username },
-      { onConflict: "email,event_name" }
-    );
-
-    if (error) {
-      showToast("Something went wrong. Please try again.");
     } else {
+      btn.textContent = "Joining…";
+      const { error } = await supabaseClient
+        .from("rsvps")
+        .insert([{ email, event_name: eventName, username }]);
+
+      if (error && error.code !== "23505") {
+        throw error;
+      }
       showToast("You're in! 🎉");
     }
+  } catch (err) {
+    console.error("RSVP error:", err);
+    showToast("Something went wrong. Please try again.");
+  } finally {
+    btn.disabled = false;
+    await loadAttendingCounts();
+    await updateRsvpButtons();
   }
-
-  btn.disabled = false;
-  await loadAttendingCounts();
-  await updateRsvpButtons();
 }
 
 async function updateRsvpButtons() {
