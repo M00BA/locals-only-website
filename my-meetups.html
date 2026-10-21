@@ -5,139 +5,90 @@
   <title>My Meetups – Locals Only</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
+  <!-- TAB ICON -->
+  <link rel="icon" type="image/jpeg" href="images/logo-dark.jpg" />
+  <link rel="apple-touch-icon" href="images/logo-dark.jpg" />
+
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body class="theme-night">
 
-  <!-- Shooting star -->
   <div class="shooting-star"></div>
 
   <!-- HEADER -->
   <header class="site-header">
     <div class="header-inner">
-
       <div class="logo">
-        <img src="images/Locals-only-icon(night mode).jpg" class="logo-image" />
+        <a href="/">
+          <img src="images/logo-dark.jpg" class="logo-image" alt="Locals Only logo" />
+        </a>
       </div>
 
-      <button class="nav-toggle">
+      <button class="nav-toggle" aria-label="Open navigation menu">
         <div class="nav-toggle-line"></div>
         <div class="nav-toggle-line"></div>
         <div class="nav-toggle-line"></div>
       </button>
 
-      <!-- UPDATED NAVBAR (same as index.html) -->
+      <!-- NAV -->
       <nav class="main-nav">
-
         <a href="/" class="nav-link">Home</a>
-        <a href="suggest-event.html" class="nav-link">Suggest Event</a>
-        <a id="myMeetupsLink" href="my-meetups.html" class="nav-link active">My Meetups</a>
-
-        <!-- USER DROPDOWN -->
-        <div id="userDropdown" class="user-dropdown" style="display:none;">
-          <button id="userDropdownButton" class="user-dropdown-btn">
-            <span id="navbarUsername">User</span> ▼
-          </button>
-
-          <div id="userDropdownMenu" class="user-dropdown-menu">
-            <a href="my-meetups.html">My Meetups</a>
-            <a href="suggest-event.html">Suggest Event</a>
-            <a id="logoutButton">Logout</a>
-          </div>
-        </div>
-
-        <!-- If logged out -->
-        <a id="loginLink" href="login.html" class="nav-link">Become a Local</a>
-
+        <a href="#" class="openSuggest">Suggest Event</a>
+        <a href="https://www.youtube.com/@Mooooba/playlists" target="_blank" rel="noopener noreferrer" class="nav-link">YouTube</a>
+        <a href="my-meetups.html" class="nav-link" style="color: var(--accent);">My Meetups</a>
       </nav>
-
     </div>
   </header>
 
-  <!-- PAGE CONTENT -->
-  <main class="fade-in" style="max-width: 900px; margin: 120px auto; padding: 24px;">
-
-    <h1 style="text-align:center; margin-bottom: 12px;">My Meetups</h1>
-    <p class="about-text" style="text-align:center; margin-bottom: 32px;">
-      These are the meetups you’ve RSVP’d to.
-    </p>
-
-    <div id="meetupsContainer" class="events-grid fade-in">
-      <!-- RSVPs will be injected here -->
+  <!-- MAIN CONTENT -->
+  <main style="max-width: 1000px; margin: 40px auto; padding: 0 20px;">
+    
+    <div class="section-header" style="margin-bottom: 30px;">
+      <h2>My Joined Meetups</h2>
     </div>
 
-    <p id="emptyMessage" class="about-text" style="display:none; text-align:center;">
-      You haven't RSVP’d to any meetups yet.
-    </p>
+    <!-- Empty state message -->
+    <div id="emptyMessage" style="display:none; text-align: center; padding: 60px 20px; color: var(--text-muted);">
+      <p style="font-size: 1.1rem; margin-bottom: 16px;">You haven't joined any meetups yet.</p>
+      <a href="/" class="login-btn" style="display: inline-block; width: auto; padding: 10px 24px; text-decoration: none;">Browse Meetups</a>
+    </div>
+
+    <!-- Meetups Grid -->
+    <div id="meetupsContainer" class="events-grid"></div>
 
   </main>
 
-  <!-- Supabase -->
+  <!-- FLOATING SUGGEST BUTTON -->
+  <button id="fabSuggest" class="fab-suggest">＋ Suggest</button>
+
+  <!-- SUGGEST EVENT MODAL -->
+  <div id="suggestModal" class="modal" style="display:none;">
+    <div class="modal-content">
+      <span id="closeSuggestModal" class="close">&times;</span>
+      <h2 class="modal-title">Suggest a Meetup</h2>
+
+      <label class="login-sub">Your Name</label>
+      <input id="suggestName" class="login-input" type="text" placeholder="e.g. Mooba" />
+
+      <label class="login-sub">Your Email</label>
+      <input id="suggestEmail" class="login-input" type="email" readonly />
+
+      <label class="login-sub">Event Idea</label>
+      <input id="suggestTitle" class="login-input" type="text" placeholder="e.g. Sunset Walk" />
+
+      <label class="login-sub">Description</label>
+      <textarea id="suggestDescription" class="login-input" placeholder="Tell us about your idea..." style="height:120px;"></textarea>
+
+      <button id="submitSuggestion" class="login-btn" style="margin-top: 20px;">
+        Send Suggestion
+      </button>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <script>
-    // Initialize Supabase
-    const SUPABASE_URL = "https://wezzokxbwzocgeawzrsp.supabase.co";
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_QiilYh9S-TYQzc6Lh1Ixxw_zFb8ZNtM";
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-
-    // Require login + load RSVPs
-    supabaseClient.auth.getSession().then(async ({ data }) => {
-      const session = data.session;
-
-      if (!session || !session.user) {
-        window.location.href = "login.html";
-        return;
-      }
-
-      const email = session.user.email;
-      const container = document.getElementById("meetupsContainer");
-      const emptyMessage = document.getElementById("emptyMessage");
-
-      const { data: rsvps, error } = await supabaseClient
-        .from("rsvps")
-        .select("*")
-        .eq("email", email);
-
-      if (error) {
-        container.innerHTML = "<p class='about-text'>Error loading your meetups.</p>";
-        return;
-      }
-
-      if (!rsvps || rsvps.length === 0) {
-        emptyMessage.style.display = "block";
-        return;
-      }
-
-      container.innerHTML = "";
-      rsvps.forEach(rsvp => {
-        const card = document.createElement("div");
-        card.className = "event-card fade-in";
-        card.innerHTML = `
-          <span class="event-tag">Joined</span>
-          <h3 class="event-title">${rsvp.event_name}</h3>
-          <p class="event-description">You're signed up for this meetup.</p>
-        `;
-        container.appendChild(card);
-      });
-    });
-  </script>
-
-  <!-- WELCOME OVERLAY -->
-  <div id="welcomeOverlay" class="welcome-overlay" style="display:none;">
-    <div class="welcome-box fade-in">
-      <h2 id="welcomeMessage"></h2>
-    </div>
-  </div>
-
-  <!-- LOGIN SUCCESS OVERLAY -->
-  <div id="loginSuccess" class="welcome-overlay" style="display:none;">
-    <div class="welcome-box fade-in">
-      <h2>You're logged in!</h2>
-      <p>Redirecting...</p>
-    </div>
-  </div>
+  <script src="main.js"></script>
 
 </body>
 </html>
