@@ -7,8 +7,8 @@
   --bg-card-hover: #151a30;
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
-  --accent: #f05a28; /* Blood Orange */
-  --accent-glow: rgba(240, 90, 40, 0.35);
+  --accent: #f2c98c; /* Warm Amber / Sand Accent */
+  --accent-glow: rgba(242, 201, 140, 0.25);
   --border-soft: rgba(255, 255, 255, 0.08);
   --radius-card: 16px;
   --radius-pill: 9999px;
@@ -201,7 +201,7 @@ body.theme-night::after {
 .city-filter-btn.active,
 .city-filter-btn:hover {
   background: var(--accent);
-  color: #ffffff;
+  color: #1b1220;
   border-color: var(--accent);
   font-weight: 600;
 }
@@ -225,13 +225,13 @@ body.theme-night::after {
 
 .event-card:hover {
   background: var(--bg-card-hover);
-  border-color: rgba(240, 90, 40, 0.3);
+  border-color: rgba(242, 201, 140, 0.3);
   transform: translateY(-2px);
 }
 
 .event-tag {
   align-self: flex-start;
-  background: rgba(240, 90, 40, 0.12);
+  background: rgba(242, 201, 140, 0.12);
   color: var(--accent);
   font-size: 0.75rem;
   font-weight: 600;
@@ -274,7 +274,7 @@ body.theme-night::after {
    =============================== */
 .event-rsvp-btn {
   background: var(--accent);
-  color: #ffffff;
+  color: #1b1220;
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
@@ -319,7 +319,7 @@ body.theme-night::after {
   right: 24px;
   z-index: 999;
   background: var(--accent);
-  color: #ffffff;
+  color: #1b1220;
   padding: 12px 22px;
   border-radius: var(--radius-pill);
   font-weight: 700;
@@ -435,7 +435,7 @@ body.theme-night::after {
 .login-btn {
   width: 100%;
   background: var(--accent);
-  color: #ffffff;
+  color: #1b1220;
   border: none;
   padding: 12px;
   border-radius: 8px;
@@ -459,7 +459,7 @@ body.theme-night::after {
 }
 
 .user-dropdown-btn {
-  background: rgba(240, 90, 40, 0.12);
+  background: rgba(242, 201, 140, 0.12);
   border: 1px solid var(--border-soft);
   color: var(--accent);
   padding: 8px 14px;
@@ -574,7 +574,6 @@ body.theme-night::after {
    =============================== */
 @media (max-width: 768px) {
   .nav-toggle {
-    display: flex;
     display: flex;
   }
 
