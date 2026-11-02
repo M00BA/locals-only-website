@@ -2,13 +2,13 @@
    CSS VARIABLES & RESET
    =============================== */
 :root {
-  --bg-dark: #090a0f;
-  --bg-card: #13151f;
-  --bg-card-hover: #191c2b;
+  --bg-dark: #070913;
+  --bg-card: #0e1222;
+  --bg-card-hover: #151a30;
   --text-main: #f3f4f6;
   --text-muted: #9ca3af;
-  --accent: #fcd34d;
-  --accent-glow: rgba(252, 211, 77, 0.25);
+  --accent: #f05a28; /* Blood Orange */
+  --accent-glow: rgba(240, 90, 40, 0.35);
   --border-soft: rgba(255, 255, 255, 0.08);
   --radius-card: 16px;
   --radius-pill: 9999px;
@@ -23,16 +23,28 @@
 }
 
 body.theme-night {
-  background-color: #050814;
+  background-color: #050711;
   background-image: 
-    radial-gradient(circle at 15% 85%, rgba(14, 58, 140, 0.45) 0%, transparent 50%),
-    radial-gradient(circle at 85% 15%, rgba(20, 75, 180, 0.35) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(8, 20, 45, 0.8) 0%, transparent 100%);
+    radial-gradient(circle at 15% 85%, rgba(14, 58, 140, 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 85% 15%, rgba(30, 90, 210, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(5, 12, 30, 0.9) 0%, transparent 100%);
   color: var(--text-main);
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
   background-attachment: fixed;
+}
+
+/* ===============================
+   GLOWING FRAME EFFECT (NEON BORDER)
+   =============================== */
+body.theme-night::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  box-shadow: inset 0 0 50px rgba(20, 100, 255, 0.35), inset 0 0 15px rgba(50, 150, 255, 0.2);
+  pointer-events: none;
+  z-index: 998;
 }
 
 /* ===============================
@@ -68,7 +80,7 @@ body.theme-night {
   border-bottom: 1px solid var(--border-soft);
   position: sticky;
   top: 0;
-  background: rgba(9, 10, 15, 0.85);
+  background: rgba(7, 9, 19, 0.85);
   backdrop-filter: blur(12px);
   z-index: 100;
 }
@@ -189,7 +201,7 @@ body.theme-night {
 .city-filter-btn.active,
 .city-filter-btn:hover {
   background: var(--accent);
-  color: #121212;
+  color: #ffffff;
   border-color: var(--accent);
   font-weight: 600;
 }
@@ -213,13 +225,13 @@ body.theme-night {
 
 .event-card:hover {
   background: var(--bg-card-hover);
-  border-color: rgba(252, 211, 77, 0.2);
+  border-color: rgba(240, 90, 40, 0.3);
   transform: translateY(-2px);
 }
 
 .event-tag {
   align-self: flex-start;
-  background: rgba(252, 211, 77, 0.1);
+  background: rgba(240, 90, 40, 0.12);
   color: var(--accent);
   font-size: 0.75rem;
   font-weight: 600;
@@ -262,7 +274,7 @@ body.theme-night {
    =============================== */
 .event-rsvp-btn {
   background: var(--accent);
-  color: #121212;
+  color: #ffffff;
   border: none;
   padding: 10px 16px;
   border-radius: 8px;
@@ -307,7 +319,7 @@ body.theme-night {
   right: 24px;
   z-index: 999;
   background: var(--accent);
-  color: #121212;
+  color: #ffffff;
   padding: 12px 22px;
   border-radius: var(--radius-pill);
   font-weight: 700;
@@ -423,7 +435,7 @@ body.theme-night {
 .login-btn {
   width: 100%;
   background: var(--accent);
-  color: #121212;
+  color: #ffffff;
   border: none;
   padding: 12px;
   border-radius: 8px;
@@ -447,7 +459,7 @@ body.theme-night {
 }
 
 .user-dropdown-btn {
-  background: rgba(252, 211, 77, 0.1);
+  background: rgba(240, 90, 40, 0.12);
   border: 1px solid var(--border-soft);
   color: var(--accent);
   padding: 8px 14px;
@@ -562,6 +574,7 @@ body.theme-night {
    =============================== */
 @media (max-width: 768px) {
   .nav-toggle {
+    display: flex;
     display: flex;
   }
 
