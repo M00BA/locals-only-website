@@ -196,6 +196,33 @@ function showToast(message) {
 }
 
 // ===============================
+// Calendar Export Helper
+// ===============================
+function getCalendarLinks(eventTitle) {
+  const title = encodeURIComponent(eventTitle);
+  const details = encodeURIComponent("Cozy community meetup with Locals Only in Hamburg.");
+  const location = encodeURIComponent("Hamburg, Germany");
+  
+  // Google Calendar link
+  const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}`;
+
+  // Apple / Outlook .ics file content
+  const icsContent = `BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${eventTitle}
+DESCRIPTION:Cozy community meetup with Locals Only in Hamburg.
+LOCATION:Hamburg, Germany
+END:VEVENT
+END:VCALENDAR`;
+
+  const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+  const icsUrl = window.URL.createObjectURL(blob);
+
+  return { googleUrl, icsUrl };
+}
+
+// ===============================
 // Load Attendee Counts
 // ===============================
 async function loadAttendingCounts() {
@@ -243,6 +270,12 @@ async function handleRsvpClick(eventName, btn) {
         .eq("event_name", eventName);
 
       if (error) throw error;
+      
+      // Remove any active calendar export helper box on cancel
+      const card = btn.closest(".event-card");
+      const exportBox = card?.querySelector(".calendar-export-box");
+      if (exportBox) exportBox.remove();
+
       showToast("RSVP canceled.");
     } else {
       btn.textContent = "Joining…";
@@ -254,6 +287,22 @@ async function handleRsvpClick(eventName, btn) {
         throw error;
       }
       showToast("You're in! 🎉");
+
+      // Inject Calendar Export options directly onto the event card upon successful RSVP
+      const card = btn.closest(".event-card");
+      if (card && !card.querySelector(".calendar-export-box")) {
+        const links = getCalendarLinks(eventName);
+        const exportDiv = document.createElement("div");
+        exportDiv.className = "calendar-export-box";
+        exportDiv.style.cssText = "margin-top: 12px; font-size: 0.85rem; display: flex; gap: 10px; align-items: center; color: var(--text-muted);";
+        exportDiv.innerHTML = `
+          <span>Add to calendar:</span>
+          <a href="${links.googleUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: underline;">Google</a>
+          <span>•</span>
+          <a href="${links.icsUrl}" download="${eventName.replace(/\s+/g, '_')}.ics" style="color: var(--accent); text-decoration: underline;">Apple / Outlook</a>
+        `;
+        card.appendChild(exportDiv);
+      }
     }
   } catch (err) {
     console.error("RSVP error:", err);
@@ -287,13 +336,33 @@ async function updateRsvpButtons() {
 
   buttons.forEach((btn) => {
     const eventName = btn.dataset.event;
+    const card = btn.closest(".event-card");
 
     if (userEvents.includes(eventName)) {
       btn.textContent = "Cancel RSVP";
       btn.classList.add("cancel-btn");
+
+      // If already RSVP'd on page load, render the calendar export links automatically
+      if (card && !card.querySelector(".calendar-export-box")) {
+        const links = getCalendarLinks(eventName);
+        const exportDiv = document.createElement("div");
+        exportDiv.className = "calendar-export-box";
+        exportDiv.style.cssText = "margin-top: 12px; font-size: 0.85rem; display: flex; gap: 10px; align-items: center; color: var(--text-muted);";
+        exportDiv.innerHTML = `
+          <span>Add to calendar:</span>
+          <a href="${links.googleUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: underline;">Google</a>
+          <span>•</span>
+          <a href="${links.icsUrl}" download="${eventName.replace(/\s+/g, '_')}.ics" style="color: var(--accent); text-decoration: underline;">Apple / Outlook</a>
+        `;
+        card.appendChild(exportDiv);
+      }
     } else {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
+
+      // Clean up calendar links if not attending
+      const exportBox = card?.querySelector(".calendar-export-box");
+      if (exportBox) exportBox.remove();
     }
 
     btn.onclick = () => handleRsvpClick(eventName, btn);
@@ -331,12 +400,19 @@ if (isMyMeetupsPage) {
 
     container.innerHTML = "";
     rsvps.forEach((rsvp) => {
+      const links = getCalendarLinks(rsvp.event_name);
       const card = document.createElement("div");
       card.className = "event-card fade-in";
       card.innerHTML = `
         <span class="event-tag">Joined</span>
         <h3 class="event-title">${rsvp.event_name}</h3>
         <p class="event-description">You're signed up for this meetup.</p>
+        <div style="margin-top: 12px; font-size: 0.85rem; display: flex; gap: 10px; align-items: center; color: var(--text-muted);">
+          <span>Add to calendar:</span>
+          <a href="${links.googleUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--accent); text-decoration: underline;">Google</a>
+          <span>•</span>
+          <a href="${links.icsUrl}" download="${rsvp.event_name.replace(/\s+/g, '_')}.ics" style="color: var(--accent); text-decoration: underline;">Apple / Outlook</a>
+        </div>
       `;
       container.appendChild(card);
       fadeObserver.observe(card);
