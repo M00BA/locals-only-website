@@ -200,18 +200,16 @@ function showToast(message) {
 // ===============================
 function getCalendarLinks(eventTitle) {
   const title = encodeURIComponent(eventTitle);
-  const details = encodeURIComponent("Cozy community meetup with Locals Only in Hamburg.");
+  const details = encodeURIComponent("Cozy inclusive community meetup with Locals Only in Hamburg.");
   const location = encodeURIComponent("Hamburg, Germany");
   
-  // Google Calendar link
   const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&details=${details}&location=${location}`;
 
-  // Apple / Outlook .ics file content
   const icsContent = `BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
 SUMMARY:${eventTitle}
-DESCRIPTION:Cozy community meetup with Locals Only in Hamburg.
+DESCRIPTION:Cozy inclusive community meetup with Locals Only in Hamburg.
 LOCATION:Hamburg, Germany
 END:VEVENT
 END:VCALENDAR`;
@@ -223,8 +221,25 @@ END:VCALENDAR`;
 }
 
 // ===============================
-// Load Attendee Counts
+// Load Community & Attendee Counts
 // ===============================
+async function loadCommunityCount() {
+  const countNumEl = document.getElementById("communityCountNum");
+  if (!countNumEl) return;
+
+  try {
+    const { data, error } = await supabaseClient
+      .from("rsvps")
+      .select("email");
+
+    if (error) throw error;
+    const uniqueMembers = new Set(data?.map(r => r.email)).size;
+    countNumEl.textContent = uniqueMembers;
+  } catch (err) {
+    console.warn("Could not load community count:", err);
+  }
+}
+
 async function loadAttendingCounts() {
   const countElements = document.querySelectorAll(".attending-count");
 
@@ -238,6 +253,7 @@ async function loadAttendingCounts() {
 
     el.textContent = `${count || 0} attending`;
   }
+  loadCommunityCount();
 }
 
 if (!isMyMeetupsPage && !isLoginPage) {
@@ -271,7 +287,6 @@ async function handleRsvpClick(eventName, btn) {
 
       if (error) throw error;
       
-      // Remove any active calendar export helper box on cancel
       const card = btn.closest(".event-card");
       const exportBox = card?.querySelector(".calendar-export-box");
       if (exportBox) exportBox.remove();
@@ -288,7 +303,6 @@ async function handleRsvpClick(eventName, btn) {
       }
       showToast("You're in! 🎉");
 
-      // Inject Calendar Export options directly onto the event card upon successful RSVP
       const card = btn.closest(".event-card");
       if (card && !card.querySelector(".calendar-export-box")) {
         const links = getCalendarLinks(eventName);
@@ -342,7 +356,6 @@ async function updateRsvpButtons() {
       btn.textContent = "Cancel RSVP";
       btn.classList.add("cancel-btn");
 
-      // If already RSVP'd on page load, render the calendar export links automatically
       if (card && !card.querySelector(".calendar-export-box")) {
         const links = getCalendarLinks(eventName);
         const exportDiv = document.createElement("div");
@@ -360,7 +373,6 @@ async function updateRsvpButtons() {
       btn.textContent = "RSVP";
       btn.classList.remove("cancel-btn");
 
-      // Clean up calendar links if not attending
       const exportBox = card?.querySelector(".calendar-export-box");
       if (exportBox) exportBox.remove();
     }
