@@ -228,13 +228,13 @@ async function loadCommunityCount() {
   if (!countNumEl) return;
 
   try {
-    const { data, error } = await supabaseClient
-      .from("rsvps")
-      .select("email");
+    // Count total rows in the profiles table (every user who signed up)
+    const { count, error } = await supabaseClient
+      .from("profiles")
+      .select("*", { count: "exact", head: true });
 
     if (error) throw error;
-    const uniqueMembers = new Set(data?.map(r => r.email)).size;
-    countNumEl.textContent = uniqueMembers;
+    countNumEl.textContent = count || 0;
   } catch (err) {
     console.warn("Could not load community count:", err);
   }
